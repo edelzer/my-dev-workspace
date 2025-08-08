@@ -65,6 +65,39 @@ Continue for each increment until your objectives are fully implemented.
 
 ## Modern TDD: AI-Assisted Development
 
+### Claude Code TDD Protocol - Mandatory Instructions
+
+**IMPORTANT: When working in a TDD environment, Claude Code MUST follow these specific directives:**
+
+#### Core Claude Code TDD Workflow
+1. **Always start with tests** - Never implement functionality before writing failing tests
+2. **Use TodoWrite tool** to track Red-Green-Refactor cycles for every feature
+3. **Run tests after every code change** using Bash tool to verify test status
+4. **Explicitly confirm test failures** before implementing code (Red phase)
+5. **Write minimal code only** to make tests pass (Green phase)
+6. **Refactor with test safety net** - always re-run tests after refactoring
+
+#### Required Claude Code Actions
+- **Test-First Implementation**: Before any functional code, ask user to clarify requirements and write comprehensive test cases
+- **Explicit Phase Communication**: Clearly state which TDD phase you're in (Red/Green/Refactor)
+- **Test Execution Validation**: Always run tests and show results to user before proceeding
+- **Incremental Development**: Break large features into small, testable increments
+- **Security-First Testing**: Include security test cases for any user input or authentication features
+
+#### Claude Code Error Handling in TDD
+- **Test Failures**: Stop implementation immediately if tests fail unexpectedly
+- **Missing Dependencies**: Identify and install test framework dependencies before proceeding
+- **Environment Issues**: Help user set up proper testing environment before starting TDD cycle
+
+#### Mandatory Claude Code Responses
+When user requests feature implementation:
+1. "I'll implement this using TDD. First, let me write the failing tests."
+2. Execute test creation and verification
+3. "Tests are failing as expected (Red phase). Now implementing minimal code to pass."
+4. Show code implementation
+5. "Running tests to verify Green phase..."
+6. "Tests passing. Now refactoring for quality while maintaining Green phase."
+
 ### TDD with AI Coding Tools
 
 Recent developments show that test-driven development (TDD) works well with LLM assistance, as the human can fix quality barriers and define the design. AI tools like Claude Code, Cursor, and GitHub Copilot have transformed how we implement TDD:
@@ -86,6 +119,29 @@ Recent developments show that test-driven development (TDD) works well with LLM 
 - Automated refactoring while maintaining test coverage
 - Performance optimizations guided by test constraints
 
+#### **Claude Code Specific TDD Requirements**
+
+1. **Mandatory Test-First Approach**
+   - Claude Code MUST refuse to implement functionality without tests
+   - Response template: "I cannot implement this feature without writing tests first. Let me create the failing tests to define the expected behavior."
+   - Exception: Only emergency bug fixes bypass this requirement
+
+2. **Required Test Execution Pattern**
+   - Before implementing: Run tests to show failure (Red)
+   - After minimal implementation: Run tests to show success (Green)  
+   - After refactoring: Run tests to confirm no regression
+   - Use Bash tool with appropriate test commands (npm test, pytest, etc.)
+
+3. **Incremental Development Enforcement**
+   - Break complex features into maximum 15-minute TDD cycles
+   - Use TodoWrite to track each Red-Green-Refactor cycle
+   - Each todo must represent one complete TDD cycle
+
+4. **Security-First Test Integration** 
+   - Automatically include security test cases for authentication, input validation, authorization
+   - Refuse to implement security-sensitive features without comprehensive security tests
+   - Example: "This feature handles user input. I'm adding input validation and XSS protection tests."
+
 #### **Best Practices for AI-Assisted TDD**
 
 1. **Human-Defined Tests, AI-Generated Code**
@@ -102,19 +158,61 @@ Recent developments show that test-driven development (TDD) works well with LLM 
 
 #### **AI Tools Integration Examples**
 
-**Claude Code TDD Workflow:**
+**Claude Code TDD Workflow Implementation:**
+```bash
+# Required Claude Code commands for TDD cycle:
+# 1. Red Phase - Create failing test
+npm test                    # Verify test fails
+# 2. Green Phase - Implement minimal code
+npm test                    # Verify test passes
+# 3. Refactor Phase - Improve code quality
+npm test                    # Verify tests still pass
+```
+
+**Claude Code Project Detection:**
 ```markdown
-# claude.md configuration for TDD
-We are following Test-Driven Development (TDD):
-1. Write failing tests first
-2. Implement minimal code to pass
-3. Refactor while keeping tests green
-4. Always run tests after changes
+# Claude Code must automatically detect TDD projects by checking:
+- package.json contains test scripts
+- Test directories exist (src/__tests__, test/, spec/)  
+- Testing frameworks present (Jest, Vitest, Mocha, etc.)
+- When detected, automatically follow TDD protocols
 ```
 
 **Cursor TDD Enhancement:**
 - Use Cursor's context awareness to maintain test-code consistency
 - Leverage Cursor's ability to understand project structure for better test organization
+
+#### **Claude Code Command Patterns for TDD**
+
+**Feature Request Detection:**
+```
+User says: "Add [feature]" or "Implement [functionality]"
+Claude Code MUST respond: "I'll implement this using TDD. First, let me write the failing tests that define the expected behavior."
+```
+
+**Test Verification Commands:**
+```bash
+# Claude Code must always run these in sequence:
+npm test              # Show failing test (Red phase)
+# [implement minimal code]
+npm test              # Show passing test (Green phase)  
+# [refactor if needed]
+npm test              # Confirm tests still pass
+```
+
+**Required TodoWrite Integration:**
+```
+Todo: "Red: Write failing test for [feature]"
+Todo: "Green: Implement minimal code to pass test"  
+Todo: "Refactor: Improve code quality while maintaining Green"
+Todo: "Validate: Run full test suite to confirm no regressions"
+```
+
+**Security-Sensitive Feature Detection:**
+```
+Keywords triggering security tests: authentication, login, password, input, form, API, user data, file upload, payment
+Claude Code response: "This feature involves [security concern]. I'm including security test cases for [specific threats]."
+```
 
 ---
 
