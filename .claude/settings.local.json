@@ -4,8 +4,18 @@
       "mcp__filesystem__list_directory",
       "mcp__filesystem__read_file",
       "mcp__filesystem__write_file",
-      "mcp__github__get_repository"
+      "mcp__github__get_repository",
+      "Bash(claude mcp:*)"
     ],
     "deny": []
+  },
+  "mcpServers": {
+    "BMAD-METHOD.git Docs": {
+      "url": "https://gitmcp.io/bmadcode/BMAD-METHOD.git"
+    },
+    "puppeteer-browser": {
+      "command": "mcp-server-puppeteer",
+      "args": []
+    }
   }
 }
