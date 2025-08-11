@@ -1,175 +1,599 @@
-# Security-First Mindset Protocol
+# AI-Optimized Security-First Development Protocol
 
-## Core Philosophy & Mission
-Security is not a feature to be added later—it's a foundational design principle that influences every architectural decision, code choice, and user interaction. This protocol establishes security as a primary consideration in all development activities, from initial requirements gathering through production deployment and maintenance.
+## AI Implementation Directives
 
-## Security-First Principles
+> **FOR CLAUDE CODE**: This protocol provides mandatory security-first instructions for all development activities. Every feature implementation MUST follow these security directives exactly as written.
 
-### 1. Zero Trust Architecture
-- **Assumption**: Every component, user, and data flow is potentially compromised
-- **Implementation**: Validate and authenticate all interactions, regardless of source
-- **Decision Framework**: "How would this behave if [component X] were malicious?"
+### Critical AI Security Behavior Requirements
+1. **NEVER** implement any feature without completing security analysis first
+2. **ALWAYS** validate all inputs and sanitize all outputs before any processing
+3. **MUST** implement authentication and authorization for every endpoint/component
+4. **REQUIRED** to use established cryptographic libraries - NEVER create custom security
+5. **MANDATORY** to log security events without exposing sensitive data
 
-### 2. Defense in Depth
-- **Layered Protection**: Multiple security controls at different levels
-- **Redundancy**: If one layer fails, others continue protecting
-- **Fail Secure**: Systems default to secure state when errors occur
+## AI Quick Reference Security Framework
 
-### 3. Principle of Least Privilege
-- **Minimal Access**: Users/systems get only the permissions absolutely necessary
-- **Time-Bounded**: Access expires and requires renewal
-- **Audit Trail**: All permission grants and usage are logged
-
-### 4. Security by Design
-- **Early Integration**: Security considerations from requirements phase
-- **Threat Modeling**: Systematic analysis of potential attack vectors
-- **Privacy by Default**: Data protection as the baseline, not opt-in
-
-## Security Decision Framework
-
-### Every Development Decision Filter
-```markdown
-Before implementing any feature/component, evaluate:
-
-1. **Attack Surface Analysis**
-   - What new entry points does this create?
-   - How could an attacker abuse this functionality?
-   - What sensitive data does this expose or handle?
-
-2. **Privilege Escalation Assessment**
-   - Could this be used to gain unauthorized access?
-   - What permissions does this require vs. what it provides?
-   - How do we limit blast radius if compromised?
-
-3. **Data Flow Security**
-   - Where does data originate, travel, and terminate?
-   - Is encryption enforced at all stages?
-   - Are there unintended data leakage points?
-
-4. **Failure Mode Analysis**
-   - What happens when this component fails?
-   - Does failure expose sensitive information?
-   - Can failure be induced to cause security issues?
+### Mandatory Security Validation Sequence
+```
+1. ANALYZE    → Complete security analysis before any implementation
+2. VALIDATE   → Input validation, authentication, authorization
+3. ENCRYPT    → All sensitive data encrypted in transit and at rest
+4. MONITOR    → Security logging and event detection
+5. TEST       → Security test cases for all attack vectors
 ```
 
-## Integration with Development Workflow
-
-### Requirements & Design Phase
-- **Threat Modeling**: Identify assets, threats, and mitigations before coding
-- **Security Requirements**: Explicit security criteria for every user story
-- **Compliance Mapping**: Identify regulatory requirements (GDPR, CCPA, SOX, etc.)
-
-### Development Phase (TDD/SDD Integration)
-- **Security Test Cases**: Every feature includes negative security tests
-- **Input Validation**: All external inputs validated and sanitized
-- **Authentication/Authorization**: Proper access controls for all endpoints
-- **Cryptographic Standards**: Use established libraries, never roll your own
-
-### Code Review Security Checklist
-```markdown
-- [ ] Input validation implemented and tested
-- [ ] Authentication/authorization properly enforced
-- [ ] Sensitive data handling follows encryption standards
-- [ ] Error messages don't leak system information
-- [ ] SQL injection/XSS prevention implemented
-- [ ] OWASP Top 10 vulnerabilities addressed
-- [ ] Secrets management properly implemented (no hardcoded credentials)
-- [ ] Logging includes security events without exposing sensitive data
+### Security Decision Tree (MANDATORY)
+```
+Feature Request Received
+├── Is this a security-sensitive component? → YES: Apply enhanced security controls
+├── Does this handle user data? → YES: Implement data protection measures
+├── Does this create new endpoints? → YES: Add authentication/authorization
+├── Does this process external input? → YES: Implement input validation
+└── Does this store/transmit data? → YES: Apply encryption requirements
 ```
 
-### Deployment & Operations
-- **Security Scanning**: Automated vulnerability assessment in CI/CD
-- **Secrets Management**: No credentials in code, environment-specific secrets
-- **Monitoring**: Security event detection and alerting
-- **Incident Response**: Predefined procedures for security incidents
+### AI Security Validation Checkpoints
+- **Before Implementation**: Security analysis must pass >95% completeness
+- **During Development**: All security controls must be implemented and tested
+- **After Implementation**: Security scan must show zero critical vulnerabilities
+- **Before Deployment**: Penetration testing must validate all security controls
 
-## AI-Enhanced Security Practices
+---
 
-### AI Tool Integration for Security
-- **Automated Threat Modeling**: AI-assisted identification of attack vectors
-- **Security Code Review**: AI analysis for common vulnerability patterns
-- **Compliance Checking**: Automated validation against security standards
-- **Penetration Testing**: AI-generated security test scenarios
+## PHASE 1: SECURITY ANALYSIS (Mandatory First Step)
 
-### AI Security Considerations
-- **Model Security**: Protect AI models from adversarial attacks
-- **Data Privacy**: Ensure AI tools don't expose sensitive training data
-- **Prompt Injection**: Validate AI inputs to prevent malicious prompts
-- **Bias & Fairness**: Security measures don't discriminate or create vulnerabilities
+### AI Directive: Complete Security Analysis Before Any Code
 
-## Security-First Communication Standards
+**MANDATORY**: You must create these security documents in order:
+1. `security-analysis.md` - Threat model and attack surface analysis
+2. `security-requirements.md` - Specific security controls and requirements
+3. `security-tests.md` - Security test scenarios and validation criteria
 
-### Documentation Requirements
-- **Security Architecture Diagrams**: Visual representation of security controls
-- **Threat Model Documentation**: Identified threats and mitigations
-- **Security Runbooks**: Incident response and recovery procedures
-- **Compliance Evidence**: Audit trails and compliance reporting
+### Security Analysis Process
+```yaml
+# AI Execution Steps for SECURITY ANALYSIS:
+step_1: "Identify all data inputs, outputs, and processing points"
+step_2: "Analyze potential attack vectors and threat scenarios"
+step_3: "Determine required security controls and protections"
+step_4: "Define security test cases for all identified threats"
+step_5: "Document compliance requirements (GDPR, OWASP, etc.)"
+step_6: "STOP - Do not proceed without security approval gate"
+```
 
-### Stakeholder Communication
-- **Risk Communication**: Translate technical risks to business impact
-- **Security Metrics**: Regular reporting on security posture
-- **Training & Awareness**: Security education for all team members
-- **Incident Communication**: Clear protocols for security event notification
+### Security Analysis Template (MANDATORY FORMAT)
+```markdown
+# Security Analysis: [Feature Name]
 
-## Security Metrics & Validation
+## Attack Surface Assessment
+- **New Entry Points**: [List all new interfaces, APIs, endpoints]
+- **Data Flow**: [Map all data sources, processing, and destinations]
+- **Attack Vectors**: [Identify all potential attack scenarios]
+- **Impact Assessment**: [Evaluate potential damage from each threat]
 
-### Key Performance Indicators
-- **Mean Time to Detection (MTTD)**: How quickly threats are identified
-- **Mean Time to Remediation (MTTR)**: How quickly vulnerabilities are fixed
-- **Security Test Coverage**: Percentage of code covered by security tests
-- **Vulnerability Density**: Number of vulnerabilities per KLOC (thousand lines of code)
+## Threat Model
+- **Assets**: [What needs protection?]
+- **Threats**: [Who/what could attack?]
+- **Vulnerabilities**: [What weaknesses exist?]
+- **Mitigations**: [How to prevent/detect/respond?]
 
-### Continuous Improvement
-- **Security Retrospectives**: Regular review of security practices and incidents
-- **Threat Intelligence**: Stay updated on emerging threats and vulnerabilities
-- **Security Tool Effectiveness**: Regular assessment of security tool performance
-- **Skills Development**: Ongoing security training and certification
+## Required Security Controls
+- **Authentication**: [How users/systems are verified]
+- **Authorization**: [How access is controlled]
+- **Encryption**: [What data needs encryption and how]
+- **Input Validation**: [All inputs that need validation]
+- **Logging**: [Security events to monitor]
+```
 
-## Emergency Security Protocols
+### Security Requirements Template (MANDATORY FORMAT)
+```markdown
+# Security Requirements: [Feature Name]
 
-### Incident Response Hierarchy
-1. **Immediate Containment**: Isolate affected systems
-2. **Impact Assessment**: Determine scope and severity
-3. **Stakeholder Notification**: Inform relevant parties based on severity
-4. **Forensics**: Preserve evidence and analyze attack vectors
-5. **Recovery**: Restore systems with enhanced security
-6. **Post-Incident Review**: Learn and improve processes
+## Authentication Requirements
+- **User Authentication**: [OAuth 2.0, JWT, Multi-factor, etc.]
+- **System Authentication**: [API keys, certificates, etc.]
+- **Session Management**: [Timeout, secure cookies, etc.]
 
-### Escalation Criteria
-- **Critical**: Active breach, data exfiltration, or system compromise
-- **High**: Potential breach, vulnerability in production, or compliance violation
-- **Medium**: Security tool alerts, suspicious activity, or policy violations
-- **Low**: Security hygiene issues, expired certificates, or minor misconfigurations
+## Authorization Requirements
+- **Access Control Model**: [RBAC, ABAC, etc.]
+- **Permission Levels**: [Read, Write, Admin, etc.]
+- **Resource Protection**: [What resources need what permissions]
 
-## Tool & Technology Guidelines
+## Data Protection Requirements
+- **Encryption in Transit**: [TLS 1.3+, certificate requirements]
+- **Encryption at Rest**: [AES-256, key management]
+- **Data Classification**: [Public, Internal, Confidential, Restricted]
+- **Retention Policies**: [How long data is kept, deletion procedures]
 
-### Approved Security Tools
-- **Static Analysis**: Tools for source code vulnerability scanning
-- **Dynamic Analysis**: Runtime security testing and monitoring
-- **Dependency Scanning**: Third-party library vulnerability assessment
-- **Infrastructure Security**: Cloud security posture management
+## Compliance Requirements
+- **GDPR**: [Right to be forgotten, data portability, etc.]
+- **OWASP Top 10**: [Specific protections needed]
+- **Industry Standards**: [PCI DSS, HIPAA, SOX as applicable]
+```
 
-### Secure Development Frameworks
-- **Authentication**: OAuth 2.0, OpenID Connect, SAML
-- **Authorization**: RBAC, ABAC, or similar fine-grained access control
-- **Encryption**: TLS 1.3+, AES-256, secure key management
-- **Logging**: Structured logging with security event correlation
+### Security Gate: ANALYSIS Phase Exit Criteria
+**BEFORE proceeding to implementation, verify:**
+- ☑ security-analysis.md complete with threat model
+- ☑ All attack vectors identified and mitigated
+- ☑ security-requirements.md specifies all controls
+- ☑ Compliance requirements documented
+- ☑ Security test scenarios defined
+- ☑ Security approval obtained from review
 
-## Compliance & Regulatory Framework
+---
 
-### Privacy Regulations
-- **GDPR**: European data protection requirements
-- **CCPA**: California privacy legislation
-- **HIPAA**: Healthcare data protection (if applicable)
-- **SOX**: Financial reporting controls (if applicable)
+## PHASE 2: SECURE IMPLEMENTATION (Development Phase)
 
-### Security Standards
-- **OWASP**: Web application security best practices
-- **NIST**: Cybersecurity framework and guidelines
-- **ISO 27001**: Information security management systems
-- **SOC 2**: Security, availability, and confidentiality controls
+### AI Directive: Implement All Security Controls During Development
 
-## Remember: Security is Everyone's Responsibility
-Security-first mindset means every developer, designer, and stakeholder considers security implications in their decisions. This protocol provides the framework, but successful implementation requires cultural adoption and continuous reinforcement throughout the development lifecycle.
+**MANDATORY**: Every security requirement must be implemented and tested
 
-**Security is not about saying "no" to features—it's about building features securely from the start.**
+### Secure Development Process
+```yaml
+# AI Execution Steps for SECURE IMPLEMENTATION:
+step_1: "Load security-requirements.md and security-analysis.md"
+step_2: "Implement input validation for all external inputs"
+step_3: "Add authentication and authorization controls"
+step_4: "Implement encryption for sensitive data handling"
+step_5: "Add security logging and monitoring"
+step_6: "Create security test cases for all controls"
+step_7: "Run security tests - all must pass before completion"
+step_8: "STOP - Verify all security requirements implemented"
+```
+
+### Mandatory Security Implementation Pattern
+```typescript
+// File: [feature-name].security.ts
+export class FeatureSecurityService {
+  // REQUIREMENT: Input validation for all external inputs
+  validateInput(input: any): ValidationResult {
+    // Sanitize and validate all inputs per security-requirements.md
+    if (!this.isValidInput(input)) {
+      this.logSecurityEvent('INVALID_INPUT_ATTEMPT', { input: '[REDACTED]' });
+      throw new SecurityError('Invalid input detected');
+    }
+    return { valid: true, sanitized: this.sanitizeInput(input) };
+  }
+  
+  // REQUIREMENT: Authentication check for all operations
+  async authenticateUser(credentials: UserCredentials): Promise<AuthResult> {
+    // Implement authentication per security-requirements.md
+    const result = await this.authService.authenticate(credentials);
+    this.logSecurityEvent('AUTH_ATTEMPT', { 
+      success: result.success,
+      userId: result.userId 
+    });
+    return result;
+  }
+  
+  // REQUIREMENT: Authorization check for all resources
+  async authorizeAccess(userId: string, resource: string, action: string): Promise<boolean> {
+    // Implement authorization per security-requirements.md
+    const authorized = await this.authzService.checkPermission(userId, resource, action);
+    this.logSecurityEvent('AUTHZ_CHECK', { 
+      userId, 
+      resource, 
+      action, 
+      authorized 
+    });
+    return authorized;
+  }
+  
+  // REQUIREMENT: Encrypt sensitive data
+  encryptSensitiveData(data: SensitiveData): EncryptedData {
+    // Use established crypto library - NEVER custom implementation
+    return this.cryptoService.encrypt(data, this.getEncryptionKey());
+  }
+}
+```
+
+### Security Implementation Rules (MANDATORY COMPLIANCE)
+1. **Input Validation**: ALL external inputs validated and sanitized
+2. **Authentication First**: Verify identity before any operations
+3. **Authorization Always**: Check permissions for every resource access
+4. **Encrypt Everything**: All sensitive data encrypted in transit and at rest
+5. **Log Security Events**: Monitor all security-relevant activities
+6. **Fail Securely**: System defaults to secure state on any errors
+7. **Use Established Libraries**: NEVER implement custom cryptography
+
+### Security Gate: IMPLEMENTATION Phase Exit Criteria
+**BEFORE proceeding to deployment, verify:**
+- ☑ All inputs validated and sanitized
+- ☑ Authentication implemented for all user operations
+- ☑ Authorization checks added for all resource access
+- ☑ Encryption implemented for all sensitive data
+- ☑ Security logging added for all security events
+- ☑ Security tests passing for all implemented controls
+- ☑ No hardcoded secrets or credentials in code
+
+---
+
+## PHASE 3: SECURITY TESTING (Validation Phase)
+
+### AI Directive: Validate All Security Controls Through Testing
+
+**MANDATORY**: Comprehensive security testing covering all threat scenarios
+
+### Security Testing Process
+```yaml
+# AI Execution Steps for SECURITY TESTING:
+step_1: "Load security-tests.md scenarios"
+step_2: "Create unit tests for all security controls"
+step_3: "Generate integration tests for security workflows"
+step_4: "Add penetration tests for identified attack vectors"
+step_5: "Run vulnerability scanning on implemented code"
+step_6: "Verify compliance with security requirements"
+step_7: "Document all security test results"
+step_8: "STOP - All security tests must pass before deployment"
+```
+
+### Security Test Categories (ALL REQUIRED)
+1. **Input Validation Tests**: Malformed, oversized, malicious inputs
+2. **Authentication Tests**: Credential attacks, session hijacking, brute force
+3. **Authorization Tests**: Privilege escalation, access control bypass
+4. **Encryption Tests**: Data exposure, weak encryption, key management
+5. **Injection Tests**: SQL, XSS, command injection, LDAP injection
+6. **Security Configuration Tests**: Default passwords, unnecessary services
+
+### Security Test Pattern (MANDATORY STRUCTURE)
+```javascript
+// File: [feature-name].security.spec.js
+describe('[Feature Name] Security Tests - [SECURITY-REQ-ID]', () => {
+  // Security Requirement: [Copy exact requirement from security-requirements.md]
+  
+  describe('Input Validation Security', () => {
+    it('should reject malicious input and log security event - [SECURITY-REQ-ID]', async () => {
+      // Arrange: Prepare malicious input
+      const maliciousInput = '<script>alert("XSS")</script>';
+      
+      // Act: Attempt to process malicious input
+      const result = await featureService.processInput(maliciousInput);
+      
+      // Assert: Input rejected, security event logged
+      expect(result.accepted).toBe(false);
+      expect(securityLogger.getEvents()).toContainEqual(
+        expect.objectContaining({
+          type: 'INVALID_INPUT_ATTEMPT',
+          severity: 'HIGH'
+        })
+      );
+      
+      // TRACEABILITY COMMENT:
+      // This test validates security requirement [SECURITY-REQ-ID]: Input validation
+    });
+  });
+  
+  describe('Authentication Security', () => {
+    it('should prevent unauthorized access and log attempt - [SECURITY-REQ-ID]', async () => {
+      // Test authentication bypass attempts
+    });
+  });
+  
+  describe('Authorization Security', () => {
+    it('should prevent privilege escalation - [SECURITY-REQ-ID]', async () => {
+      // Test authorization control bypass attempts
+    });
+  });
+});
+```
+
+### Security Gate: TESTING Phase Exit Criteria
+**BEFORE proceeding to deployment, verify:**
+- ☑ All security test categories implemented and passing
+- ☑ Vulnerability scanning shows zero critical/high issues
+- ☑ Penetration testing validates all security controls
+- ☑ Security requirements fully tested and validated
+- ☑ Compliance requirements tested and documented
+- ☑ Security logging and monitoring operational
+
+---
+
+## PHASE 4: SECURITY MONITORING (Operations Phase)
+
+### AI Directive: Implement Continuous Security Monitoring
+
+**MANDATORY**: All security events must be monitored and alerting configured
+
+### Security Monitoring Process
+```yaml
+# AI Execution Steps for SECURITY MONITORING:
+step_1: "Configure security event logging for all implemented controls"
+step_2: "Set up automated vulnerability scanning in CI/CD pipeline"
+step_3: "Implement real-time security event monitoring and alerting"
+step_4: "Create security dashboards for operational visibility"
+step_5: "Document incident response procedures"
+step_6: "Test incident response procedures"
+step_7: "Schedule regular security assessments"
+step_8: "Establish security metrics and reporting"
+```
+
+### Security Monitoring Configuration (MANDATORY SETUP)
+```yaml
+# Security Event Categories to Monitor:
+security_events:
+  authentication:
+    - failed_login_attempts
+    - successful_privileged_access
+    - account_lockouts
+    - password_changes
+  
+  authorization:
+    - privilege_escalation_attempts
+    - access_denied_events
+    - permission_changes
+  
+  data_protection:
+    - sensitive_data_access
+    - encryption_failures
+    - data_export_events
+  
+  system_security:
+    - configuration_changes
+    - security_tool_alerts
+    - vulnerability_scan_results
+
+# Alert Thresholds:
+alerts:
+  critical:
+    - multiple_failed_logins: 5_attempts_per_minute
+    - privilege_escalation: any_attempt
+    - data_exfiltration: any_large_export
+  
+  high:
+    - authentication_bypass: any_attempt
+    - unauthorized_access: any_attempt
+    - vulnerability_detected: critical_or_high_severity
+```
+
+### Incident Response Protocol (MANDATORY PROCEDURE)
+```yaml
+# Incident Response Steps (Execute in Order):
+incident_response:
+  immediate_response:
+    step_1: "Identify and classify the security incident"
+    step_2: "Contain the incident to prevent further damage"
+    step_3: "Preserve evidence for forensic analysis"
+    step_4: "Notify security team and stakeholders"
+  
+  investigation:
+    step_5: "Analyze logs and forensic evidence"
+    step_6: "Determine root cause and attack vector"
+    step_7: "Assess scope and impact of the incident"
+    step_8: "Document findings and timeline"
+  
+  recovery:
+    step_9: "Implement fixes and security improvements"
+    step_10: "Restore affected systems and services"
+    step_11: "Verify security controls are operational"
+    step_12: "Monitor for recurring issues"
+  
+  post_incident:
+    step_13: "Conduct post-incident review meeting"
+    step_14: "Update security procedures and controls"
+    step_15: "Provide training on lessons learned"
+    step_16: "Report to compliance and regulatory bodies if required"
+```
+
+---
+
+## AI Tool Integration for Security
+
+### Claude Code Security Commands
+
+#### For SECURITY ANALYSIS Phase:
+```bash
+# Create security analysis documents
+Write security-analysis.md "[Complete threat model and attack surface analysis]"
+Write security-requirements.md "[Specific security controls and requirements]"
+Write security-tests.md "[Security test scenarios for all threats]"
+
+# Validate security completeness
+Read security-analysis.md  # Check threat model completeness
+TodoWrite [{"content": "Validate security analysis quality gate", "status": "pending"}]
+```
+
+#### For SECURE IMPLEMENTATION Phase:
+```bash
+# Implement security controls
+Read security-requirements.md security-analysis.md  # Load security context
+Write [feature].security.ts "[Security service with all required controls]"
+Edit [feature].service.ts "[Add security validation to existing service]"
+
+# Verify security implementation
+Grep "validateInput\|authenticate\|authorize" **/*.ts  # Check security controls
+Bash "npm run security:scan" # Run security scanning
+```
+
+#### For SECURITY TESTING Phase:
+```bash
+# Create comprehensive security tests
+Read security-tests.md security-requirements.md  # Load test scenarios
+Write [feature].security.spec.js "[Complete security test suite]"
+
+# Run security validation
+Bash "npm run test:security" # Execute all security tests
+Bash "npm run vulnerability:scan" # Check for vulnerabilities
+```
+
+#### For SECURITY MONITORING Phase:
+```bash
+# Set up security monitoring
+Write security-monitoring.config.yml "[Security event monitoring configuration]"
+Edit [feature].service.ts "[Add security event logging]"
+
+# Verify monitoring operational
+Bash "npm run security:monitor" # Test monitoring setup
+Bash "npm run security:alerts:test" # Verify alerting works
+```
+
+### Security Context Management for AI Tools
+
+#### Information Priority for AI Security Context:
+1. **Current Security Phase Requirements** (highest priority)
+2. **Security Analysis Documents** (threat model, requirements)
+3. **Existing Security Controls** (for integration and consistency)
+4. **Compliance Requirements** (GDPR, OWASP, industry standards)
+5. **Security Test Results** (for validation and improvement)
+
+#### AI Security Decision Framework
+```yaml
+# Security Decision Tree for AI Tools:
+security_decisions:
+  feature_analysis:
+    question: "Does this feature handle sensitive data?"
+    if_yes: "Apply data protection requirements and encryption"
+    if_no: "Apply standard security controls"
+  
+  access_control:
+    question: "Does this feature provide access to resources?"
+    if_yes: "Implement authentication and authorization"
+    if_no: "Apply input validation and monitoring"
+  
+  external_interface:
+    question: "Does this feature accept external input?"
+    if_yes: "Implement comprehensive input validation"
+    if_no: "Apply internal security controls"
+  
+  compliance_check:
+    question: "Are there specific compliance requirements?"
+    if_yes: "Implement compliance-specific controls"
+    if_no: "Apply baseline security requirements"
+```
+
+---
+
+## Security Compliance and Validation Framework
+
+### Mandatory Security Compliance Checkpoints
+
+**After SECURITY ANALYSIS Phase:**
+```yaml
+security_gate_1:
+  threat_model_completeness: ">95% of attack vectors identified"
+  security_requirements: "All controls specified and documented"
+  compliance_mapping: "All regulatory requirements identified"
+  stakeholder_approval: "Security analysis reviewed and approved"
+```
+
+**After SECURE IMPLEMENTATION Phase:**
+```yaml
+security_gate_2:
+  control_implementation: "100% of security requirements implemented"
+  input_validation: "All external inputs validated and sanitized"
+  authentication: "All user operations require authentication"
+  authorization: "All resource access requires authorization check"
+  encryption: "All sensitive data encrypted in transit and at rest"
+  logging: "All security events logged without data exposure"
+```
+
+**After SECURITY TESTING Phase:**
+```yaml
+security_gate_3:
+  vulnerability_scan: "Zero critical or high severity vulnerabilities"
+  security_tests: "100% of security test scenarios passing"
+  penetration_testing: "All attack vectors tested and mitigated"
+  compliance_validation: "All regulatory requirements tested"
+```
+
+**After SECURITY MONITORING Phase:**
+```yaml
+security_gate_4:
+  monitoring_operational: "All security events being monitored"
+  alerting_configured: "Real-time alerts for critical security events"
+  incident_response: "Incident response procedures tested and ready"
+  security_metrics: "Security dashboards and reporting operational"
+```
+
+### Feature Security Completion Definition
+A feature is considered SECURITY COMPLETE when:
+- ☑ **Threat Analysis**: Complete threat model with all attack vectors identified
+- ☑ **Security Controls**: All required security controls implemented and tested
+- ☑ **Vulnerability Testing**: Zero critical/high vulnerabilities in production code
+- ☑ **Compliance**: All regulatory and policy requirements satisfied
+- ☑ **Monitoring**: Security event monitoring and incident response operational
+- ☑ **Documentation**: Complete security documentation for operations team
+
+### Security Production Readiness Checklist
+```markdown
+## Feature: [Name] - Security Production Readiness
+
+### Security Analysis Complete:
+- [x] Threat model documents all attack vectors and mitigations
+- [x] Security requirements specify all necessary controls
+- [x] Compliance requirements identified and documented
+
+### Security Implementation Complete:
+- [x] Input validation implemented for all external inputs
+- [x] Authentication required for all user operations
+- [x] Authorization checks implemented for all resource access
+- [x] Encryption implemented for all sensitive data
+- [x] Security logging operational without data exposure
+- [x] No hardcoded secrets or credentials in code
+
+### Security Testing Complete:
+- [x] All security test scenarios passing
+- [x] Vulnerability scanning shows zero critical/high issues
+- [x] Penetration testing validates all security controls
+- [x] Compliance requirements tested and validated
+
+### Security Monitoring Operational:
+- [x] Security event monitoring configured and running
+- [x] Real-time alerting for critical security events
+- [x] Incident response procedures tested and documented
+- [x] Security metrics and dashboards operational
+
+**Status: SECURITY APPROVED FOR PRODUCTION DEPLOYMENT**
+```
+
+---
+
+## Emergency Security Protocol
+
+### Critical Security Incident Response
+```yaml
+# IMMEDIATE RESPONSE (Execute within 5 minutes):
+immediate:
+  step_1: "STOP - Isolate affected systems immediately"
+  step_2: "ASSESS - Determine if active attack is in progress"
+  step_3: "CONTAIN - Prevent further damage or data exposure"
+  step_4: "NOTIFY - Alert security team and stakeholders"
+
+# INVESTIGATION RESPONSE (Execute within 1 hour):
+investigation:
+  step_5: "PRESERVE - Capture forensic evidence"
+  step_6: "ANALYZE - Determine attack vector and scope"
+  step_7: "DOCUMENT - Record timeline and impact"
+  step_8: "COMMUNICATE - Update stakeholders on status"
+
+# RECOVERY RESPONSE (Execute within 24 hours):
+recovery:
+  step_9: "FIX - Implement security patches and improvements"
+  step_10: "RESTORE - Bring systems back online securely"
+  step_11: "VALIDATE - Verify security controls are operational"
+  step_12: "MONITOR - Enhanced monitoring for recurring issues"
+```
+
+### Security Incident Classification
+```yaml
+severity_levels:
+  critical:
+    description: "Active attack, data breach, or system compromise"
+    response_time: "Immediate (within 5 minutes)"
+    escalation: "C-level executives, legal, PR, regulators"
+  
+  high:
+    description: "Vulnerability in production, compliance violation"
+    response_time: "Within 1 hour"
+    escalation: "Security team, engineering management"
+  
+  medium:
+    description: "Security tool alerts, suspicious activity"
+    response_time: "Within 4 hours"
+    escalation: "Security team, development team lead"
+  
+  low:
+    description: "Security hygiene issues, expired certificates"
+    response_time: "Within 24 hours"
+    escalation: "Security team, operations team"
+```
+
+This protocol ensures systematic security implementation with clear AI directives, mandatory checkpoints, and comprehensive validation at every phase of development.

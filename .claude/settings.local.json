@@ -5,7 +5,16 @@
       "mcp__filesystem__read_file",
       "mcp__filesystem__write_file",
       "mcp__github__get_repository",
-      "Bash(claude mcp:*)"
+      "Bash(claude mcp:*)",
+      "Bash(export PATH=\"$HOME/.local/bin:$PATH\")",
+      "Bash(uv:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(git clone:*)",
+      "Bash(claude --version)",
+      "Bash(npm search:*)",
+      "Bash(npx bmad-method install:*)",
+      "Bash(npx bmad-method:*)",
+      "Bash(git add:*)"
     ],
     "deny": []
   },

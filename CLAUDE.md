@@ -26,57 +26,53 @@ Complex development challenges are broken into 15-30 minute micro-sessions with 
 ### AI-Enhanced Development
 Leverage AI tools systematically while maintaining human oversight and decision-making authority.
 
-## Quick Decision Frameworks
+## AI-Optimized Protocol Implementation
 
-### Security Check (Apply to Every Feature)
-```
-Before implementing any component:
-□ Attack surface analysis: What new entry points does this create?
-□ Input validation: All external inputs validated and sanitized?
-□ Authentication/authorization: Proper access controls enforced?
-□ Data flow security: Encryption at all stages?
-□ Failure mode analysis: Does failure expose sensitive information?
-```
+### Mandatory AI Workflow Sequences
 
-### Technical Debt Decision Framework
+**Security-First Protocol**: ANALYZE → IMPLEMENT → TEST → MONITOR
 ```
-Before choosing a shortcut:
-□ Business justification: Strategic value of speed vs. quality?
-□ Technical impact: Estimated "interest rate" (maintenance cost)?
-□ Remediation plan: When and who will address this debt?
-□ Risk assessment: Security/stability implications?
-□ Documentation: Decision rationale recorded?
+1. ANALYZE    → Complete security analysis before any implementation
+2. IMPLEMENT  → Apply security controls during development  
+3. TEST       → Validate security through comprehensive testing
+4. MONITOR    → Implement continuous security monitoring
 ```
 
-### Test Strategy Decision Tree
+**SDD/TDD Integration**: SPECIFY → TEST → IMPLEMENT → REFACTOR
 ```
-For every feature:
-□ Specification-first: Requirements clearly defined?
-□ Test generation: Comprehensive test scenarios created?
-□ Implementation: Code satisfies both tests and specifications?
-□ Validation: Cross-artifact consistency verified?
-□ Refactoring: Code optimized while maintaining compliance?
+1. SPECIFY    → Create requirements.md, design.md, tasks.md
+2. TEST       → Generate failing tests from specifications
+3. IMPLEMENT  → Write minimal code satisfying tests + specs
+4. REFACTOR   → Optimize while maintaining compliance
 ```
 
-### Surgical Debugging Hierarchy (When Issues Arise)
+**Surgical Debugging Hierarchy**: Level 1-7 Systematic Escalation
 ```
-Level 1 (1-5 min): Character-level fixes (typos, syntax)
-Level 2 (5-15 min): Single-line modifications (logic, conditions)
-Level 3 (5-10 min): Import/dependency resolution
-Level 4 (10-20 min): Local variable/scope fixes
-Level 5 (15-30 min): Function signature adjustments
-Level 6 (20-45 min): Isolated block modifications
-Level 7 (1+ hours): Larger refactoring (requires approval)
+1. CHARACTER-LEVEL    → Single character fixes (5 min)
+2. SINGLE-LINE        → One line modifications (15 min)
+3. IMPORT/DEPENDENCY  → Missing imports/deps (10 min)
+4. VARIABLE/SCOPE     → Variable declarations (20 min)
+5. FUNCTION SIGNATURE → Parameter adjustments (30 min)
+6. ISOLATED BLOCKS    → Block modifications (45 min - requires approval)
+7. STRUCTURAL CHANGES → Major refactoring (requires team consultation)
 ```
 
-### Task Decomposition Framework (For Complex Features)
+**Task Decomposition Protocol**: ANALYZE → DECOMPOSE → SEQUENCE → TRACK → VALIDATE
 ```
-Before starting any development work:
-□ Outcome definition: What does "working" look like for this task?
-□ Time boxing: Can this be completed in 15-30 minutes?
-□ Dependency mapping: What must be complete before this task?
-□ Success criteria: How will we validate completion?
-□ Context preservation: How do we maintain state between sessions?
+1. ANALYZE    → Assess complexity and identify boundaries
+2. DECOMPOSE  → Break into 15-30 minute micro-tasks
+3. SEQUENCE   → Order by dependencies and progression
+4. TRACK      → Use TodoWrite for status management
+5. VALIDATE   → Confirm completion before advancing
+```
+
+**Technical Debt Management**: IDENTIFY → EVALUATE → AUTHORIZE → DOCUMENT → TRACK
+```
+1. IDENTIFY   → Recognize potential debt-creating decisions
+2. EVALUATE   → Assess business value vs technical cost
+3. AUTHORIZE  → Confirm appropriate approval level
+4. DOCUMENT   → Record debt details with remediation plan
+5. TRACK      → Add to monitoring and TodoWrite system
 ```
 
 ## Project Structure
@@ -212,26 +208,54 @@ npm test              # Comprehensive test suite
 
 This workspace is optimized for AI-enhanced development:
 
-### Protocol-Aware Assistance
-- **Context-Aware**: AI understands security, debt, and testing priorities
-- **Decision Support**: AI helps apply decision frameworks
-- **Quality Assurance**: AI assists with protocol compliance checking
-- **Documentation**: AI helps maintain protocol documentation
+### AI-Driven Protocol Execution
+- **Systematic Implementation**: AI follows mandatory phase sequences for all protocols
+- **TodoWrite Integration**: All protocols use TodoWrite for task and progress tracking
+- **Quality Gates**: AI validates completion criteria at each protocol phase
+- **Context Preservation**: AI maintains protocol state across sessions
+- **Emergency Protocols**: AI recognizes and escalates critical situations appropriately
 
-### Tool Configurations
-- **Cursor Rules**: Automated protocol enforcement in `.cursor-rules`
-- **Claude Code**: Protocol-aware commands and workflows
-- **MCP Servers**: Access to protocol documentation and templates
-- **Automation**: CI/CD integration for protocol validation
+### Claude Code Command Integration
+Each protocol includes specific Claude Code command patterns:
+- **Read/Write/Edit**: File manipulation following protocol templates
+- **Grep/Glob**: Code analysis and pattern detection
+- **Bash**: Testing, validation, and build commands
+- **TodoWrite**: Mandatory progress tracking throughout all workflows
+- **Task**: Complex analysis and multi-step operations
 
-### Full Protocol Documentation
-For detailed guidance beyond these quick frameworks, search project knowledge for:
-- "Security-First Mindset Protocol" - Comprehensive security guidelines
-- "Technical Debt Management Protocol" - Strategic debt management
-- "TDD/SDD Integration Protocol" - Test-driven development practices
-- "Surgical Debugging Protocol" - Systematic debugging methodology
-- "Task Decomposition Protocol" - Strategic work breakdown strategies
-- "AI Integration Protocol" - AI tool integration best practices
+### Protocol Validation Framework
+- **Pre-Phase Validation**: Requirements checked before each phase
+- **Phase Transition Gates**: Completion criteria validated before progression
+- **Quality Checkpoints**: Security, testing, and debt validation at each stage
+- **Context Recovery**: Session continuation with full protocol state restoration
+
+### AI-Executable Protocol Documents
+Our protocols are now optimized for Claude Code execution. Access detailed implementation guidance:
+
+- **Security-First Protocol** (`docs/protocols/security_first_protocol.md`)
+  - 4-phase security implementation (ANALYZE → IMPLEMENT → TEST → MONITOR)
+  - Mandatory security templates and validation checkpoints
+  - Claude Code command patterns for each security phase
+
+- **SDD/TDD Integration Protocol** (`docs/protocols/sdd_tdd_integration_guide.md`)
+  - 4-phase development cycle with AI implementation directives
+  - Specification-to-test-to-code traceability requirements
+  - Quality gates and validation frameworks
+
+- **Surgical Debugging Protocol** (`docs/protocols/surgical_precision_debugging_guide.md`)
+  - 7-level hierarchy with systematic escalation
+  - TodoWrite integration for debugging progress tracking
+  - AI debugging decision frameworks and tool patterns
+
+- **Task Decomposition Protocol** (`docs/protocols/task_decomposition_protocol.md`)
+  - Complexity analysis and micro-task creation
+  - Dependency mapping and sequencing strategies
+  - TodoWrite-integrated task management workflows
+
+- **Technical Debt Protocol** (`docs/protocols/technical_debt_protocol.md`)
+  - 5-phase debt management with approval workflows
+  - Debt evaluation templates and authorization matrices
+  - Systematic remediation tracking and reporting
 
 ## Current Project Context
 
@@ -241,11 +265,12 @@ For detailed guidance beyond these quick frameworks, search project knowledge fo
 - Tool configuration for automated protocol enforcement
 - Team training and adoption of integrated methodologies
 
-### Success Metrics
-- **Security**: Zero critical vulnerabilities in production
-- **Debt**: Debt-to-feature ratio maintained below 1:3
-- **Testing**: >90% test coverage with specification alignment
-- **Velocity**: Development speed maintained while improving quality
+### Protocol Success Metrics
+- **Security Protocol**: Zero critical vulnerabilities, all phases completed
+- **SDD/TDD Protocol**: 100% specification-test-code traceability, all quality gates passed
+- **Debugging Protocol**: >95% success rate for Level 1-3 fixes, minimal escalation
+- **Task Decomposition**: All tasks 15-30 minutes, 100% TodoWrite tracking compliance
+- **Debt Management**: All shortcuts documented, remediation scheduled, authorization obtained
 
 ## Future Enhancements
 
@@ -259,4 +284,12 @@ Planned improvements include:
 
 These protocols are not constraints—they're enablers that allow us to build secure, maintainable, high-quality software faster and more reliably. Every protocol decision should ask: "Does this help us deliver better software more efficiently?"
 
-**When in doubt: prioritize security, document debt decisions, write tests first, debug surgically, decompose tasks strategically, and leverage AI thoughtfully.**
+**Claude Code Implementation Priorities:**
+1. **Always follow protocol phase sequences** - Never skip mandatory phases
+2. **Use TodoWrite for all task tracking** - Every protocol integrates task management
+3. **Validate at every quality gate** - Confirm completion criteria before progression
+4. **Escalate when protocol limits exceeded** - Respect authorization levels and approval requirements
+5. **Preserve context between sessions** - Document protocol state for continuation
+6. **Apply emergency protocols when needed** - Recognize and respond to critical situations
+
+**Protocol Integration Command**: When implementing any feature, start with complexity assessment, apply appropriate protocol sequence, track progress with TodoWrite, and validate completion at each phase.**

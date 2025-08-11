@@ -1,0 +1,32 @@
+{
+  "browser": {
+    "browserName": "chromium",
+    "isolated": true,
+    "launchOptions": {
+      "headless": false,
+      "channel": "chrome"
+    },
+    "contextOptions": {
+      "viewport": { 
+        "width": 1280, 
+        "height": 720 
+      }
+    }
+  },
+  "server": {
+    "port": 3002,
+    "host": "localhost"
+  },
+  "capabilities": [
+    "tabs",
+    "install",
+    "pdf",
+    "vision"
+  ],
+  "outputDir": "./logs/playwright-output",
+  "network": {
+    "allowedOrigins": ["*"],
+    "blockedOrigins": []
+  },
+  "imageResponses": "allow"
+}
