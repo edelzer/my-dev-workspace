@@ -14,7 +14,8 @@
       "Bash(npm search:*)",
       "Bash(npx bmad-method install:*)",
       "Bash(npx bmad-method:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git push:*)"
     ],
     "deny": []
   },
