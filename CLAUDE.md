@@ -216,22 +216,43 @@ Available project types:
 
 ### Specialized AI Development Team (Phase 2)
 
+Our development environment includes two complementary agent systems that work together:
+
+#### Custom Claude Code Agents (`.claude/agents/`)
+Our project-specific development team providing deep technical expertise:
+
 **Foundation Team Agents:**
-- **Project Manager** - Overall project orchestration, team coordination, and workflow management
-- **Requirements Analyst** - Requirements elicitation, user story creation, stakeholder analysis  
-- **System Architect** - Architecture design, technology selection, technical documentation
-- **Planner** - Task decomposition, effort estimation, milestone management
+- **project-manager** - Project orchestration, team coordination, and workflow management
+- **spec-analyst** - Requirements elicitation, user story creation, and stakeholder analysis  
+- **spec-architect** - Technical architecture design, technology selection, and system documentation
+- **spec-planner** - Strategic task decomposition, effort estimation, and milestone management
 
 **Implementation Team Agents:**
-- **Frontend Developer** - React/TypeScript UI development with Magic MCP integration
-- **Backend Developer** - Server-side development, API creation, database optimization
-- **Full-Stack Developer** - End-to-end feature implementation and system integration
+- **frontend-developer** - React/TypeScript UI development with Magic MCP integration
+- **backend-developer** - Server-side development, API creation, and database optimization
+- **spec-developer** - Full-stack feature implementation and system integration
 
 **Quality & Security Team Agents:**
-- **Tester** - Comprehensive testing strategies (unit, integration, E2E) with Playwright
-- **Code Reviewer** - Code quality assurance and review processes with ESLint integration
-- **Validator** - Final quality gates and deployment readiness validation  
-- **Security Specialist** - Security architecture, threat modeling, and vulnerability assessment
+- **spec-tester** - Comprehensive testing strategies (unit, integration, E2E) with Playwright
+- **spec-reviewer** - Code quality assurance and review processes with ESLint integration
+- **spec-validator** - Final quality gates and deployment readiness validation  
+- **security-specialist** - Security architecture, threat modeling, and vulnerability assessment
+
+#### Agent Selection Guidelines
+
+**Use Custom Agents When:**
+- Deep technical implementation is required
+- Code-level analysis, debugging, or optimization is needed
+- Comprehensive testing, security analysis, or code review is required
+- Working within existing codebase with established patterns
+- Need specialized tool access (Playwright, ESLint, IDE diagnostics)
+
+**Use BMAD Agents When:**
+- High-level planning and project coordination is needed
+- Cross-project or strategic analysis is required
+- Market research, competitive analysis, or business planning is needed
+- User experience design and interaction patterns are the focus
+- Managing multiple projects or complex orchestration workflows
 
 ### BMAD Multi-Agent Commands
 
@@ -260,6 +281,43 @@ Available project types:
 /execute-checklist   # Systematic task execution
 /document-project    # Project documentation generation
 ```
+
+#### Agent Coordination Workflows
+
+**Hybrid Development Workflow:**
+```bash
+# Phase 1: Strategic Planning (BMAD Agents)
+/analyst              # Market research and competitive analysis
+/pm                   # Product requirements and business objectives
+/po                   # Epic creation and story prioritization
+
+# Phase 2: Technical Foundation (Custom Agents)
+claude --agent spec-analyst    # Detailed requirements analysis
+claude --agent spec-architect  # Technical architecture design
+claude --agent spec-planner    # Task decomposition and estimation
+
+# Phase 3: Implementation (Custom + BMAD Coordination)
+claude --agent backend-developer     # Server-side implementation
+claude --agent frontend-developer    # UI/UX implementation
+/ux-expert                           # Design review and refinement
+/sm                                  # Sprint coordination
+
+# Phase 4: Quality Assurance (Custom Agents)
+claude --agent spec-tester      # Comprehensive testing
+claude --agent spec-reviewer    # Code quality review
+claude --agent security-specialist  # Security validation
+claude --agent spec-validator   # Final deployment readiness
+
+# Phase 5: Deployment Coordination (BMAD Orchestration)
+/qa                   # Final quality gates
+/bmad-orchestrator   # Deployment coordination
+```
+
+**Cross-Agent Communication Protocol:**
+- Use TodoWrite for shared task tracking across both agent systems
+- Maintain shared context files (requirements.md, architecture.md, tasks.md)
+- Implement quality gates at each phase transition
+- Document all agent handoffs with clear acceptance criteria
 
 ### Development Commands
 
