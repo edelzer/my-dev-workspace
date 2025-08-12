@@ -15,7 +15,20 @@
       "Bash(npx bmad-method install:*)",
       "Bash(npx bmad-method:*)",
       "Bash(git add:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "mcp__filesystem__create_directory",
+      "Bash(node:*)",
+      "Bash(mkdir:*)",
+      "Bash(cp:*)",
+      "Bash(python:*)",
+      "mcp__filesystem__read_multiple_files",
+      "WebFetch(domain:docs.anthropic.com)",
+      "mcp__memory__read_graph",
+      "mcp__memory__create_entities",
+      "mcp__memory__create_relations",
+      "WebFetch(domain:modelcontextprotocol.io)",
+      "mcp__memory__add_observations",
+      "mcp__filesystem__edit_file"
     ],
     "deny": []
   },

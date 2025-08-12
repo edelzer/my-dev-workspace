@@ -1,0 +1,71 @@
+# Cursor Rules for Advanced Integration and Cross-File Suggestions
+
+## Code Context Rules
+- Always analyze project structure before making suggestions
+- Prioritize existing patterns and conventions in the codebase
+- Use TypeScript strict mode when available
+- Follow the established architectural patterns in templates/
+- Consider security implications from docs/protocols/security_first_protocol.md
+
+## Cross-File Suggestions Priority
+1. Import suggestions from local project files first
+2. Use established utilities from templates/ directories
+3. Reference existing configurations in config/
+4. Follow patterns from .bmad-core/ and .claude/ structures
+5. Integrate with existing BMad workflows
+
+## Auto-Import Preferences
+- Prefer relative imports for local files
+- Use absolute imports for utilities and shared components
+- Always suggest TypeScript types when available
+- Import security middleware from established patterns
+- Follow established naming conventions
+
+## Code Completion Intelligence
+- Analyze file context for relevant completions
+- Suggest BMad-specific patterns and workflows
+- Reference protocol documents for security and TDD patterns
+- Use existing agent templates for consistency
+- Integrate with established task management patterns
+
+## File Association Patterns
+- *.bmad files: YAML configuration with BMad-specific completion
+- *.claude files: Markdown with agent-specific suggestions
+- Template files: Follow established project structure patterns
+- Protocol files: Reference security and development best practices
+- Task files: Integrate with TodoWrite patterns and workflow management
+
+## Security Context Rules
+- Never suggest code that exposes sensitive data
+- Always recommend input validation patterns
+- Suggest security middleware from established templates
+- Reference security protocols from docs/protocols/
+- Implement proper error handling and logging
+
+## BMad Integration Context
+- Reference existing agent definitions from .bmad-core/agents/
+- Use established workflow patterns from .bmad-core/workflows/
+- Follow template structures from .bmad-core/templates/
+- Integrate with task management from .bmad-core/tasks/
+- Maintain consistency with checklists and data structures
+
+## Performance Optimization Rules
+- Suggest lazy loading patterns where appropriate
+- Recommend efficient data structures
+- Use established caching patterns
+- Optimize bundle size considerations
+- Follow established performance best practices
+
+## Testing Integration Rules
+- Suggest test patterns that align with TDD protocols
+- Reference established testing utilities
+- Follow security testing requirements
+- Integrate with existing validation patterns
+- Maintain test coverage standards
+
+## Documentation Integration
+- Reference existing protocol documents
+- Suggest inline documentation patterns
+- Follow established comment standards
+- Integrate with knowledge base patterns
+- Maintain consistency with existing documentation structure

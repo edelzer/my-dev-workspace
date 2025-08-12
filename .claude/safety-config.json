@@ -1,0 +1,20 @@
+{
+  "maxBackups": 10,
+  "autoBackup": true,
+  "dangerousCommands": [
+    "rm -rf",
+    "sudo rm",
+    "format",
+    "del /q",
+    "rd /s",
+    "shutdown",
+    "reboot"
+  ],
+  "maxHooksPerEvent": 20,
+  "allowedEventTypes": [
+    "PreToolUse",
+    "PostToolUse",
+    "Stop",
+    "Notification"
+  ]
+}

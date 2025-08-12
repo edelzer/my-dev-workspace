@@ -1,0 +1,139 @@
+{
+  "protocolRules": {
+    "version": "1.0.0",
+    "enabled": true,
+    "rules": [
+      {
+        "id": "security-first-sequence",
+        "severity": "warning",
+        "category": "protocol",
+        "description": "Enforce Security-First protocol sequence",
+        "context": "implementation",
+        "requiredSequence": ["ANALYZE", "IMPLEMENT", "TEST", "MONITOR"],
+        "action": "guide",
+        "message": "Follow Security-First protocol: ANALYZE → IMPLEMENT → TEST → MONITOR"
+      },
+      {
+        "id": "tdd-cycle",
+        "severity": "info",
+        "category": "testing",
+        "description": "Encourage TDD cycle implementation",
+        "context": "test-files",
+        "pattern": "describe\\(|test\\(|it\\(",
+        "requiredSequence": ["RED", "GREEN", "REFACTOR"],
+        "action": "suggest",
+        "message": "Follow TDD cycle: Write failing test (RED) → Make it pass (GREEN) → Refactor"
+      },
+      {
+        "id": "surgical-debugging-hierarchy",
+        "severity": "info",
+        "category": "debugging",
+        "description": "Use surgical debugging hierarchy",
+        "debugLevels": [
+          "CHARACTER-LEVEL (5 min)",
+          "SINGLE-LINE (15 min)",
+          "IMPORT/DEPENDENCY (10 min)",
+          "VARIABLE/SCOPE (20 min)",
+          "FUNCTION SIGNATURE (30 min)",
+          "ISOLATED BLOCKS (45 min - requires approval)",
+          "STRUCTURAL CHANGES (requires team consultation)"
+        ],
+        "action": "guide",
+        "message": "Start with smallest intervention level and escalate systematically"
+      },
+      {
+        "id": "task-decomposition",
+        "severity": "info",
+        "category": "planning",
+        "description": "Enforce 15-30 minute task decomposition",
+        "maxTaskDuration": "30m",
+        "requireTodoWrite": true,
+        "action": "suggest",
+        "message": "Break complex tasks into 15-30 minute micro-sessions with TodoWrite tracking"
+      },
+      {
+        "id": "debt-authorization",
+        "severity": "warning",
+        "category": "debt",
+        "description": "Require authorization for technical debt",
+        "triggers": ["TODO:", "FIXME:", "HACK:", "TEMP:"],
+        "requiredFields": ["business_value", "technical_cost", "remediation_plan"],
+        "action": "require",
+        "message": "Document technical debt with authorization and remediation plan"
+      }
+    ],
+    "phaseValidation": {
+      "securityFirst": {
+        "ANALYZE": {
+          "required": ["threat_model", "security_requirements", "risk_assessment"],
+          "outputs": ["security_analysis.md", "threat_vectors.json"]
+        },
+        "IMPLEMENT": {
+          "required": ["security_controls", "input_validation", "error_handling"],
+          "validates": "security_analysis.md"
+        },
+        "TEST": {
+          "required": ["security_tests", "penetration_tests", "vulnerability_scans"],
+          "validates": "implementation"
+        },
+        "MONITOR": {
+          "required": ["security_logging", "alerting", "monitoring_dashboard"],
+          "validates": "running_system"
+        }
+      },
+      "sddTdd": {
+        "SPECIFY": {
+          "required": ["requirements.md", "design.md", "tasks.md"],
+          "outputs": ["specification_documents"]
+        },
+        "TEST": {
+          "required": ["failing_tests", "test_coverage_plan"],
+          "validates": "specifications"
+        },
+        "IMPLEMENT": {
+          "required": ["minimal_code", "test_compliance"],
+          "validates": ["tests", "specifications"]
+        },
+        "REFACTOR": {
+          "required": ["code_optimization", "maintained_tests"],
+          "validates": ["implementation", "specifications"]
+        }
+      }
+    },
+    "qualityGates": {
+      "security": {
+        "noBlockingVulnerabilities": true,
+        "allSecurityTestsPass": true,
+        "securityReviewComplete": true
+      },
+      "testing": {
+        "allTestsPass": true,
+        "coverageThreshold": 80,
+        "specificationCompliance": true
+      },
+      "debt": {
+        "maxNewDebt": "20%",
+        "minDebtReduction": "15%",
+        "allDebtDocumented": true
+      },
+      "debugging": {
+        "appropriateLevel": true,
+        "impactMinimized": true,
+        "validationComplete": true
+      }
+    },
+    "enforcement": {
+      "checkpoints": [
+        "phase_transition",
+        "commit_prepare",
+        "workflow_completion"
+      ],
+      "actions": {
+        "guide": "show_guidance",
+        "suggest": "show_suggestion",
+        "require": "block_until_satisfied",
+        "warn": "show_warning"
+      }
+    }
+  }
+}

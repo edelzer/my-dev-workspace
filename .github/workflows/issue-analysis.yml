@@ -1,0 +1,229 @@
+name: Intelligent Issue Analysis and Planning
+
+on:
+  issues:
+    types: [opened, edited]
+  issue_comment:
+    types: [created]
+
+jobs:
+  issue-analysis:
+    runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'issues' && (github.event.action == 'opened' || github.event.action == 'edited')) ||
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '/claude-analyze'))
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Analyze issue complexity
+        id: analyze-complexity
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue || context.payload.issue_comment?.issue;
+            const title = issue.title;
+            const body = issue.body || '';
+            const labels = issue.labels?.map(l => l.name) || [];
+            
+            // Complexity analysis based on content
+            let complexity = 'simple';
+            let estimatedHours = 1;
+            let recommendedAgents = ['dev'];
+            
+            // Keywords that indicate complexity
+            const complexKeywords = ['architecture', 'database', 'security', 'performance', 'integration', 'api'];
+            const simpleKeywords = ['fix', 'update', 'typo', 'documentation', 'style'];
+            
+            const contentLower = (title + ' ' + body).toLowerCase();
+            
+            if (complexKeywords.some(keyword => contentLower.includes(keyword))) {
+              complexity = 'complex';
+              estimatedHours = 4;
+              recommendedAgents = ['analyst', 'architect', 'dev', 'qa'];
+            } else if (body.length > 500 || labels.includes('enhancement')) {
+              complexity = 'moderate';
+              estimatedHours = 2;
+              recommendedAgents = ['pm', 'dev', 'qa'];
+            }
+            
+            // Security-related issues
+            if (contentLower.includes('security') || labels.includes('security')) {
+              recommendedAgents.push('security-specialist');
+              complexity = 'complex';
+            }
+            
+            // UI/UX related issues
+            if (contentLower.includes('ui') || contentLower.includes('ux') || labels.includes('frontend')) {
+              recommendedAgents.push('ux-expert');
+            }
+            
+            return {
+              complexity,
+              estimatedHours,
+              recommendedAgents: recommendedAgents.join(', '),
+              requiresPlanning: complexity !== 'simple'
+            };
+
+      - name: Generate BMAD agent recommendations
+        id: bmad-recommendations
+        uses: actions/github-script@v7
+        with:
+          result-encoding: string
+          script: |
+            const analysis = ${{ steps.analyze-complexity.outputs.result }};
+            const recommendations = [];
+            
+            if (analysis.requiresPlanning) {
+              recommendations.push('## 🎯 BMAD Agent Workflow Recommendation');
+              recommendations.push('');
+              recommendations.push('### Planning Phase');
+              recommendations.push('- `/analyst` - Initial requirement analysis and market research');
+              recommendations.push('- `/pm` - Product requirements and feature specification');
+              recommendations.push('- `/architect` - Technical architecture and design decisions');
+              recommendations.push('');
+              recommendations.push('### Development Phase');
+              recommendations.push(`- \`/dev\` - Core development and implementation`);
+              
+              if (analysis.recommendedAgents.includes('ux-expert')) {
+                recommendations.push('- `/ux-expert` - User interface and experience design');
+              }
+              
+              recommendations.push('- `/sm` - Sprint management and coordination');
+              recommendations.push('');
+              recommendations.push('### Quality Assurance');
+              recommendations.push('- `/qa` - Code review and testing validation');
+              
+              if (analysis.recommendedAgents.includes('security-specialist')) {
+                recommendations.push('- Security specialist consultation required');
+              }
+              
+              recommendations.push('');
+              recommendations.push('### Orchestration');
+              recommendations.push('- `/bmad-orchestrator` - Workflow coordination and handoffs');
+              recommendations.push('- `/document-project` - Comprehensive documentation');
+            }
+            
+            return recommendations.join('\n');
+
+      - name: Create implementation checklist
+        id: create-checklist
+        uses: actions/github-script@v7
+        with:
+          result-encoding: string
+          script: |
+            const analysis = ${{ steps.analyze-complexity.outputs.result }};
+            const checklist = [];
+            
+            checklist.push('## 📋 Implementation Checklist');
+            checklist.push('');
+            checklist.push('### Pre-Development');
+            checklist.push('- [ ] Requirements analysis completed');
+            checklist.push('- [ ] Technical specification created');
+            checklist.push('- [ ] Security considerations reviewed');
+            checklist.push('- [ ] Testing strategy defined');
+            checklist.push('');
+            checklist.push('### Development');
+            checklist.push('- [ ] Feature branch created');
+            checklist.push('- [ ] Core functionality implemented');
+            checklist.push('- [ ] Unit tests written');
+            checklist.push('- [ ] Integration tests added');
+            checklist.push('- [ ] Security validation performed');
+            checklist.push('');
+            checklist.push('### Quality Assurance');
+            checklist.push('- [ ] Code review completed');
+            checklist.push('- [ ] All tests passing');
+            checklist.push('- [ ] Performance impact assessed');
+            checklist.push('- [ ] Documentation updated');
+            checklist.push('- [ ] Accessibility compliance verified');
+            checklist.push('');
+            checklist.push('### Deployment');
+            checklist.push('- [ ] Pull request created');
+            checklist.push('- [ ] CI/CD pipeline passing');
+            checklist.push('- [ ] Stakeholder approval obtained');
+            checklist.push('- [ ] Deployment to staging');
+            checklist.push('- [ ] Production deployment');
+            
+            return checklist.join('\n');
+
+      - name: Post analysis comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const analysis = ${{ steps.analyze-complexity.outputs.result }};
+            const bmadRecommendations = `${{ steps.bmad-recommendations.outputs.result }}`;
+            const checklist = `${{ steps.create-checklist.outputs.result }}`;
+            
+            const comment = `## 🤖 Claude Code Issue Analysis
+
+            ### Complexity Assessment
+            - **Complexity Level**: ${analysis.complexity}
+            - **Estimated Hours**: ${analysis.estimatedHours}
+            - **Recommended Agents**: ${analysis.recommendedAgents}
+            - **Planning Required**: ${analysis.requiresPlanning ? 'Yes' : 'No'}
+
+            ${bmadRecommendations}
+
+            ${checklist}
+
+            ### Next Steps
+            1. Review the complexity assessment and agent recommendations
+            2. Use the suggested BMAD agent workflow for optimal results
+            3. Follow the implementation checklist to ensure quality delivery
+            4. Apply security-first and test-driven development protocols
+
+            ---
+            🤖 Generated with [Claude Code](https://claude.ai/code) Issue Analysis
+
+            Co-Authored-By: Claude <noreply@anthropic.com>`;
+
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+      - name: Auto-label based on analysis
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const analysis = ${{ steps.analyze-complexity.outputs.result }};
+            const labels = [];
+            
+            // Add complexity label
+            labels.push(`complexity: ${analysis.complexity}`);
+            
+            // Add estimated hours label
+            if (analysis.estimatedHours <= 1) {
+              labels.push('effort: small');
+            } else if (analysis.estimatedHours <= 4) {
+              labels.push('effort: medium');
+            } else {
+              labels.push('effort: large');
+            }
+            
+            // Add agent recommendations as labels
+            if (analysis.recommendedAgents.includes('security-specialist')) {
+              labels.push('security-review-required');
+            }
+            
+            if (analysis.recommendedAgents.includes('ux-expert')) {
+              labels.push('ui-ux-required');
+            }
+            
+            if (analysis.requiresPlanning) {
+              labels.push('planning-required');
+            }
+            
+            // Claude Code processed label
+            labels.push('claude-analyzed');
+            
+            // Add labels to issue
+            await github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: labels
+            });

@@ -1,0 +1,145 @@
+{
+  "version": "1.0.0",
+  "indexingStrategy": "smart-incremental",
+  "sharedTeamIndex": {
+    "enabled": true,
+    "syncInterval": "5m",
+    "conflictResolution": "merge-with-priority",
+    "teamMembers": [],
+    "sharedPaths": [
+      ".bmad-core/",
+      ".claude/",
+      "docs/protocols/",
+      "templates/",
+      "config/",
+      "scripts/"
+    ]
+  },
+  "indexingRules": {
+    "include": [
+      "**/*.ts",
+      "**/*.tsx",
+      "**/*.js",
+      "**/*.jsx",
+      "**/*.md",
+      "**/*.yaml",
+      "**/*.yml",
+      "**/*.json",
+      "**/*.bmad",
+      "**/*.claude",
+      "**/*.protocol"
+    ],
+    "exclude": [
+      "node_modules/**",
+      "dist/**",
+      "build/**",
+      ".git/**",
+      "*.log",
+      "*.tmp",
+      ".DS_Store",
+      "Thumbs.db"
+    ],
+    "maxFileSize": "1MB",
+    "priority": {
+      "high": [
+        "docs/protocols/**",
+        ".bmad-core/**",
+        ".claude/**",
+        "templates/**",
+        "CLAUDE.md"
+      ],
+      "medium": [
+        "config/**",
+        "scripts/**",
+        "projects/**/README.md"
+      ],
+      "low": [
+        "projects/**/node_modules/**",
+        "logs/**"
+      ]
+    }
+  },
+  "updateFrequency": {
+    "realtime": [
+      "**/*.ts",
+      "**/*.tsx",
+      "**/*.js",
+      "**/*.jsx"
+    ],
+    "frequent": [
+      "**/*.md",
+      "**/*.json",
+      "**/*.yaml",
+      "**/*.yml"
+    ],
+    "periodic": [
+      "**/package.json",
+      "**/tsconfig.json",
+      "**/*.config.*"
+    ]
+  },
+  "startupOptimization": {
+    "preloadPaths": [
+      "CLAUDE.md",
+      "docs/protocols/",
+      ".bmad-core/core-config.yaml",
+      ".cursor/settings.json",
+      "templates/"
+    ],
+    "cacheStrategy": "aggressive",
+    "backgroundPreload": true,
+    "deferNonCritical": true
+  },
+  "performanceSettings": {
+    "maxConcurrentIndexing": 4,
+    "indexingBatchSize": 100,
+    "memoryLimit": "512MB",
+    "diskCacheSize": "2GB",
+    "compressionEnabled": true,
+    "incrementalSync": true
+  },
+  "synchronization": {
+    "enabled": true,
+    "strategy": "conflict-aware-merge",
+    "retryPolicy": {
+      "maxRetries": 3,
+      "backoffMultiplier": 2,
+      "initialDelay": "1s"
+    },
+    "checksumValidation": true,
+    "deltaSync": true
+  },
+  "monitoring": {
+    "logLevel": "info",
+    "metricsCollection": true,
+    "performanceTracking": true,
+    "indexHealthChecks": true,
+    "alertThresholds": {
+      "indexingTime": "30s",
+      "memoryUsage": "80%",
+      "diskUsage": "90%"
+    }
+  },
+  "contextualIndexing": {
+    "semanticAnalysis": true,
+    "relationshipMapping": true,
+    "dependencyTracking": true,
+    "usagePatterns": true,
+    "codeFlowAnalysis": true
+  },
+  "bmadIntegration": {
+    "agentDefinitions": true,
+    "workflowPatterns": true,
+    "templateStructures": true,
+    "taskRelationships": true,
+    "checklistTracking": true,
+    "protocolCompliance": true
+  },
+  "claudeIntegration": {
+    "agentContexts": true,
+    "commandPatterns": true,
+    "orchestrationFlows": true,
+    "settingsSync": true,
+    "workflowStates": true
+  }
+}

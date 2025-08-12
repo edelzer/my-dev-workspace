@@ -1,0 +1,144 @@
+name: 🔒 Security Report
+description: Report a security vulnerability or concern
+title: "[SECURITY] "
+labels: ["security", "triage", "high-priority"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ⚠️ **SECURITY NOTICE**: If this is a critical security vulnerability that could expose user data or system integrity, please consider reporting it privately first.
+        
+        Thank you for helping us maintain the security of our project!
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Security Severity
+      description: How severe is this security issue?
+      options:
+        - Critical (immediate data/system compromise)
+        - High (significant security risk)
+        - Medium (moderate security concern)
+        - Low (minor security improvement)
+        - Informational (security best practice)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Security Category
+      description: What type of security issue is this?
+      options:
+        - Authentication/Authorization
+        - Input Validation/Injection
+        - Cross-Site Scripting (XSS)
+        - Cross-Site Request Forgery (CSRF)
+        - Insecure Dependencies
+        - Data Exposure/Privacy
+        - Cryptographic Issues
+        - Configuration Security
+        - Access Control
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: vulnerability-description
+    attributes:
+      label: Security Issue Description
+      description: Provide a clear description of the security issue.
+      placeholder: Describe the security vulnerability or concern...
+    validations:
+      required: true
+
+  - type: textarea
+    id: attack-vector
+    attributes:
+      label: Attack Vector
+      description: How could this vulnerability be exploited?
+      placeholder: An attacker could...
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact-assessment
+    attributes:
+      label: Impact Assessment
+      description: What could happen if this vulnerability is exploited?
+      placeholder: This could lead to...
+    validations:
+      required: true
+
+  - type: textarea
+    id: affected-components
+    attributes:
+      label: Affected Components
+      description: Which parts of the system are affected?
+      placeholder: |
+        - File: path/to/file.js
+        - Function: functionName()
+        - API endpoint: /api/endpoint
+        - Configuration: config.yml
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: Steps to Reproduce (if applicable)
+      description: Provide steps to reproduce the security issue (be responsible with sensitive details).
+      placeholder: |
+        1. Navigate to...
+        2. Submit request with...
+        3. Observe that...
+    validations:
+      required: false
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed Solution
+      description: Do you have suggestions for fixing this security issue?
+      placeholder: This could be fixed by...
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: security-checks
+    attributes:
+      label: Security Validation
+      description: Please confirm the following security checks.
+      options:
+        - label: I have verified this is a legitimate security concern
+        - label: I have checked that this hasn't been reported before
+        - label: I am not including sensitive exploitation details in this public report
+        - label: I understand this issue will be prioritized for security review
+
+  - type: dropdown
+    id: disclosure-timeline
+    attributes:
+      label: Disclosure Preference
+      description: How would you like this security issue to be handled?
+      options:
+        - "Public disclosure (normal GitHub issue process)"
+        - "Private disclosure first (coordinate with maintainers)"
+        - "Immediate fix required (critical security issue)"
+      default: 1
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Security Context
+      description: Any additional security context or references?
+      placeholder: |
+        - OWASP references
+        - CVE numbers
+        - Security research links
+        - Related security issues
+    validations:
+      required: false

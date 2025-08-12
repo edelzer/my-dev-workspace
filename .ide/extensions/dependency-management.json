@@ -1,0 +1,296 @@
+{
+  "extensionDependencyManagement": {
+    "version": "1.0.0",
+    "description": "Advanced extension dependency resolution and management system",
+    "dependency_resolution": {
+      "resolution_strategy": "semantic_dependency_graph",
+      "conflict_resolution": "priority_based_with_user_choice",
+      "circular_dependency_handling": "detect_and_warn",
+      "version_constraints": "semver_compatible_ranges"
+    },
+    "dependency_types": {
+      "hard_dependencies": {
+        "description": "Extensions that are absolutely required",
+        "enforcement": "block_installation_without_dependency",
+        "auto_install": true,
+        "examples": [
+          {
+            "extension": "ms-vscode.vscode-typescript-next",
+            "depends_on": ["ms-vscode.vscode-json"],
+            "reason": "TypeScript requires JSON language support"
+          },
+          {
+            "extension": "ms-playwright.playwright", 
+            "depends_on": ["ms-vscode.vscode-node-debug2"],
+            "reason": "Playwright testing requires Node debugging"
+          }
+        ]
+      },
+      "soft_dependencies": {
+        "description": "Extensions that enhance functionality when present",
+        "enforcement": "recommend_but_allow_without",
+        "auto_install": false,
+        "examples": [
+          {
+            "extension": "dbaeumer.vscode-eslint",
+            "enhanced_by": ["esbenp.prettier-vscode"],
+            "reason": "ESLint works better with Prettier for formatting"
+          },
+          {
+            "extension": "eamodio.gitlens",
+            "enhanced_by": ["GitHub.vscode-pull-request-github"],
+            "reason": "GitLens pairs well with GitHub integration"
+          }
+        ]
+      },
+      "peer_dependencies": {
+        "description": "Extensions that work together as a group",
+        "enforcement": "suggest_group_installation",
+        "auto_install": "with_user_confirmation",
+        "examples": [
+          {
+            "group_name": "react_development_suite",
+            "extensions": [
+              "ms-vscode.vscode-typescript-next",
+              "bradlc.vscode-tailwindcss", 
+              "formulahendry.auto-rename-tag",
+              "christian-kohler.path-intellisense"
+            ],
+            "reason": "Comprehensive React development experience"
+          },
+          {
+            "group_name": "testing_framework",
+            "extensions": [
+              "ms-vscode.vscode-jest",
+              "ms-playwright.playwright",
+              "humao.rest-client"
+            ],
+            "reason": "Complete testing workflow coverage"
+          }
+        ]
+      },
+      "conflicting_extensions": {
+        "description": "Extensions that should not be installed together",
+        "enforcement": "prevent_concurrent_installation",
+        "resolution": "user_choice_with_recommendation",
+        "examples": [
+          {
+            "conflict_group": "typescript_support",
+            "extensions": ["ms-vscode.vscode-typescript-next", "typescript-hero.hero"],
+            "reason": "Multiple TypeScript providers cause conflicts",
+            "recommendation": "ms-vscode.vscode-typescript-next"
+          },
+          {
+            "conflict_group": "code_formatting",
+            "extensions": ["esbenp.prettier-vscode", "beautify-web.js-beautify"],
+            "reason": "Multiple formatters create inconsistent results",
+            "recommendation": "esbenp.prettier-vscode"
+          }
+        ]
+      }
+    },
+    "dependency_graph": {
+      "graph_structure": "directed_acyclic_graph",
+      "node_properties": {
+        "extension_id": "string",
+        "version_range": "semver_range",
+        "installation_priority": "number",
+        "project_context": "array_of_project_types"
+      },
+      "edge_properties": {
+        "dependency_type": ["hard", "soft", "peer", "conflict"],
+        "dependency_strength": "number_0_to_1",
+        "optional": "boolean"
+      },
+      "graph_algorithms": {
+        "topological_sort": "installation_order_determination",
+        "cycle_detection": "circular_dependency_identification",
+        "shortest_path": "minimal_extension_set_calculation",
+        "connected_components": "extension_group_identification"
+      }
+    },
+    "version_management": {
+      "version_pinning": {
+        "strategy": "pin_major_allow_minor_and_patch",
+        "override_capability": "team_lead_approval_required",
+        "automatic_updates": "security_patches_only"
+      },
+      "compatibility_matrix": {
+        "editor_versions": {
+          "vscode": {
+            "1.80.x": "supported",
+            "1.81.x": "supported", 
+            "1.82.x": "recommended",
+            "1.83.x": "latest"
+          },
+          "cursor": {
+            "0.30.x": "supported",
+            "0.31.x": "recommended", 
+            "0.32.x": "latest"
+          }
+        },
+        "extension_compatibility": {
+          "check_frequency": "weekly",
+          "compatibility_source": "marketplace_api_and_community_reports",
+          "validation_method": "automated_testing_with_sample_projects"
+        }
+      },
+      "update_policies": {
+        "critical_extensions": {
+          "update_frequency": "immediate_for_security",
+          "testing_required": "automated_regression_tests",
+          "approval_process": "automatic_with_notification"
+        },
+        "non_critical_extensions": {
+          "update_frequency": "monthly_batch_updates",
+          "testing_required": "comprehensive_functionality_tests",
+          "approval_process": "team_review_required"
+        }
+      }
+    },
+    "installation_orchestration": {
+      "installation_phases": [
+        {
+          "phase": "dependency_analysis",
+          "description": "Analyze and resolve all dependencies",
+          "timeout": "30_seconds",
+          "rollback_on_failure": true
+        },
+        {
+          "phase": "conflict_resolution",
+          "description": "Handle conflicting extensions",
+          "timeout": "user_interaction_dependent",
+          "rollback_on_failure": true
+        },
+        {
+          "phase": "sequential_installation",
+          "description": "Install extensions in dependency order",
+          "timeout": "5_minutes_per_extension",
+          "rollback_on_failure": true
+        },
+        {
+          "phase": "configuration_application",
+          "description": "Apply extension-specific configurations",
+          "timeout": "2_minutes",
+          "rollback_on_failure": false
+        },
+        {
+          "phase": "validation_testing",
+          "description": "Verify all extensions work correctly",
+          "timeout": "10_minutes",
+          "rollback_on_failure": false
+        }
+      ],
+      "parallel_installation": {
+        "enabled": true,
+        "max_concurrent": 3,
+        "respect_dependencies": true,
+        "resource_throttling": {
+          "max_cpu_usage": "50%",
+          "max_memory_usage": "1GB",
+          "max_network_bandwidth": "10Mbps"
+        }
+      }
+    },
+    "workspace_integration": {
+      "project_context_awareness": {
+        "enabled": true,
+        "context_detection": [
+          "package_json_analysis",
+          "file_structure_analysis",
+          "git_repository_analysis",
+          "build_tool_detection"
+        ],
+        "dynamic_dependencies": "adapt_based_on_project_changes"
+      },
+      "multi_root_workspace_support": {
+        "enabled": true,
+        "dependency_scope": "per_workspace_root",
+        "shared_dependencies": "global_workspace_level",
+        "conflict_resolution": "workspace_specific_overrides"
+      },
+      "remote_development": {
+        "ssh_remote": {
+          "dependency_synchronization": "local_to_remote",
+          "installation_target": "remote_environment",
+          "fallback_strategy": "local_extension_proxy"
+        },
+        "container_development": {
+          "dependency_injection": "container_volume_mount",
+          "installation_persistence": "persistent_volumes",
+          "performance_optimization": "container_layer_caching"
+        }
+      }
+    },
+    "monitoring_and_analytics": {
+      "dependency_health": {
+        "health_checks": [
+          "extension_activation_status",
+          "dependency_satisfaction",
+          "performance_impact_measurement",
+          "error_rate_monitoring"
+        ],
+        "health_reporting": {
+          "dashboard_integration": true,
+          "alert_thresholds": {
+            "extension_failure_rate": "5%",
+            "dependency_resolution_time": "30_seconds",
+            "installation_success_rate": "95%"
+          }
+        }
+      },
+      "usage_analytics": {
+        "extension_usage_tracking": "anonymized_telemetry",
+        "dependency_pattern_analysis": "most_common_combinations",
+        "performance_metrics": "installation_time_and_resource_usage",
+        "user_satisfaction": "optional_feedback_collection"
+      },
+      "optimization_insights": {
+        "dependency_optimization": "suggest_redundant_extension_removal",
+        "performance_optimization": "identify_resource_heavy_extensions",
+        "workflow_optimization": "suggest_complementary_extensions"
+      }
+    },
+    "team_collaboration": {
+      "shared_configurations": {
+        "team_extension_manifest": ".ide/team-extensions.json",
+        "project_specific_overrides": ".ide/project-extensions.json",
+        "personal_customizations": ".ide/personal-extensions.json"
+      },
+      "onboarding_automation": {
+        "new_team_member_setup": "automated_extension_installation",
+        "project_onboarding": "project_specific_extension_setup", 
+        "role_based_extensions": "install_based_on_team_role"
+      },
+      "governance": {
+        "approved_extensions_list": "security_and_compliance_reviewed",
+        "extension_request_process": "team_lead_approval_workflow",
+        "security_scanning": "extension_security_vulnerability_checks"
+      }
+    },
+    "troubleshooting": {
+      "common_issues": {
+        "dependency_resolution_failures": {
+          "causes": ["circular_dependencies", "version_conflicts", "missing_marketplace_access"],
+          "resolution_steps": ["clear_dependency_cache", "manual_conflict_resolution", "marketplace_connectivity_check"],
+          "prevention": "regular_dependency_graph_validation"
+        },
+        "installation_failures": {
+          "causes": ["network_issues", "permission_problems", "disk_space_limitations"],
+          "resolution_steps": ["retry_with_exponential_backoff", "elevated_permissions", "disk_cleanup"],
+          "prevention": "pre_installation_environment_checks"
+        },
+        "performance_issues": {
+          "causes": ["too_many_extensions", "resource_intensive_extensions", "conflicting_extensions"],
+          "resolution_steps": ["extension_audit", "selective_disabling", "resource_monitoring"],
+          "prevention": "extension_performance_budgeting"
+        }
+      },
+      "diagnostic_tools": {
+        "dependency_graph_visualizer": "visual_representation_of_dependencies",
+        "extension_performance_profiler": "identify_performance_bottlenecks",
+        "conflict_resolution_assistant": "guided_conflict_resolution"
+      }
+    }
+  }
+}

@@ -1,0 +1,182 @@
+{
+  "terminalIntegration": {
+    "ctrlK": {
+      "enabled": true,
+      "model": "claude-3-5-sonnet-20241022",
+      "maxTokens": 2048,
+      "contextWindow": 4096,
+      "includeWorkspaceContext": true,
+      "includeBmadContext": true,
+      "suggestionDelay": 200
+    },
+    "commandGeneration": {
+      "enabled": true,
+      "learningMode": true,
+      "contextAware": true,
+      "securityValidation": true,
+      "maxSuggestions": 5
+    },
+    "intelligentHistory": {
+      "enabled": true,
+      "maxHistorySize": 2000,
+      "semanticSearch": true,
+      "contextualRecommendations": true,
+      "frequencyAnalysis": true
+    }
+  },
+  "commandPatterns": {
+    "bmadCommands": {
+      "prefix": "bmad-",
+      "suggestions": [
+        "bmad-create-story",
+        "bmad-review-checklist", 
+        "bmad-generate-epic",
+        "bmad-validate-architecture",
+        "bmad-run-workflow"
+      ]
+    },
+    "claudeCommands": {
+      "prefix": "claude-",
+      "suggestions": [
+        "claude code",
+        "claude analyze",
+        "claude debug",
+        "claude optimize",
+        "claude test"
+      ]
+    },
+    "securityCommands": {
+      "prefix": "security-",
+      "suggestions": [
+        "security-scan",
+        "security-audit",
+        "security-validate",
+        "security-test",
+        "security-report"
+      ]
+    },
+    "tddCommands": {
+      "prefix": "test-",
+      "suggestions": [
+        "test-red",
+        "test-green", 
+        "test-refactor",
+        "test-coverage",
+        "test-integration"
+      ]
+    }
+  },
+  "contextualSuggestions": {
+    "projectCommands": {
+      "webProject": [
+        "npm run dev",
+        "npm run build",
+        "npm run test",
+        "npm run lint",
+        "npm run typecheck"
+      ],
+      "apiProject": [
+        "npm run dev",
+        "npm run build", 
+        "npm test",
+        "npm run security:scan",
+        "npm run db:migrate"
+      ],
+      "generalProject": [
+        "node scripts/new-project.js",
+        "git status",
+        "git add .",
+        "git commit -m",
+        "git push origin"
+      ]
+    },
+    "protocolCommands": [
+      "# Security-First Protocol",
+      "# ANALYZE → IMPLEMENT → TEST → MONITOR",
+      "",
+      "# TDD Protocol", 
+      "# SPECIFY → TEST → IMPLEMENT → REFACTOR",
+      "",
+      "# Surgical Debugging",
+      "# Level 1-7 systematic escalation"
+    ],
+    "workflowCommands": [
+      "# BMad Workflow Commands",
+      "bmad-create-story --type=feature",
+      "bmad-review-story --checklist",
+      "bmad-validate-epic --architecture",
+      "bmad-generate-tasks --breakdown"
+    ]
+  },
+  "shortcuts": {
+    "customCommands": {
+      "dev": "npm run dev",
+      "build": "npm run build", 
+      "test": "npm test",
+      "lint": "npm run lint",
+      "tc": "npm run typecheck",
+      "sec": "npm run security:scan",
+      "new-proj": "node scripts/new-project.js",
+      "claude-debug": "claude code --debug",
+      "bmad-story": "bmad-create-story",
+      "protocol-check": "echo 'Checking protocol compliance...'",
+      "tdd-cycle": "npm test -- --watch",
+      "security-audit": "npm audit && npm run security:scan"
+    },
+    "gitShortcuts": {
+      "gs": "git status",
+      "ga": "git add .",
+      "gc": "git commit -m",
+      "gp": "git push origin",
+      "gl": "git log --oneline -10",
+      "gd": "git diff",
+      "gb": "git branch"
+    },
+    "bmadShortcuts": {
+      "bs": "bmad-create-story",
+      "br": "bmad-review-checklist",
+      "be": "bmad-generate-epic",
+      "bv": "bmad-validate-architecture",
+      "bw": "bmad-run-workflow",
+      "bt": "bmad-create-brownfield-story"
+    }
+  },
+  "intelligentSuggestions": {
+    "contextAnalysis": {
+      "currentDirectory": true,
+      "projectType": true,
+      "recentCommands": true,
+      "fileChanges": true,
+      "gitStatus": true,
+      "packageJson": true
+    },
+    "securityGuidance": {
+      "flagDangerousCommands": true,
+      "suggestSecureAlternatives": true,
+      "validateFilePermissions": true,
+      "warnAboutSensitiveData": true
+    },
+    "protocolIntegration": {
+      "tddWorkflow": true,
+      "securityFirst": true,
+      "surgicalDebugging": true,
+      "taskDecomposition": true,
+      "debtManagement": true
+    }
+  },
+  "historyOptimization": {
+    "duplicateRemoval": true,
+    "frequencyWeighting": true,
+    "contextualGrouping": true,
+    "timeDecay": true,
+    "successRateTracking": true,
+    "learningFromErrors": true
+  },
+  "performance": {
+    "cacheSize": "50MB",
+    "suggestionTimeout": "500ms",
+    "backgroundPreload": true,
+    "asyncProcessing": true,
+    "memoryLimit": "128MB"
+  }
+}

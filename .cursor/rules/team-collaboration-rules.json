@@ -1,0 +1,327 @@
+{
+  "teamCollaborationRules": {
+    "version": "1.0.0",
+    "enabled": true,
+    "description": "Cursor rules for team collaboration patterns, communication standards, and workflow coordination",
+    "rules": [
+      {
+        "id": "git-commit-conventions",
+        "severity": "warning",
+        "category": "version-control",
+        "description": "Enforce conventional commit message standards",
+        "commitMessageFormat": {
+          "pattern": "^(feat|fix|docs|style|refactor|test|chore|security)(?:\\(.+\\))?: .{1,50}",
+          "types": {
+            "feat": "New feature implementation",
+            "fix": "Bug fix or issue resolution",
+            "docs": "Documentation updates",
+            "style": "Code formatting and style changes",
+            "refactor": "Code restructuring without behavior change",
+            "test": "Test additions or modifications",
+            "chore": "Maintenance tasks and dependencies",
+            "security": "Security-related changes"
+          },
+          "scopeRequired": false,
+          "maxLength": 72,
+          "bodyRequired": "for breaking changes"
+        },
+        "requiredElements": {
+          "type": "required",
+          "description": "required",
+          "body": "optional",
+          "footer": "for breaking changes and issue references"
+        },
+        "action": "validate",
+        "message": "Follow conventional commit format: type(scope): description"
+      },
+      {
+        "id": "pull-request-templates",
+        "severity": "info",
+        "category": "code-review",
+        "description": "Enforce pull request template usage",
+        "requiredSections": [
+          "description",
+          "changes_made",
+          "testing_performed",
+          "security_considerations",
+          "breaking_changes"
+        ],
+        "prTemplate": {
+          "title_format": "[Type] Brief description of changes",
+          "labels_required": ["type", "priority", "area"],
+          "reviewers_required": "minimum_2",
+          "assignee_required": true
+        },
+        "checklistItems": [
+          "Code follows project style guide",
+          "Tests added/updated for changes",
+          "Documentation updated if needed",
+          "Security implications reviewed",
+          "Breaking changes documented"
+        ],
+        "action": "template",
+        "message": "Use PR template to ensure comprehensive change documentation"
+      },
+      {
+        "id": "code-review-standards",
+        "severity": "warning",
+        "category": "quality-assurance",
+        "description": "Enforce comprehensive code review standards",
+        "reviewRequirements": {
+          "minimum_reviewers": 2,
+          "required_reviewer_types": ["senior_developer", "domain_expert"],
+          "security_review": "for_sensitive_changes",
+          "architectural_review": "for_structural_changes"
+        },
+        "reviewCriteria": {
+          "correctness": "logic and functionality validation",
+          "readability": "code clarity and documentation",
+          "maintainability": "long-term maintenance considerations",
+          "performance": "efficiency and scalability impact",
+          "security": "vulnerability assessment",
+          "testing": "test coverage and quality"
+        },
+        "reviewGuidelines": {
+          "constructive_feedback": "specific and actionable comments",
+          "approval_criteria": "all concerns addressed",
+          "response_time": "24_hours_for_initial_review",
+          "follow_up": "re_review_after_changes"
+        },
+        "action": "require",
+        "message": "Complete thorough code review before approval"
+      },
+      {
+        "id": "documentation-collaboration",
+        "severity": "info",
+        "category": "knowledge-sharing",
+        "description": "Promote collaborative documentation practices",
+        "documentationTypes": {
+          "technical_specs": "architectural decisions and designs",
+          "api_documentation": "endpoint specifications and examples",
+          "user_guides": "feature usage and workflows",
+          "troubleshooting": "common issues and solutions",
+          "onboarding": "setup and development guides"
+        },
+        "collaborationPatterns": {
+          "living_documentation": "keep_docs_with_code",
+          "review_process": "docs_reviewed_with_code",
+          "accessibility": "clear_language_and_structure",
+          "versioning": "version_control_for_docs",
+          "search_optimization": "keywords_and_tagging"
+        },
+        "documentationStandards": {
+          "markdown_format": "consistent_styling",
+          "code_examples": "working_and_tested",
+          "diagrams": "version_controlled_sources",
+          "links": "relative_links_preferred"
+        },
+        "action": "encourage",
+        "message": "Maintain collaborative and accessible documentation"
+      },
+      {
+        "id": "issue-tracking-workflows",
+        "severity": "info",
+        "category": "project-management",
+        "description": "Standardize issue tracking and workflow management",
+        "issueTypes": {
+          "bug": "defect reports with reproduction steps",
+          "feature": "new functionality requests",
+          "enhancement": "improvements to existing features",
+          "task": "development work items",
+          "epic": "large feature collections",
+          "spike": "research and investigation"
+        },
+        "issueTemplate": {
+          "title_format": "[Type] Clear and specific title",
+          "required_fields": ["description", "acceptance_criteria", "priority"],
+          "labels": ["type", "priority", "component", "effort"],
+          "assignment": "team_member_or_unassigned"
+        },
+        "workflowStates": {
+          "backlog": "prioritized_and_ready",
+          "in_progress": "actively_being_worked",
+          "review": "code_review_in_progress",
+          "testing": "qa_validation_phase",
+          "done": "completed_and_verified"
+        },
+        "action": "standardize",
+        "message": "Use consistent issue tracking for better project visibility"
+      },
+      {
+        "id": "communication-protocols",
+        "severity": "info",
+        "category": "team-communication",
+        "description": "Establish clear communication protocols and channels",
+        "communicationChannels": {
+          "code_reviews": "github_pr_comments",
+          "technical_discussions": "dedicated_slack_channels",
+          "urgent_issues": "direct_messages_or_calls",
+          "announcements": "team_meetings_and_email",
+          "documentation": "confluence_or_wiki"
+        },
+        "responseTimeExpectations": {
+          "code_reviews": "24_hours",
+          "urgent_bugs": "4_hours",
+          "feature_questions": "48_hours",
+          "general_discussions": "72_hours"
+        },
+        "escalationPaths": {
+          "level_1": "team_lead",
+          "level_2": "engineering_manager",
+          "level_3": "technical_director",
+          "security_issues": "security_team_direct"
+        },
+        "action": "guide",
+        "message": "Use appropriate communication channels for different types of discussions"
+      },
+      {
+        "id": "knowledge-sharing-practices",
+        "severity": "info",
+        "category": "learning",
+        "description": "Encourage knowledge sharing and team learning",
+        "knowledgeSharing": {
+          "tech_talks": "monthly_internal_presentations",
+          "code_walkthroughs": "complex_feature_explanations",
+          "documentation": "architectural_decision_records",
+          "mentoring": "pair_programming_sessions",
+          "retrospectives": "regular_process_improvement"
+        },
+        "learningOpportunities": {
+          "code_reviews": "learning_from_feedback",
+          "architecture_discussions": "design_pattern_sharing",
+          "post_mortems": "incident_learning",
+          "technology_research": "proof_of_concept_sharing"
+        },
+        "knowledgeCapture": {
+          "decision_records": "document_important_decisions",
+          "lessons_learned": "capture_project_insights",
+          "best_practices": "evolving_team_standards",
+          "troubleshooting_guides": "common_problem_solutions"
+        },
+        "action": "promote",
+        "message": "Share knowledge to strengthen the entire team's capabilities"
+      },
+      {
+        "id": "cross-functional-collaboration",
+        "severity": "info",
+        "category": "stakeholder-coordination",
+        "description": "Facilitate collaboration across different roles and teams",
+        "collaborationPatterns": {
+          "design_engineering": "early_design_review_involvement",
+          "product_engineering": "requirement_clarification_sessions",
+          "qa_engineering": "test_strategy_collaboration",
+          "security_engineering": "security_review_integration",
+          "devops_engineering": "deployment_and_infrastructure_coordination"
+        },
+        "meetingProtocols": {
+          "standup_meetings": "daily_progress_and_blockers",
+          "sprint_planning": "collaborative_estimation_and_commitment",
+          "retrospectives": "team_improvement_focus",
+          "architecture_reviews": "technical_decision_collaboration"
+        },
+        "artifactSharing": {
+          "design_mockups": "accessible_to_all_stakeholders",
+          "technical_specs": "reviewed_by_relevant_teams",
+          "test_plans": "aligned_with_acceptance_criteria",
+          "deployment_guides": "shared_with_operations_team"
+        },
+        "action": "coordinate",
+        "message": "Engage all relevant stakeholders in collaborative decision making"
+      },
+      {
+        "id": "conflict-resolution-guidelines",
+        "severity": "info",
+        "category": "team-dynamics",
+        "description": "Provide guidelines for constructive conflict resolution",
+        "conflictTypes": {
+          "technical_disagreements": "data_driven_resolution",
+          "process_conflicts": "team_discussion_and_voting",
+          "resource_conflicts": "manager_mediation",
+          "interpersonal_issues": "hr_involvement_if_needed"
+        },
+        "resolutionSteps": [
+          "identify_root_cause",
+          "gather_relevant_information",
+          "facilitate_open_discussion",
+          "explore_alternative_solutions",
+          "document_agreed_resolution",
+          "monitor_implementation_success"
+        ],
+        "escalationCriteria": {
+          "prolonged_disagreement": "more_than_2_days",
+          "impact_on_delivery": "blocking_critical_path",
+          "team_morale_impact": "affecting_team_dynamics",
+          "recurring_issues": "pattern_of_similar_conflicts"
+        },
+        "action": "facilitate",
+        "message": "Address conflicts constructively to maintain team cohesion"
+      }
+    ],
+    "teamRoles": {
+      "tech_lead": {
+        "responsibilities": ["architectural_decisions", "code_review_oversight", "team_mentoring"],
+        "collaboration_focus": ["cross_team_coordination", "technical_standard_setting"],
+        "communication_expectations": ["regular_team_updates", "stakeholder_technical_communication"]
+      },
+      "senior_developer": {
+        "responsibilities": ["complex_feature_implementation", "junior_developer_mentoring", "code_quality_advocacy"],
+        "collaboration_focus": ["pair_programming", "knowledge_sharing", "design_review_participation"],
+        "communication_expectations": ["constructive_code_review", "technical_discussion_leadership"]
+      },
+      "developer": {
+        "responsibilities": ["feature_implementation", "bug_fixes", "test_writing"],
+        "collaboration_focus": ["active_code_review_participation", "documentation_contribution"],
+        "communication_expectations": ["clear_progress_communication", "help_seeking_when_needed"]
+      },
+      "qa_engineer": {
+        "responsibilities": ["test_strategy", "quality_validation", "automation_development"],
+        "collaboration_focus": ["requirement_clarification", "test_case_review"],
+        "communication_expectations": ["clear_defect_reporting", "testing_status_updates"]
+      }
+    },
+    "collaborationMetrics": {
+      "code_review_participation": "reviews_per_team_member",
+      "knowledge_sharing_activity": "documentation_contributions",
+      "cross_team_interaction": "inter_team_communication_frequency",
+      "conflict_resolution_time": "average_time_to_resolve_disagreements",
+      "team_satisfaction": "regular_team_health_surveys"
+    },
+    "toolIntegration": {
+      "github": {
+        "pr_templates": "standardized_across_repositories",
+        "issue_templates": "consistent_information_gathering",
+        "project_boards": "visual_workflow_management"
+      },
+      "slack": {
+        "channel_organization": "topic_specific_channels",
+        "bot_integrations": "automated_notifications",
+        "thread_usage": "organized_discussions"
+      },
+      "documentation_tools": {
+        "wiki_or_confluence": "centralized_knowledge_base",
+        "markdown_in_repo": "code_adjacent_documentation",
+        "diagram_tools": "architectural_visualization"
+      }
+    },
+    "enforcement": {
+      "checkpoints": [
+        "pr_creation",
+        "code_review_completion",
+        "issue_creation",
+        "meeting_scheduling",
+        "documentation_updates"
+      ],
+      "actions": {
+        "validate": "check_template_compliance",
+        "require": "mandate_review_completion",
+        "standardize": "enforce_consistent_processes",
+        "template": "provide_structured_formats",
+        "encourage": "promote_best_practices",
+        "promote": "highlight_good_examples",
+        "coordinate": "facilitate_cross_team_work",
+        "facilitate": "assist_in_conflict_resolution",
+        "guide": "provide_process_guidance"
+      }
+    }
+  }
+}

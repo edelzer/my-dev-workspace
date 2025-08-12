@@ -1,0 +1,89 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "TodoWrite",
+        "hooks": [
+          {
+            "type": "command",
+            "comment": "Slack integration for todo updates",
+            "command": "if [ -n \"$SLACK_WEBHOOK_URL\" ]; then curl -X POST -H 'Content-type: application/json' --data '{\"text\":\"Todo list updated in $(basename $PWD)\"}' $SLACK_WEBHOOK_URL 2>/dev/null || true; fi"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "comment": "Git workflow integration",
+            "command": "if echo \"$TOOL_OUTPUT\" | grep -E '(commit|push|merge)'; then echo 'Git operation completed'; git log --oneline -1 2>/dev/null || true; fi"
+          }
+        ]
+      },
+      {
+        "matcher": "Task",
+        "hooks": [
+          {
+            "type": "command",
+            "comment": "Agent task completion tracking",
+            "command": "echo \"$(date): Task completed by agent\" >> .claude/agent-activity.log && if [ -f .bmad-core/activity.json ]; then echo 'BMAD integration active'; fi"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "comment": "Pre-edit integration checks",
+            "command": "if [ -f .editorconfig ] || [ -f .prettierrc ]; then echo 'Editor configuration detected - applying standards'; fi"
+          }
+        ]
+      },
+      {
+        "matcher": "Grep|Glob",
+        "hooks": [
+          {
+            "type": "command",
+            "comment": "Search operation logging",
+            "command": "echo \"$(date): Search operation initiated\" >> .claude/search-log.txt"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "comment": "Session completion integration",
+            "command": "if [ -f .claude/agent-activity.log ] && [ -s .claude/agent-activity.log ]; then echo 'Agent activity recorded:'; tail -2 .claude/agent-activity.log; fi"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "comment": "Monitoring system integration",
+            "command": "if [ -n \"$MONITORING_ENDPOINT\" ]; then curl -X POST \"$MONITORING_ENDPOINT/session-complete\" -d '{\"project\":\"$(basename $PWD)\",\"timestamp\":\"$(date -Iseconds)\"}' 2>/dev/null || true; fi"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "comment": "Notification forwarding",
+            "command": "echo \"$(date): Notification - $NOTIFICATION_MESSAGE\" >> .claude/notifications.log"
+          }
+        ]
+      }
+    ]
+  }
+}

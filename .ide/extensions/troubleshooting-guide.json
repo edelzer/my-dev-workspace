@@ -1,0 +1,562 @@
+{
+  "extensionTroubleshootingGuide": {
+    "version": "1.0.0",
+    "description": "Comprehensive troubleshooting guide for VS Code, Cursor, and Windsurf extension issues",
+    "troubleshooting_framework": {
+      "diagnostic_approach": "systematic_elimination_of_causes",
+      "escalation_path": "self_service_to_expert_support",
+      "resolution_tracking": "track_resolution_effectiveness",
+      "knowledge_base_integration": "learn_from_previous_resolutions"
+    },
+    "common_issues": {
+      "installation_failures": {
+        "category": "Installation & Setup",
+        "severity": "high",
+        "frequency": "common",
+        "symptoms": [
+          "Extension fails to install from marketplace",
+          "Installation hangs or times out",
+          "Permission denied errors during installation",
+          "Dependency resolution failures"
+        ],
+        "root_causes": [
+          {
+            "cause": "network_connectivity_issues",
+            "probability": 0.4,
+            "diagnostic_steps": [
+              "Test marketplace connectivity: `curl -I https://marketplace.visualstudio.com`",
+              "Check proxy settings and corporate firewalls",
+              "Verify DNS resolution for marketplace URLs",
+              "Test with different network connection"
+            ],
+            "resolution_steps": [
+              "Configure proxy settings in editor preferences",
+              "Add marketplace domains to firewall whitelist",
+              "Use manual extension installation (.vsix files)",
+              "Contact IT team for network access"
+            ]
+          },
+          {
+            "cause": "insufficient_permissions",
+            "probability": 0.3,
+            "diagnostic_steps": [
+              "Check user account permissions",
+              "Verify write access to extensions directory",
+              "Test with elevated privileges (temporarily)",
+              "Review file system permissions"
+            ],
+            "resolution_steps": [
+              "Run editor as administrator (Windows)",
+              "Use sudo for installation commands (Mac/Linux)",
+              "Modify file permissions for extensions directory",
+              "Change extension installation directory"
+            ]
+          },
+          {
+            "cause": "corrupted_extension_cache",
+            "probability": 0.2,
+            "diagnostic_steps": [
+              "Check extension cache directory size and integrity",
+              "Look for partial or corrupted downloads",
+              "Verify extension manifest files",
+              "Check available disk space"
+            ],
+            "resolution_steps": [
+              "Clear extension cache: rm -rf ~/.vscode/extensions/.cache",
+              "Restart editor and retry installation",
+              "Free up disk space",
+              "Manual cache cleanup and rebuild"
+            ]
+          }
+        ]
+      },
+      "activation_problems": {
+        "category": "Runtime & Activation",
+        "severity": "high",
+        "frequency": "common",
+        "symptoms": [
+          "Extension installed but not active",
+          "Extension activation error messages", 
+          "Features not working despite successful installation",
+          "Extension appears grayed out in extensions list"
+        ],
+        "root_causes": [
+          {
+            "cause": "missing_dependencies",
+            "probability": 0.5,
+            "diagnostic_steps": [
+              "Check extension dependencies in package.json",
+              "Verify required runtime dependencies (Node.js, Python, etc.)",
+              "Test dependency availability in terminal",
+              "Review extension activation logs"
+            ],
+            "resolution_steps": [
+              "Install missing runtime dependencies",
+              "Update runtime to required minimum version",
+              "Install dependent extensions manually",
+              "Configure environment variables if needed"
+            ]
+          },
+          {
+            "cause": "configuration_errors",
+            "probability": 0.3,
+            "diagnostic_steps": [
+              "Review extension settings for incorrect values",
+              "Check for conflicting settings with other extensions",
+              "Validate file paths and permissions",
+              "Examine workspace vs user settings conflicts"
+            ],
+            "resolution_steps": [
+              "Reset extension settings to defaults",
+              "Fix conflicting configuration values",
+              "Update file paths to correct locations",
+              "Separate workspace and user configuration"
+            ]
+          },
+          {
+            "cause": "extension_conflicts",
+            "probability": 0.2,
+            "diagnostic_steps": [
+              "Identify extensions with overlapping functionality",
+              "Check for keybinding conflicts",
+              "Review extension activation order",
+              "Test with extensions disabled one by one"
+            ],
+            "resolution_steps": [
+              "Disable conflicting extensions",
+              "Resolve keybinding conflicts",
+              "Adjust extension loading order",
+              "Choose one extension from conflicting set"
+            ]
+          }
+        ]
+      },
+      "performance_issues": {
+        "category": "Performance & Resource Usage",
+        "severity": "medium",
+        "frequency": "occasional",
+        "symptoms": [
+          "Editor becomes slow or unresponsive",
+          "High CPU or memory usage",
+          "Long extension loading times",
+          "Frequent freezing or crashes"
+        ],
+        "root_causes": [
+          {
+            "cause": "resource_intensive_extensions",
+            "probability": 0.6,
+            "diagnostic_steps": [
+              "Use built-in performance profiler",
+              "Monitor CPU and memory usage per extension",
+              "Check extension startup times",
+              "Identify extensions with high resource usage"
+            ],
+            "resolution_steps": [
+              "Disable or replace resource-intensive extensions",
+              "Configure extension settings for better performance",
+              "Limit extension scope to specific file types",
+              "Use extension performance budgeting"
+            ]
+          },
+          {
+            "cause": "too_many_extensions",
+            "probability": 0.3,
+            "diagnostic_steps": [
+              "Count total number of installed extensions",
+              "Measure cumulative startup time",
+              "Analyze extension usage patterns",
+              "Identify redundant or unused extensions"
+            ],
+            "resolution_steps": [
+              "Uninstall unused extensions",
+              "Disable extensions not needed for current project",
+              "Group extensions by project type",
+              "Use extension packs instead of individual extensions"
+            ]
+          },
+          {
+            "cause": "extension_memory_leaks",
+            "probability": 0.1,
+            "diagnostic_steps": [
+              "Monitor memory usage over time",
+              "Check for continuously growing memory usage",
+              "Identify extensions with memory leaks",
+              "Test with extensions disabled"
+            ],
+            "resolution_steps": [
+              "Update extensions to latest versions",
+              "Report memory leak issues to extension authors",
+              "Restart editor periodically",
+              "Use alternative extensions without memory issues"
+            ]
+          }
+        ]
+      },
+      "feature_malfunctions": {
+        "category": "Feature & Functionality",
+        "severity": "medium",
+        "frequency": "occasional",
+        "symptoms": [
+          "Specific extension features not working",
+          "Incorrect behavior or unexpected results",
+          "Missing UI elements or commands",
+          "Keybindings not responding"
+        ],
+        "root_causes": [
+          {
+            "cause": "incorrect_configuration",
+            "probability": 0.4,
+            "diagnostic_steps": [
+              "Review extension-specific settings",
+              "Check workspace configuration overrides",
+              "Validate configuration file syntax",
+              "Compare with working configuration examples"
+            ],
+            "resolution_steps": [
+              "Fix configuration syntax errors",
+              "Update settings to match current extension version",
+              "Remove conflicting workspace settings",
+              "Use extension configuration wizard if available"
+            ]
+          },
+          {
+            "cause": "version_incompatibility",
+            "probability": 0.3,
+            "diagnostic_steps": [
+              "Check extension version compatibility",
+              "Verify editor version requirements",
+              "Review extension changelog for breaking changes",
+              "Test with different extension versions"
+            ],
+            "resolution_steps": [
+              "Update extension to compatible version",
+              "Downgrade extension if newer version incompatible",
+              "Update editor to supported version",
+              "Use extension migration tools if available"
+            ]
+          },
+          {
+            "cause": "corrupted_extension_files",
+            "probability": 0.3,
+            "diagnostic_steps": [
+              "Verify extension file integrity",
+              "Check for partial or corrupted downloads",
+              "Compare file checksums if available",
+              "Test extension reinstallation"
+            ],
+            "resolution_steps": [
+              "Uninstall and reinstall extension",
+              "Clear extension cache before reinstallation",
+              "Download extension manually and install",
+              "Verify installation integrity after reinstall"
+            ]
+          }
+        ]
+      },
+      "sync_and_backup_issues": {
+        "category": "Synchronization & Backup",
+        "severity": "low",
+        "frequency": "rare", 
+        "symptoms": [
+          "Extension settings not syncing across devices",
+          "Configuration backup failures",
+          "Sync conflicts between different installations",
+          "Lost extension configurations"
+        ],
+        "root_causes": [
+          {
+            "cause": "sync_service_connectivity",
+            "probability": 0.5,
+            "diagnostic_steps": [
+              "Test connectivity to sync service",
+              "Check authentication status",
+              "Verify sync service configuration",
+              "Review sync conflict logs"
+            ],
+            "resolution_steps": [
+              "Reconnect to sync service",
+              "Update authentication credentials",
+              "Resolve sync conflicts manually",
+              "Reset sync data if corruption detected"
+            ]
+          },
+          {
+            "cause": "conflicting_configurations",
+            "probability": 0.3,
+            "diagnostic_steps": [
+              "Identify conflicting settings between devices",
+              "Check modification timestamps",
+              "Review sync conflict resolution rules",
+              "Analyze configuration differences"
+            ],
+            "resolution_steps": [
+              "Resolve configuration conflicts manually",
+              "Choose preferred configuration source",
+              "Update conflict resolution rules",
+              "Standardize configurations across devices"
+            ]
+          }
+        ]
+      }
+    },
+    "diagnostic_tools": {
+      "built_in_diagnostics": {
+        "developer_tools": {
+          "description": "Built-in editor developer tools for extension debugging",
+          "access_method": "Help > Developer Tools or Ctrl+Shift+I",
+          "capabilities": [
+            "Console log monitoring",
+            "Network request tracking",
+            "Performance profiling",
+            "Extension process monitoring"
+          ]
+        },
+        "extension_host_log": {
+          "description": "Extension host process logging",
+          "access_method": "View > Output > Extension Host",
+          "use_cases": [
+            "Extension activation errors",
+            "Runtime exceptions",
+            "Communication errors",
+            "Performance warnings"
+          ]
+        },
+        "extension_bisect": {
+          "description": "Systematic extension disabling for issue isolation",
+          "access_method": "Help > Start Extension Bisect",
+          "procedure": [
+            "Disable half of extensions",
+            "Test for issue reproduction",
+            "Iteratively narrow down problematic extension",
+            "Identify specific extension causing issue"
+          ]
+        }
+      },
+      "command_line_tools": {
+        "extension_listing": {
+          "command": "code --list-extensions --show-versions",
+          "description": "List all installed extensions with versions",
+          "use_cases": ["Inventory management", "Version comparison", "Bulk operations"]
+        },
+        "extension_installation": {
+          "command": "code --install-extension <extension-id>",
+          "description": "Install extension via command line",
+          "use_cases": ["Automated installation", "Batch installation", "Scripted setup"]
+        },
+        "extension_uninstallation": {
+          "command": "code --uninstall-extension <extension-id>",
+          "description": "Uninstall extension via command line",
+          "use_cases": ["Cleanup scripts", "Batch removal", "Automated maintenance"]
+        }
+      },
+      "log_analysis_tools": {
+        "log_aggregation": {
+          "description": "Aggregate logs from multiple sources",
+          "sources": ["Extension host", "Main process", "Renderer process", "Individual extensions"],
+          "analysis_capabilities": [
+            "Error pattern recognition",
+            "Performance bottleneck identification",
+            "Extension interaction analysis",
+            "Timeline correlation"
+          ]
+        },
+        "performance_profiling": {
+          "description": "Profile extension performance impact",
+          "metrics": ["Startup time", "CPU usage", "Memory usage", "I/O operations"],
+          "reporting": [
+            "Performance comparison charts",
+            "Resource utilization trends",
+            "Extension ranking by impact",
+            "Optimization recommendations"
+          ]
+        }
+      }
+    },
+    "troubleshooting_procedures": {
+      "step_by_step_guides": {
+        "installation_troubleshooting": {
+          "title": "Extension Installation Issues",
+          "estimated_time": "15-30 minutes",
+          "steps": [
+            {
+              "step": 1,
+              "action": "Verify network connectivity",
+              "description": "Test connection to extension marketplace",
+              "commands": ["curl -I https://marketplace.visualstudio.com"],
+              "expected_result": "HTTP 200 OK response"
+            },
+            {
+              "step": 2,
+              "action": "Check available disk space",
+              "description": "Ensure sufficient space for extension installation",
+              "commands": ["df -h (Linux/Mac)", "dir (Windows)"],
+              "expected_result": "At least 1GB free space"
+            },
+            {
+              "step": 3,
+              "action": "Clear extension cache",
+              "description": "Remove potentially corrupted cache files",
+              "commands": ["rm -rf ~/.vscode/extensions/.cache"],
+              "expected_result": "Cache directory cleared"
+            },
+            {
+              "step": 4,
+              "action": "Restart editor",
+              "description": "Fresh start with cleared cache",
+              "commands": ["Close and reopen editor"],
+              "expected_result": "Editor starts normally"
+            },
+            {
+              "step": 5,
+              "action": "Retry installation",
+              "description": "Attempt extension installation again",
+              "commands": ["Use marketplace or command line installation"],
+              "expected_result": "Successful installation"
+            }
+          ]
+        },
+        "performance_troubleshooting": {
+          "title": "Extension Performance Issues",
+          "estimated_time": "20-45 minutes",
+          "steps": [
+            {
+              "step": 1,
+              "action": "Open performance profiler",
+              "description": "Access built-in performance monitoring",
+              "commands": ["Developer: Startup Performance"],
+              "expected_result": "Performance data displayed"
+            },
+            {
+              "step": 2,
+              "action": "Identify resource-heavy extensions",
+              "description": "Find extensions consuming most resources",
+              "commands": ["Analyze performance data"],
+              "expected_result": "List of resource-intensive extensions"
+            },
+            {
+              "step": 3,
+              "action": "Disable high-impact extensions",
+              "description": "Temporarily disable resource-heavy extensions",
+              "commands": ["Extensions view > Disable"],
+              "expected_result": "Extensions disabled"
+            },
+            {
+              "step": 4,
+              "action": "Test performance improvement",
+              "description": "Evaluate editor performance without heavy extensions",
+              "commands": ["Perform normal development tasks"],
+              "expected_result": "Improved responsiveness"
+            },
+            {
+              "step": 5,
+              "action": "Selectively re-enable extensions",
+              "description": "Re-enable extensions one by one",
+              "commands": ["Extensions view > Enable"],
+              "expected_result": "Identify specific problematic extension"
+            }
+          ]
+        }
+      },
+      "quick_fixes": {
+        "extension_not_working": [
+          "Reload window: Ctrl+Shift+P > Developer: Reload Window",
+          "Check extension is enabled: Extensions view > Enable",
+          "Verify workspace trust: File > Trust Workspace",
+          "Reset extension settings: Settings > Extensions > Reset"
+        ],
+        "missing_commands": [
+          "Check command palette: Ctrl+Shift+P",
+          "Verify extension activation: Output > Extension Host",
+          "Check keybinding conflicts: Preferences > Keyboard Shortcuts",
+          "Restart extension host: Developer: Reload Window With Extensions Disabled"
+        ],
+        "sync_problems": [
+          "Sign out and back in to sync service",
+          "Clear sync data and re-sync",
+          "Check sync settings are enabled",
+          "Manually resolve sync conflicts"
+        ]
+      }
+    },
+    "escalation_paths": {
+      "self_service_resources": {
+        "documentation": [
+          "Extension-specific documentation",
+          "Editor documentation and guides",
+          "Community forums and discussions",
+          "Stack Overflow and similar platforms"
+        ],
+        "diagnostic_tools": [
+          "Built-in developer tools",
+          "Extension bisect functionality",
+          "Log analysis and monitoring",
+          "Performance profiling tools"
+        ]
+      },
+      "community_support": {
+        "forums": [
+          "VS Code GitHub discussions",
+          "Extension-specific GitHub issues",
+          "Reddit communities (r/vscode, r/cursor)",
+          "Discord and Slack communities"
+        ],
+        "issue_reporting": {
+          "bug_reports": "Extension GitHub repository issues",
+          "feature_requests": "Extension repository feature requests",
+          "security_issues": "Responsible disclosure to extension authors",
+          "documentation_issues": "Documentation repository contributions"
+        }
+      },
+      "professional_support": {
+        "vendor_support": [
+          "Microsoft VS Code support (for core issues)",
+          "Extension publisher support (for extension-specific issues)",
+          "Enterprise support contracts",
+          "Professional consulting services"
+        ],
+        "internal_support": [
+          "IT help desk for environment issues",
+          "Development team leads for workflow issues",
+          "Security team for security-related issues",
+          "Training team for user education needs"
+        ]
+      }
+    },
+    "prevention_strategies": {
+      "proactive_maintenance": {
+        "regular_updates": {
+          "frequency": "weekly",
+          "scope": "critical and security updates",
+          "testing": "automated validation",
+          "rollback": "immediate if issues detected"
+        },
+        "health_monitoring": {
+          "performance_tracking": "monitor extension resource usage",
+          "error_monitoring": "track extension errors and failures",
+          "usage_analytics": "analyze extension utilization patterns",
+          "capacity_planning": "predict future extension needs"
+        },
+        "configuration_management": {
+          "standardization": "use consistent extension configurations",
+          "version_control": "track configuration changes",
+          "documentation": "maintain configuration documentation",
+          "validation": "verify configuration correctness"
+        }
+      },
+      "risk_mitigation": {
+        "extension_vetting": {
+          "security_review": "evaluate extension security posture",
+          "publisher_verification": "verify extension publisher credibility",
+          "code_review": "review open-source extension code",
+          "community_feedback": "consider community reviews and ratings"
+        },
+        "backup_strategies": {
+          "configuration_backup": "regular extension configuration backup",
+          "extension_inventory": "maintain extension inventory lists",
+          "rollback_capability": "ensure ability to revert changes",
+          "disaster_recovery": "plan for complete environment restoration"
+        }
+      }
+    }
+  }
+}

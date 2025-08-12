@@ -1,0 +1,92 @@
+name: Claude Code Action
+run-name: Claude Code - ${{ github.event_name }} on ${{ github.ref_name }}
+
+on:
+  issue_comment:
+    types: [created, edited]
+  pull_request_review:
+    types: [submitted]
+  pull_request:
+    types: [opened, synchronize, reopened]
+  issues:
+    types: [opened, edited, labeled]
+
+jobs:
+  claude:
+    if: |
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
+      (github.event_name == 'pull_request' && contains(github.event.pull_request.body, '@claude')) ||
+      (github.event_name == 'issues' && contains(github.event.issue.body, '@claude')) ||
+      (github.event_name == 'issues' && contains(github.event.issue.labels.*.name, 'claude'))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      checks: write
+      actions: read
+      security-events: write
+      statuses: write
+
+    steps:
+      - name: Claude Code Action
+        uses: anthropics/claude-code-action@v2
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # Optional: Limit the number of conversation turns
+          max_turns: 10
+          # Optional: Set timeout in minutes (default: 15)
+          timeout: 20
+          # Optional: Enable debug mode
+          debug: false
+          # Optional: Additional tools configuration
+          additional_tools: |
+            {
+              "computer_use": false,
+              "bash": true,
+              "file_editor": true,
+              "file_viewer": true
+            }
+          # Optional: Custom instructions
+          custom_instructions: |
+            You are working with a professional development workspace that follows:
+            - Security-First Development Protocol
+            - Test-Driven Development (TDD) practices
+            - BMAD Multi-Agent coordination workflows
+            - Surgical Debugging methodology
+            - Strategic Task Decomposition
+            
+            Always:
+            1. Check CLAUDE.md for project-specific guidelines
+            2. Follow security-first principles
+            3. Use TodoWrite for task tracking
+            4. Implement comprehensive testing
+            5. Apply surgical debugging when fixing issues
+            6. Coordinate with BMAD agents when appropriate
+            
+            Refer to the development protocols in docs/protocols/ for detailed guidance.
+
+      - name: Upload Claude Logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: claude-logs-${{ github.run_id }}
+          path: claude-logs/
+          retention-days: 30
+
+      - name: Comment Status Update
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue_number = context.issue?.number || context.payload.pull_request?.number;
+            if (issue_number) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue_number,
+                body: '❌ **Claude Code Action Failed**\n\nThe automated Claude response encountered an error. Please check the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.'
+              });
+            }

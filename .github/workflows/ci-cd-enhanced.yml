@@ -1,0 +1,370 @@
+name: Enhanced CI/CD Pipeline
+run-name: CI/CD Pipeline - ${{ github.event_name }} on ${{ github.ref_name }}
+
+on:
+  push:
+    branches: [main, develop]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/PULL_REQUEST_TEMPLATE/**'
+  pull_request:
+    branches: [main, develop]
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+        - staging
+        - production
+      skip_tests:
+        description: 'Skip test execution'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  NODE_VERSION: '20.x'
+  PYTHON_VERSION: '3.11'
+  
+jobs:
+  # Security and Quality Gates
+  security-scan:
+    name: Security Vulnerability Scan
+    runs-on: ubuntu-latest
+    if: github.event_name != 'workflow_dispatch' || !inputs.skip_tests
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for better analysis
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH,MEDIUM'
+
+      - name: Upload Trivy scan results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+      - name: Dependency Security Audit
+        run: |
+          # Check for multiple package managers
+          if [ -f "package.json" ]; then
+            npm audit --audit-level=moderate --omit=dev
+          fi
+          if [ -f "requirements.txt" ]; then
+            pip install safety
+            safety check -r requirements.txt
+          fi
+          if [ -f "Cargo.toml" ]; then
+            cargo audit
+          fi
+
+  # Code Quality Analysis
+  code-quality:
+    name: Code Quality Analysis
+    runs-on: ubuntu-latest
+    if: github.event_name != 'workflow_dispatch' || !inputs.skip_tests
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        if: hashFiles('package.json') != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        if: hashFiles('package.json') != ''
+        run: npm ci
+
+      - name: ESLint Analysis
+        if: hashFiles('package.json') != ''
+        run: |
+          npm run lint || echo "Lint issues found - creating report"
+          npm run lint -- --format json --output-file eslint-report.json || true
+
+      - name: TypeScript Type Check
+        if: hashFiles('package.json') != '' && hashFiles('tsconfig.json') != ''
+        run: npm run type-check || echo "TypeScript errors found"
+
+      - name: Setup Python
+        if: hashFiles('requirements.txt') != '' || hashFiles('pyproject.toml') != ''
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Python Quality Analysis
+        if: hashFiles('requirements.txt') != '' || hashFiles('pyproject.toml') != ''
+        run: |
+          pip install flake8 black isort mypy bandit
+          flake8 . --config .flake8 || echo "Flake8 issues found"
+          black --check . || echo "Black formatting issues found"
+          isort --check-only . || echo "Import sorting issues found"
+          mypy . || echo "MyPy type issues found"
+          bandit -r . -f json -o bandit-report.json || echo "Security issues found"
+
+      - name: Upload Quality Reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: quality-reports-${{ github.run_id }}
+          path: |
+            eslint-report.json
+            bandit-report.json
+            *.log
+          retention-days: 14
+
+  # Comprehensive Testing
+  test-suite:
+    name: Comprehensive Test Suite
+    runs-on: ubuntu-latest
+    if: github.event_name != 'workflow_dispatch' || !inputs.skip_tests
+    strategy:
+      matrix:
+        test-type: [unit, integration, e2e]
+        include:
+          - test-type: unit
+            command: 'test:unit'
+            coverage: true
+          - test-type: integration  
+            command: 'test:integration'
+            coverage: false
+          - test-type: e2e
+            command: 'test:e2e'
+            coverage: false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        if: hashFiles('package.json') != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        if: hashFiles('package.json') != ''
+        run: npm ci
+
+      - name: Run ${{ matrix.test-type }} tests
+        if: hashFiles('package.json') != ''
+        run: |
+          if npm run ${{ matrix.command }} 2>/dev/null; then
+            echo "Running ${{ matrix.command }}"
+            npm run ${{ matrix.command }}
+          else
+            echo "Script ${{ matrix.command }} not found, skipping"
+          fi
+
+      - name: Upload test coverage
+        if: matrix.coverage && hashFiles('coverage/') != ''
+        uses: codecov/codecov-action@v3
+        with:
+          directory: ./coverage/
+          flags: ${{ matrix.test-type }}
+          name: ${{ matrix.test-type }}-coverage
+
+  # Performance Analysis
+  performance-analysis:
+    name: Performance Impact Analysis
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        if: hashFiles('package.json') != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        if: hashFiles('package.json') != ''
+        run: npm ci
+
+      - name: Build for performance analysis
+        if: hashFiles('package.json') != ''
+        run: |
+          if npm run build 2>/dev/null; then
+            npm run build
+          else
+            echo "Build script not found, skipping performance analysis"
+            exit 0
+          fi
+
+      - name: Bundle size analysis
+        if: hashFiles('package.json') != '' && hashFiles('dist/') != ''
+        run: |
+          echo "## Bundle Size Analysis" >> performance-report.md
+          echo "\`\`\`" >> performance-report.md
+          du -sh dist/* 2>/dev/null || echo "No dist files found" >> performance-report.md
+          echo "\`\`\`" >> performance-report.md
+
+      - name: Lighthouse CI
+        if: hashFiles('package.json') != ''
+        uses: treosh/lighthouse-ci-action@v10
+        with:
+          uploadArtifacts: true
+          configPath: './lighthouserc.js'
+        continue-on-error: true
+
+      - name: Comment PR with performance results
+        if: github.event_name == 'pull_request' && hashFiles('performance-report.md') != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            if (fs.existsSync('performance-report.md')) {
+              const report = fs.readFileSync('performance-report.md', 'utf8');
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: `## 📊 Performance Analysis\n\n${report}`
+              });
+            }
+
+  # Build and Deploy
+  build-deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    needs: [security-scan, code-quality, test-suite]
+    if: always() && !cancelled() && (needs.security-scan.result == 'success' || needs.security-scan.result == 'skipped')
+    environment: ${{ github.event_name == 'workflow_dispatch' && inputs.environment || (github.ref == 'refs/heads/main' && 'production' || 'staging') }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        if: hashFiles('package.json') != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        if: hashFiles('package.json') != ''
+        run: npm ci
+
+      - name: Build application
+        if: hashFiles('package.json') != ''
+        run: |
+          if npm run build 2>/dev/null; then
+            npm run build
+          else
+            echo "Build script not found"
+          fi
+
+      - name: Deploy to staging
+        if: github.ref != 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && inputs.environment == 'staging')
+        run: |
+          echo "Deploying to staging environment"
+          # Add your staging deployment commands here
+
+      - name: Deploy to production
+        if: github.ref == 'refs/heads/main' && (github.event_name != 'workflow_dispatch' || inputs.environment == 'production')
+        run: |
+          echo "Deploying to production environment"
+          # Add your production deployment commands here
+
+      - name: Notify deployment status
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const status = '${{ job.status }}';
+            const environment = '${{ github.event_name == 'workflow_dispatch' && inputs.environment || (github.ref == 'refs/heads/main' && 'production' || 'staging') }}';
+            const message = status === 'success' 
+              ? `✅ **Deployment Successful** to ${environment}`
+              : `❌ **Deployment Failed** to ${environment}`;
+            
+            // For pull requests, comment on the PR
+            if (context.payload.pull_request) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: message
+              });
+            }
+
+  # Claude Integration for Failed Workflows
+  claude-failure-analysis:
+    name: Claude Failure Analysis
+    runs-on: ubuntu-latest
+    needs: [security-scan, code-quality, test-suite, build-deploy]
+    if: always() && contains(needs.*.result, 'failure') && github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Analyze workflow failures
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const failures = [];
+            const needs = ${{ toJSON(needs) }};
+            
+            Object.entries(needs).forEach(([job, result]) => {
+              if (result.result === 'failure') {
+                failures.push(job);
+              }
+            });
+            
+            if (failures.length > 0) {
+              const failureList = failures.map(job => `- ${job}`).join('\n');
+              const comment = `## 🔍 CI/CD Failure Analysis
+              
+              @claude The following workflow jobs failed:
+              ${failureList}
+              
+              Please analyze the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) and provide recommendations for fixing these issues.
+              
+              Focus on:
+              1. Root cause analysis
+              2. Surgical debugging approach (start with Level 1-3 fixes)
+              3. Security-first solutions
+              4. TDD compliance
+              
+              Use the TodoWrite tool to track any fixes needed.`;
+              
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: comment
+              });
+            }

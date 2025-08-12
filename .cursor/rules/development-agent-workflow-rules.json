@@ -1,0 +1,241 @@
+{
+  "developmentAgentWorkflowRules": {
+    "version": "1.0.0",
+    "enabled": true,
+    "description": "Cursor rules for development agent workflow coordination and multi-agent collaboration patterns",
+    "rules": [
+      {
+        "id": "bmad-agent-coordination",
+        "severity": "info",
+        "category": "agent-workflow",
+        "description": "Guide BMAD multi-agent workflow coordination",
+        "triggers": ["/analyst", "/pm", "/architect", "/dev", "/qa", "/bmad-orchestrator"],
+        "requiredSequence": {
+          "planning": ["/analyst", "/pm", "/architect", "/po"],
+          "development": ["/dev", "/ux-expert", "/sm"],
+          "quality": ["/qa", "/validator", "/security-specialist"],
+          "orchestration": ["/bmad-orchestrator", "/bmad-master"]
+        },
+        "action": "guide",
+        "message": "Follow BMAD agent coordination patterns: Planning → Development → Quality → Orchestration"
+      },
+      {
+        "id": "agent-handoff-validation",
+        "severity": "warning",
+        "category": "quality-gates",
+        "description": "Validate agent handoffs with quality gates",
+        "pattern": "\\/(analyst|pm|architect|dev|qa|bmad-orchestrator)",
+        "requiredOutputs": {
+          "/analyst": ["project_brief", "competitive_analysis", "market_research"],
+          "/pm": ["requirements_doc", "user_stories", "acceptance_criteria"],
+          "/architect": ["technical_design", "system_architecture", "tech_stack"],
+          "/dev": ["implementation", "unit_tests", "code_review"],
+          "/qa": ["test_results", "quality_report", "validation_complete"],
+          "/bmad-orchestrator": ["coordination_log", "handoff_validation", "quality_gates_passed"]
+        },
+        "action": "require",
+        "message": "Complete required outputs before agent handoff"
+      },
+      {
+        "id": "shared-workspace-integrity",
+        "severity": "error",
+        "category": "workspace",
+        "description": "Maintain shared workspace integrity across agents",
+        "filePattern": ".bmad-workspace/**/*",
+        "requiredStructure": {
+          "coordination-logs/": "required",
+          "shared-context/": "required",
+          "agent-outputs/": "required",
+          "quality-gates/": "required"
+        },
+        "action": "enforce",
+        "message": "Maintain proper .bmad-workspace/ structure for agent coordination"
+      },
+      {
+        "id": "agent-context-preservation",
+        "severity": "warning",
+        "category": "context",
+        "description": "Preserve context between agent sessions",
+        "pattern": "Agent: (Foundation|Implementation|Quality)",
+        "requiredContextFields": [
+          "current_phase",
+          "completed_tasks",
+          "pending_handoffs",
+          "quality_checkpoints"
+        ],
+        "action": "validate",
+        "message": "Update agent context before session completion"
+      },
+      {
+        "id": "multi-agent-task-decomposition",
+        "severity": "info",
+        "category": "task-management",
+        "description": "Coordinate task decomposition across multiple agents",
+        "pattern": "TodoWrite|task.*decomposition",
+        "agentRoles": {
+          "planner": "task_breakdown",
+          "developer": "implementation_tasks", 
+          "tester": "validation_tasks",
+          "orchestrator": "coordination_tasks"
+        },
+        "maxTaskComplexity": "30min",
+        "action": "coordinate",
+        "message": "Distribute tasks appropriately across specialized agents"
+      },
+      {
+        "id": "rule2hook-integration",
+        "severity": "info",
+        "category": "automation",
+        "description": "Integrate natural language rules with hook automation",
+        "pattern": "/project:rule2hook|claudecode-rule2hook",
+        "requiredValidation": [
+          "rule_safety_check",
+          "environment_compatibility", 
+          "rollback_mechanism"
+        ],
+        "action": "validate",
+        "message": "Validate Rule2Hook automation before activation"
+      },
+      {
+        "id": "agent-performance-tracking",
+        "severity": "info",
+        "category": "monitoring",
+        "description": "Track agent performance and coordination efficiency",
+        "metrics": [
+          "task_completion_time",
+          "handoff_success_rate",
+          "quality_gate_pass_rate",
+          "context_preservation_score"
+        ],
+        "reportingFrequency": "per_session",
+        "action": "track",
+        "message": "Monitor and log agent performance metrics"
+      },
+      {
+        "id": "emergency-fallback-protocols",
+        "severity": "error",
+        "category": "error-handling",
+        "description": "Handle agent communication failures with fallback protocols",
+        "triggers": [
+          "agent_timeout",
+          "handoff_failure",
+          "quality_gate_block",
+          "workspace_corruption"
+        ],
+        "fallbackActions": [
+          "manual_handoff",
+          "workspace_recovery", 
+          "emergency_rollback",
+          "single_agent_mode"
+        ],
+        "action": "escalate",
+        "message": "Agent communication failure - activating fallback protocol"
+      }
+    ],
+    "agentSpecializations": {
+      "foundation_team": {
+        "project_manager": {
+          "tools": ["TodoWrite", "Bash", "Read", "Write"],
+          "responsibilities": ["workflow_orchestration", "team_coordination", "progress_tracking"]
+        },
+        "requirements_analyst": {
+          "tools": ["Read", "Write", "WebFetch", "Grep"],
+          "responsibilities": ["requirements_elicitation", "stakeholder_analysis", "user_story_creation"]
+        },
+        "system_architect": {
+          "tools": ["Read", "Write", "Bash", "TodoWrite"],
+          "responsibilities": ["architecture_design", "technology_selection", "technical_documentation"]
+        },
+        "planner": {
+          "tools": ["TodoWrite", "Read", "Write", "Task"],
+          "responsibilities": ["task_decomposition", "effort_estimation", "milestone_management"]
+        }
+      },
+      "implementation_team": {
+        "frontend_developer": {
+          "tools": ["Read", "Write", "Edit", "MultiEdit", "Magic", "TodoWrite"],
+          "responsibilities": ["ui_development", "component_creation", "frontend_optimization"]
+        },
+        "backend_developer": {
+          "tools": ["Read", "Write", "Edit", "Bash", "TodoWrite"],
+          "responsibilities": ["api_development", "database_design", "server_optimization"]
+        },
+        "full_stack_developer": {
+          "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "TodoWrite"],
+          "responsibilities": ["end_to_end_features", "system_integration", "deployment"]
+        }
+      },
+      "quality_security_team": {
+        "tester": {
+          "tools": ["Read", "Write", "Bash", "Playwright", "TodoWrite"],
+          "responsibilities": ["test_strategy", "automated_testing", "quality_validation"]
+        },
+        "code_reviewer": {
+          "tools": ["Read", "Grep", "ESLint", "TodoWrite"],
+          "responsibilities": ["code_quality", "review_processes", "standards_enforcement"]
+        },
+        "validator": {
+          "tools": ["Read", "Bash", "TodoWrite", "IDE"],
+          "responsibilities": ["final_quality_gates", "deployment_readiness", "compliance_validation"]
+        },
+        "security_specialist": {
+          "tools": ["Read", "Write", "Bash", "Grep", "TodoWrite"],
+          "responsibilities": ["security_architecture", "threat_modeling", "vulnerability_assessment"]
+        }
+      }
+    },
+    "workflowPatterns": {
+      "planning_phase": {
+        "sequence": ["analyst_brief", "pm_requirements", "architect_design", "po_prioritization"],
+        "deliverables": ["project_brief.md", "requirements.md", "architecture.md", "backlog.md"],
+        "quality_gates": ["requirements_complete", "architecture_approved", "backlog_prioritized"]
+      },
+      "development_phase": {
+        "sequence": ["dev_implementation", "ux_design", "sm_coordination"],
+        "deliverables": ["implementation", "ui_components", "sprint_progress"],
+        "quality_gates": ["tests_pass", "code_review_complete", "sprint_goals_met"]
+      },
+      "quality_phase": {
+        "sequence": ["qa_testing", "validator_approval", "security_review"],
+        "deliverables": ["test_results", "quality_report", "security_assessment"],
+        "quality_gates": ["all_tests_pass", "quality_approved", "security_cleared"]
+      }
+    },
+    "coordinationProtocols": {
+      "handoff_requirements": {
+        "context_documentation": "required",
+        "deliverable_validation": "required", 
+        "next_agent_notification": "required",
+        "quality_gate_confirmation": "required"
+      },
+      "shared_workspace_rules": {
+        "file_naming": "agent-{name}-{timestamp}-{deliverable}",
+        "context_updates": "every_major_milestone",
+        "conflict_resolution": "orchestrator_mediation",
+        "backup_frequency": "hourly"
+      },
+      "escalation_procedures": {
+        "level_1": "agent_retry",
+        "level_2": "orchestrator_intervention",
+        "level_3": "manual_override",
+        "level_4": "emergency_protocols"
+      }
+    },
+    "enforcement": {
+      "checkpoints": [
+        "agent_initialization",
+        "handoff_validation",
+        "quality_gate_evaluation",
+        "session_completion"
+      ],
+      "actions": {
+        "guide": "show_workflow_guidance",
+        "coordinate": "facilitate_agent_coordination",
+        "validate": "check_requirements_completion",
+        "enforce": "block_invalid_transitions",
+        "track": "log_performance_metrics",
+        "escalate": "activate_fallback_protocols"
+      }
+    }
+  }
+}

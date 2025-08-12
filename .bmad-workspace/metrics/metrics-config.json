@@ -1,0 +1,155 @@
+{
+  "trackingEnabled": true,
+  "metricsVersion": "1.0.0",
+  "updateInterval": 300000,
+  "retentionPeriod": {
+    "daily": 30,
+    "weekly": 12,
+    "monthly": 6
+  },
+  "thresholds": {
+    "agent": {
+      "successRate": {
+        "excellent": 95,
+        "good": 90,
+        "fair": 80,
+        "poor": 70
+      },
+      "responseTime": {
+        "excellent": 10000,
+        "good": 30000,
+        "fair": 60000,
+        "poor": 120000
+      },
+      "reliability": {
+        "excellent": 98,
+        "good": 95,
+        "fair": 90,
+        "poor": 85
+      }
+    },
+    "workflow": {
+      "successRate": {
+        "excellent": 98,
+        "good": 95,
+        "fair": 90,
+        "poor": 85
+      },
+      "efficiency": {
+        "excellent": 90,
+        "good": 80,
+        "fair": 70,
+        "poor": 60
+      }
+    },
+    "collaboration": {
+      "handoffSuccess": {
+        "excellent": 98,
+        "good": 95,
+        "fair": 90,
+        "poor": 85
+      },
+      "communicationEfficiency": {
+        "excellent": 95,
+        "good": 90,
+        "fair": 80,
+        "poor": 70
+      }
+    },
+    "system": {
+      "health": {
+        "excellent": 95,
+        "good": 85,
+        "fair": 75,
+        "attention": 65
+      }
+    }
+  },
+  "alerting": {
+    "enabled": true,
+    "channels": ["console", "file"],
+    "rules": [
+      {
+        "condition": "agent.successRate < 80",
+        "severity": "high",
+        "message": "Agent performance degraded"
+      },
+      {
+        "condition": "workflow.successRate < 85",
+        "severity": "medium", 
+        "message": "Workflow success rate below threshold"
+      },
+      {
+        "condition": "system.health < 75",
+        "severity": "critical",
+        "message": "System health requires immediate attention"
+      }
+    ]
+  },
+  "reporting": {
+    "enabled": true,
+    "formats": ["json", "html"],
+    "schedules": {
+      "realtime": "*/5 * * * *",
+      "hourly": "0 * * * *", 
+      "daily": "0 0 * * *",
+      "weekly": "0 0 * * 0"
+    }
+  },
+  "agents": {
+    "expectedAgents": [
+      "analyst",
+      "pm", 
+      "architect",
+      "po",
+      "dev",
+      "sm",
+      "qa",
+      "ux-expert",
+      "bmad-orchestrator",
+      "bmad-master"
+    ],
+    "specializations": {
+      "analyst": ["market_research", "competitive_analysis", "brainstorming"],
+      "pm": ["product_management", "requirements", "coordination"],
+      "architect": ["technical_design", "system_architecture", "technology_selection"],
+      "po": ["product_ownership", "epic_management", "story_validation"],
+      "dev": ["software_development", "implementation", "debugging"],
+      "sm": ["scrum_management", "sprint_planning", "story_creation"],
+      "qa": ["quality_assurance", "testing", "code_review"],
+      "ux-expert": ["user_experience", "design", "front_end"]
+    }
+  },
+  "workflows": {
+    "expectedWorkflows": [
+      "planning-phase",
+      "development-phase", 
+      "qa-phase",
+      "deployment-phase",
+      "full-cycle"
+    ],
+    "phases": {
+      "planning-phase": ["analyst", "pm", "architect", "po"],
+      "development-phase": ["dev", "sm"],
+      "qa-phase": ["qa", "dev"],
+      "deployment-phase": ["dev", "qa"]
+    }
+  },
+  "integration": {
+    "claude-code": {
+      "enabled": true,
+      "hookIntegration": true,
+      "commandTracking": true
+    },
+    "bmad-core": {
+      "enabled": true,
+      "agentTracking": true,
+      "workflowTracking": true
+    },
+    "external": {
+      "slack": false,
+      "jira": false,
+      "monitoring": false
+    }
+  }
+}

@@ -1,0 +1,196 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2025-08-12",
+  "searchIndex": {
+    "categories": [
+      "patterns",
+      "lessons-learned", 
+      "best-practices",
+      "troubleshooting"
+    ],
+    "tags": [
+      "architecture",
+      "security",
+      "performance",
+      "testing",
+      "deployment",
+      "development",
+      "ai-agents",
+      "bmad",
+      "workflow",
+      "automation",
+      "documentation",
+      "quality-assurance",
+      "debugging",
+      "optimization"
+    ],
+    "entries": [
+      {
+        "id": "arch-patterns-001",
+        "title": "Microservices Architecture Patterns",
+        "category": "patterns",
+        "path": "patterns/architecture-patterns.md",
+        "tags": ["architecture", "microservices", "scalability"],
+        "description": "Common patterns for microservices architecture design",
+        "lastModified": "2025-08-12",
+        "quality": "high",
+        "validated": true
+      },
+      {
+        "id": "test-patterns-001",
+        "title": "TDD and Testing Patterns",
+        "category": "patterns",
+        "path": "patterns/testing-patterns.md",
+        "tags": ["testing", "tdd", "quality-assurance"],
+        "description": "Test-driven development patterns and testing strategies",
+        "lastModified": "2025-08-12",
+        "quality": "high",
+        "validated": true
+      },
+      {
+        "id": "sec-patterns-001",
+        "title": "Security Implementation Patterns",
+        "category": "patterns",
+        "path": "patterns/security-patterns.md",
+        "tags": ["security", "authentication", "authorization"],
+        "description": "Security-first development patterns and implementations",
+        "lastModified": "2025-08-12",
+        "quality": "high",
+        "validated": true
+      },
+      {
+        "id": "perf-patterns-001",
+        "title": "Performance Optimization Patterns",
+        "category": "patterns",
+        "path": "patterns/performance-patterns.md",
+        "tags": ["performance", "optimization", "monitoring"],
+        "description": "Performance optimization techniques and monitoring patterns",
+        "lastModified": "2025-08-12",
+        "quality": "high",
+        "validated": true
+      },
+      {
+        "id": "retro-001",
+        "title": "Project Retrospectives and Insights",
+        "category": "lessons-learned",
+        "path": "lessons-learned/project-retrospectives.md",
+        "tags": ["retrospectives", "lessons-learned", "improvement"],
+        "description": "Project retrospectives and key insights from development cycles",
+        "lastModified": "2025-08-12",
+        "quality": "medium",
+        "validated": false
+      },
+      {
+        "id": "tech-decisions-001",
+        "title": "Technical Decision Documentation",
+        "category": "lessons-learned",
+        "path": "lessons-learned/technical-decisions.md",
+        "tags": ["architecture", "decisions", "documentation"],
+        "description": "Documentation of technical decisions and their outcomes",
+        "lastModified": "2025-08-12",
+        "quality": "medium",
+        "validated": false
+      },
+      {
+        "id": "dev-standards-001",
+        "title": "Development Standards and Guidelines",
+        "category": "best-practices",
+        "path": "best-practices/development-standards.md",
+        "tags": ["development", "standards", "guidelines"],
+        "description": "Comprehensive development standards and coding guidelines",
+        "lastModified": "2025-08-12",
+        "quality": "high",
+        "validated": true
+      },
+      {
+        "id": "code-review-001",
+        "title": "Code Review Guidelines",
+        "category": "best-practices",
+        "path": "best-practices/code-review-guidelines.md",
+        "tags": ["code-review", "quality-assurance", "collaboration"],
+        "description": "Guidelines for effective code review processes",
+        "lastModified": "2025-08-12",
+        "quality": "high",
+        "validated": true
+      },
+      {
+        "id": "troubleshoot-common-001",
+        "title": "Common Development Issues",
+        "category": "troubleshooting",
+        "path": "troubleshooting/common-issues.md",
+        "tags": ["troubleshooting", "debugging", "issues"],
+        "description": "Common development issues and their solutions",
+        "lastModified": "2025-08-12",
+        "quality": "medium",
+        "validated": false
+      },
+      {
+        "id": "env-setup-001",
+        "title": "Environment Setup Troubleshooting",
+        "category": "troubleshooting",
+        "path": "troubleshooting/environment-setup.md",
+        "tags": ["environment", "setup", "configuration"],
+        "description": "Solutions for environment setup and configuration issues",
+        "lastModified": "2025-08-12",
+        "quality": "medium",
+        "validated": false
+      }
+    ]
+  },
+  "searchCapabilities": {
+    "keywordSearch": {
+      "enabled": true,
+      "fields": ["title", "description", "tags"],
+      "fuzzyMatch": true,
+      "stemming": true
+    },
+    "semanticSearch": {
+      "enabled": true,
+      "aiPowered": true,
+      "contextAware": true,
+      "similarityThreshold": 0.7
+    },
+    "categoryFilter": {
+      "enabled": true,
+      "multiSelect": true
+    },
+    "tagFilter": {
+      "enabled": true,
+      "multiSelect": true,
+      "hierarchical": false
+    },
+    "qualityFilter": {
+      "enabled": true,
+      "levels": ["high", "medium", "low"]
+    },
+    "validationFilter": {
+      "enabled": true,
+      "showValidatedOnly": false
+    }
+  },
+  "analytics": {
+    "totalEntries": 10,
+    "categoryCounts": {
+      "patterns": 4,
+      "lessons-learned": 2,
+      "best-practices": 2,
+      "troubleshooting": 2
+    },
+    "validatedEntries": 6,
+    "lastIndexUpdate": "2025-08-12",
+    "searchFrequency": {
+      "architecture": 45,
+      "testing": 32,
+      "security": 28,
+      "performance": 25,
+      "troubleshooting": 18
+    }
+  },
+  "maintenance": {
+    "autoIndexing": true,
+    "validationReminders": true,
+    "qualityChecks": true,
+    "duplicateDetection": true,
+    "brokenLinkDetection": true
+  }
+}

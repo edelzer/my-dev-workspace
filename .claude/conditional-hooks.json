@@ -1,0 +1,69 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "comment": "Production environment safety checks",
+            "command": "if [ \"$NODE_ENV\" = \"production\" ] || [ \"$ENVIRONMENT\" = \"prod\" ]; then echo 'Production environment detected - running extra validation'; npm run validate --silent 2>/dev/null || true; fi"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "comment": "Development environment optimizations",
+            "command": "if [ \"$NODE_ENV\" = \"development\" ] || [ -f .env.development ]; then npm run dev:format --silent 2>/dev/null || prettier --write . --ignore-unknown 2>/dev/null || true; fi"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "comment": "CI/CD environment integration",
+            "command": "if [ \"$CI\" = \"true\" ] || [ \"$GITHUB_ACTIONS\" = \"true\" ]; then echo 'CI environment detected'; npm run ci:validate --silent 2>/dev/null || true; fi"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "comment": "Environment-aware command validation",
+            "command": "if [ \"$NODE_ENV\" = \"production\" ] && echo \"$TOOL_INPUT\" | grep -E '(rm|del|drop|truncate)'; then echo 'WARNING: Destructive command detected in production environment'; fi"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "comment": "Conditional security scanning",
+            "command": "if [ \"$SECURITY_SCAN\" = \"enabled\" ] || [ -f .security-config ]; then echo 'Security scanning enabled'; grep -r 'password\\|secret\\|key' . --exclude-dir=node_modules --exclude-dir=.git 2>/dev/null | head -3 || true; fi"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "comment": "Environment-specific cleanup",
+            "command": "if [ \"$NODE_ENV\" = \"development\" ]; then echo 'Development session completed'; elif [ \"$NODE_ENV\" = \"production\" ]; then echo 'Production session completed - review changes carefully'; fi"
+          }
+        ]
+      }
+    ]
+  }
+}

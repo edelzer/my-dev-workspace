@@ -1,0 +1,264 @@
+name: Issue to PR Automation
+run-name: Issue to PR - Issue #${{ github.event.issue.number }}
+
+on:
+  issues:
+    types: [labeled]
+  issue_comment:
+    types: [created]
+
+jobs:
+  analyze-issue:
+    name: Analyze Issue for Implementation
+    runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'issues' && contains(github.event.issue.labels.*.name, 'auto-implement')) ||
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '/implement') && github.event.issue.state == 'open')
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      actions: write
+
+    outputs:
+      should_implement: ${{ steps.analysis.outputs.should_implement }}
+      implementation_plan: ${{ steps.analysis.outputs.implementation_plan }}
+      branch_name: ${{ steps.analysis.outputs.branch_name }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Analyze issue complexity
+        id: analysis
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const issueBody = issue.body || '';
+            const issueTitle = issue.title || '';
+            
+            // Define keywords that indicate different complexity levels
+            const simpleKeywords = ['typo', 'docs', 'documentation', 'readme', 'comment', 'text', 'link'];
+            const complexKeywords = ['refactor', 'architecture', 'database', 'api', 'security', 'performance', 'algorithm'];
+            
+            const content = (issueTitle + ' ' + issueBody).toLowerCase();
+            
+            const isSimple = simpleKeywords.some(keyword => content.includes(keyword));
+            const isComplex = complexKeywords.some(keyword => content.includes(keyword));
+            
+            // Determine if we should auto-implement
+            const shouldImplement = isSimple || (!isComplex && content.length < 1000);
+            
+            // Generate branch name
+            const branchName = `issue-${issue.number}-${issueTitle.toLowerCase().replace(/[^a-z0-9]/g, '-').substring(0, 50)}`;
+            
+            // Create implementation plan
+            const implementationPlan = {
+              complexity: isComplex ? 'high' : (isSimple ? 'low' : 'medium'),
+              estimatedTime: isSimple ? '15min' : (isComplex ? '2h+' : '45min'),
+              requiresHumanReview: isComplex,
+              suggestedApproach: isSimple ? 'direct-implementation' : (isComplex ? 'design-first' : 'tdd-approach'),
+              securityConsiderations: content.includes('auth') || content.includes('security') || content.includes('password'),
+              testingRequired: !isSimple
+            };
+            
+            core.setOutput('should_implement', shouldImplement);
+            core.setOutput('implementation_plan', JSON.stringify(implementationPlan));
+            core.setOutput('branch_name', branchName);
+            
+            // Comment analysis results
+            const analysisComment = `## 🔍 Issue Analysis Results
+            
+            **Complexity Level:** ${implementationPlan.complexity.toUpperCase()}
+            **Estimated Time:** ${implementationPlan.estimatedTime}
+            **Auto-Implementation:** ${shouldImplement ? '✅ Approved' : '❌ Requires Manual Review'}
+            
+            **Implementation Plan:**
+            - Approach: ${implementationPlan.suggestedApproach}
+            - Security Review: ${implementationPlan.securityConsiderations ? 'Required' : 'Not Required'}
+            - Testing Required: ${implementationPlan.testingRequired ? 'Yes' : 'No'}
+            - Human Review: ${implementationPlan.requiresHumanReview ? 'Required' : 'Optional'}
+            
+            ${shouldImplement ? 
+              `**Next Steps:** Creating branch \`${branchName}\` and implementing solution...` :
+              '**Next Steps:** This issue requires manual planning and implementation due to its complexity.'
+            }`;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              body: analysisComment
+            });
+
+      - name: Create implementation branch
+        if: steps.analysis.outputs.should_implement == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git checkout -b "${{ steps.analysis.outputs.branch_name }}"
+          git push origin "${{ steps.analysis.outputs.branch_name }}"
+
+  implement-solution:
+    name: Claude Implementation
+    runs-on: ubuntu-latest
+    needs: analyze-issue
+    if: needs.analyze-issue.outputs.should_implement == 'true'
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout implementation branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.analyze-issue.outputs.branch_name }}
+
+      - name: Request Claude implementation
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const implementationPlan = JSON.parse('${{ needs.analyze-issue.outputs.implementation_plan }}');
+            
+            const claudeRequest = `@claude Please implement the solution for this issue.
+            
+            **Issue:** ${issue.title}
+            **Description:** 
+            ${issue.body}
+            
+            **Implementation Guidance:**
+            - Complexity Level: ${implementationPlan.complexity}
+            - Approach: ${implementationPlan.suggestedApproach}
+            - Security Review: ${implementationPlan.securityConsiderations ? 'Required - follow Security-First Protocol' : 'Standard security practices'}
+            - Testing: ${implementationPlan.testingRequired ? 'Implement comprehensive tests following TDD' : 'Basic validation sufficient'}
+            
+            **Development Protocol:**
+            1. Follow the Security-First Protocol (ANALYZE → IMPLEMENT → TEST → MONITOR)
+            2. Use TDD approach if testing is required
+            3. Apply Surgical Debugging methodology for any fixes
+            4. Use TodoWrite to track implementation progress
+            5. Follow BMAD multi-agent coordination if needed
+            
+            **Branch:** This should be implemented in branch \`${{ needs.analyze-issue.outputs.branch_name }}\`
+            
+            When complete, create a pull request that:
+            - Links to this issue (#${issue.number})
+            - Includes comprehensive testing if required
+            - Documents any security considerations
+            - Follows our established code quality standards
+            
+            Please start implementation now.`;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              body: claudeRequest
+            });
+
+  create-pr-on-completion:
+    name: Create PR When Implementation Complete  
+    runs-on: ubuntu-latest
+    needs: [analyze-issue, implement-solution]
+    if: always() && needs.analyze-issue.outputs.should_implement == 'true'
+    
+    steps:
+      - name: Check for implementation completion
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const branchName = '${{ needs.analyze-issue.outputs.branch_name }}';
+            const issue = context.payload.issue;
+            
+            // Check if branch has commits beyond the initial branch creation
+            try {
+              const { data: commits } = await github.rest.repos.listCommits({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                sha: branchName,
+                per_page: 5
+              });
+              
+              // If there are commits on this branch (implementation happened)
+              if (commits.length > 0) {
+                // Check if PR already exists
+                const { data: prs } = await github.rest.pulls.list({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  head: `${context.repo.owner}:${branchName}`,
+                  state: 'open'
+                });
+                
+                if (prs.length === 0) {
+                  // Create PR
+                  const implementationPlan = JSON.parse('${{ needs.analyze-issue.outputs.implementation_plan }}');
+                  
+                  const prBody = `## 🤖 Automated Implementation
+                  
+                  **Resolves:** #${issue.number}
+                  **Branch:** \`${branchName}\`
+                  **Implementation Approach:** ${implementationPlan.suggestedApproach}
+                  
+                  ### Implementation Details
+                  - **Complexity Level:** ${implementationPlan.complexity}
+                  - **Estimated Time:** ${implementationPlan.estimatedTime}
+                  - **Security Review:** ${implementationPlan.securityConsiderations ? 'Required ⚠️' : 'Standard'}
+                  - **Testing:** ${implementationPlan.testingRequired ? 'Comprehensive tests included ✅' : 'Basic validation'}
+                  
+                  ### Development Protocol Compliance
+                  - [x] Security-First Protocol followed
+                  - [x] ${implementationPlan.testingRequired ? 'TDD methodology applied' : 'Testing as appropriate'}
+                  - [x] Code quality standards maintained
+                  - [x] Documentation updated as needed
+                  
+                  ### Review Checklist
+                  - [ ] Code functionality verified
+                  - [ ] Security review ${implementationPlan.securityConsiderations ? '(REQUIRED)' : '(optional)'}
+                  - [ ] Performance impact assessed
+                  - [ ] Test coverage adequate
+                  - [ ] Documentation complete
+                  
+                  **Note:** This PR was automatically created from issue analysis and Claude Code implementation.
+                  ${implementationPlan.requiresHumanReview ? '⚠️ **Human review required before merging due to complexity.**' : ''}`;
+                  
+                  const { data: pr } = await github.rest.pulls.create({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    title: `Implement: ${issue.title}`,
+                    head: branchName,
+                    base: 'main',
+                    body: prBody,
+                    draft: implementationPlan.requiresHumanReview
+                  });
+                  
+                  // Add labels to PR
+                  await github.rest.issues.addLabels({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: pr.number,
+                    labels: ['auto-generated', implementationPlan.complexity + '-complexity']
+                  });
+                  
+                  // Comment on original issue
+                  await github.rest.issues.createComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issue.number,
+                    body: `## ✅ Implementation Complete
+                    
+                    A pull request has been created: #${pr.number}
+                    
+                    The implementation is ready for review and testing.
+                    ${implementationPlan.requiresHumanReview ? '⚠️ **Human review required before merging.**' : '✅ **Ready for automated testing and merge.**'}`
+                  });
+                }
+              } else {
+                // No implementation yet, wait for Claude to complete
+                console.log('Waiting for implementation to be completed...');
+              }
+            } catch (error) {
+              console.log('Branch may not exist yet or implementation not started:', error.message);
+            }

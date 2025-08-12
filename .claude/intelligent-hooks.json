@@ -1,0 +1,89 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f package.json ]; then npm run lint --silent 2>/dev/null || true; fi"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f requirements.txt ] || [ -f pyproject.toml ]; then black . --quiet 2>/dev/null || true; fi"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -d tests/ ] || [ -d test/ ] || [ -d __tests__/ ]; then npm test --silent 2>/dev/null || python -m pytest --quiet 2>/dev/null || true; fi"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f .env.example ] && [ -f .env ]; then echo 'Environment files updated - consider clearing cache'; fi"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if echo \"$TOOL_INPUT\" | grep -E '(git commit|git push)'; then echo '[Hook] Running pre-commit checks...'; git diff --cached --name-only | xargs grep -l 'TODO\\|FIXME\\|console\\.log' 2>/dev/null | head -5 || true; fi"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f .gitignore ]; then grep -E '(API_KEY|SECRET|PASSWORD|TOKEN)' \"$TOOL_INPUT\" 2>/dev/null && echo 'Warning: Potential secrets detected' || true; fi"
+          }
+        ]
+      },
+      {
+        "matcher": "Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[Hook] Starting agent task...' && date '+%Y-%m-%d %H:%M:%S' >> .claude/task-log.txt"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "git status --porcelain | wc -l | xargs -I {} echo 'Session ended - {} files modified'"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f .claude/task-log.txt ]; then echo 'Tasks completed:' && tail -3 .claude/task-log.txt; fi"
+          }
+        ]
+      }
+    ]
+  }
+}

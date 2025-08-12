@@ -1,0 +1,226 @@
+{
+  "backgroundAgents": {
+    "enabled": true,
+    "maxConcurrentAgents": 4,
+    "agentTimeout": "10m",
+    "retryPolicy": {
+      "maxRetries": 3,
+      "backoffMultiplier": 2,
+      "initialDelay": "5s"
+    }
+  },
+  "taskQueue": {
+    "enabled": true,
+    "maxQueueSize": 100,
+    "processingInterval": "1s",
+    "priorityLevels": 5,
+    "persistentQueue": true,
+    "queueFilePath": ".cursor/background/task-queue.json"
+  },
+  "asynchronousProcessing": {
+    "indexingAgent": {
+      "enabled": true,
+      "priority": 1,
+      "triggerEvents": ["file_save", "file_create", "file_delete"],
+      "batchSize": 50,
+      "processingWindow": "5s"
+    },
+    "securityAgent": {
+      "enabled": true,
+      "priority": 2,
+      "triggerEvents": ["file_save", "dependency_change"],
+      "scanPatterns": [
+        "**/*.js",
+        "**/*.ts",
+        "**/*.jsx", 
+        "**/*.tsx",
+        "**/package*.json"
+      ],
+      "excludePatterns": [
+        "node_modules/**",
+        "dist/**",
+        "build/**"
+      ]
+    },
+    "bmadAgent": {
+      "enabled": true,
+      "priority": 3,
+      "triggerEvents": ["workflow_start", "task_create", "checklist_update"],
+      "workflowPaths": [
+        ".bmad-core/workflows/",
+        ".bmad-core/tasks/"
+      ],
+      "integrationPoints": [
+        "story_validation",
+        "architecture_review", 
+        "checklist_compliance"
+      ]
+    },
+    "testAgent": {
+      "enabled": true,
+      "priority": 3,
+      "triggerEvents": ["file_save", "test_run"],
+      "testPatterns": [
+        "**/*.test.js",
+        "**/*.test.ts",
+        "**/*.spec.js",
+        "**/*.spec.ts"
+      ],
+      "tddIntegration": true,
+      "coverageTracking": true
+    },
+    "documentationAgent": {
+      "enabled": true,
+      "priority": 4,
+      "triggerEvents": ["file_save", "project_structure_change"],
+      "docPaths": [
+        "docs/",
+        "README.md",
+        "CLAUDE.md",
+        ".bmad-core/",
+        ".claude/"
+      ],
+      "autoGenerate": false,
+      "validationOnly": true
+    }
+  },
+  "workflowIntegration": {
+    "bmadWorkflows": {
+      "enabled": true,
+      "autoTrigger": true,
+      "workflowPaths": [
+        ".bmad-core/workflows/greenfield-fullstack.yaml",
+        ".bmad-core/workflows/brownfield-fullstack.yaml",
+        ".bmad-core/workflows/greenfield-service.yaml"
+      ],
+      "taskIntegration": true,
+      "checklistValidation": true
+    },
+    "claudeOrchestration": {
+      "enabled": true,
+      "agentHandoff": true,
+      "contextSynchronization": true,
+      "workflowPaths": [
+        ".claude/workflows/",
+        ".claude/orchestration/"
+      ]
+    },
+    "protocolCompliance": {
+      "securityFirst": true,
+      "tddIntegration": true,
+      "surgicalDebugging": true,
+      "taskDecomposition": true,
+      "debtManagement": true
+    }
+  },
+  "monitoring": {
+    "enabled": true,
+    "logLevel": "info",
+    "metricsCollection": true,
+    "performanceTracking": true,
+    "healthChecks": {
+      "interval": "30s",
+      "endpoints": [
+        "agent_status",
+        "queue_health",
+        "processing_performance"
+      ]
+    },
+    "alerting": {
+      "enabled": true,
+      "thresholds": {
+        "queueSize": 80,
+        "processingTime": "30s",
+        "errorRate": 0.1,
+        "memoryUsage": 0.8
+      }
+    }
+  },
+  "taskTypes": {
+    "indexing": {
+      "priority": 1,
+      "timeout": "30s",
+      "retryable": true,
+      "dependencies": []
+    },
+    "security_scan": {
+      "priority": 2,
+      "timeout": "60s", 
+      "retryable": true,
+      "dependencies": ["indexing"]
+    },
+    "test_execution": {
+      "priority": 3,
+      "timeout": "120s",
+      "retryable": true,
+      "dependencies": ["indexing"]
+    },
+    "bmad_validation": {
+      "priority": 3,
+      "timeout": "45s",
+      "retryable": true,
+      "dependencies": ["indexing"]
+    },
+    "documentation_sync": {
+      "priority": 4,
+      "timeout": "30s",
+      "retryable": true,
+      "dependencies": ["indexing"]
+    },
+    "workflow_orchestration": {
+      "priority": 2,
+      "timeout": "300s",
+      "retryable": true,
+      "dependencies": ["indexing", "bmad_validation"]
+    }
+  },
+  "reliabilityFeatures": {
+    "deadLetterQueue": true,
+    "taskPersistence": true,
+    "gracefulShutdown": true,
+    "circuitBreaker": {
+      "enabled": true,
+      "failureThreshold": 5,
+      "recoveryTimeout": "30s"
+    },
+    "bulkhead": {
+      "enabled": true,
+      "isolatedThreadPools": true,
+      "resourceLimits": {
+        "cpu": "50%",
+        "memory": "512MB"
+      }
+    }
+  },
+  "integration": {
+    "cursorIDE": {
+      "statusBarUpdates": true,
+      "progressNotifications": true,
+      "errorReporting": true,
+      "contextSync": true
+    },
+    "fileSystem": {
+      "watchPaths": [
+        "src/",
+        "docs/",
+        ".bmad-core/",
+        ".claude/",
+        "config/",
+        "templates/"
+      ],
+      "ignorePatterns": [
+        "node_modules/",
+        ".git/",
+        "dist/",
+        "build/",
+        "*.log"
+      ]
+    },
+    "versionControl": {
+      "gitIntegration": true,
+      "preCommitValidation": true,
+      "postCommitTriggers": true,
+      "branchAwareProcessing": true
+    }
+  }
+}

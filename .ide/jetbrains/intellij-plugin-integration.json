@@ -1,0 +1,482 @@
+{
+  "intellijPluginIntegration": {
+    "version": "1.0.0",
+    "description": "IntelliJ IDEA plugin support and integration configuration for development workflow",
+    "supported_versions": {
+      "intellij_idea": {
+        "community": {
+          "minimum_version": "2023.1",
+          "recommended_version": "2023.3",
+          "latest_tested": "2024.1"
+        },
+        "ultimate": {
+          "minimum_version": "2023.1", 
+          "recommended_version": "2023.3",
+          "latest_tested": "2024.1"
+        }
+      }
+    },
+    "plugin_categories": {
+      "essential_development": {
+        "description": "Core development tools and language support",
+        "plugins": [
+          {
+            "id": "org.jetbrains.plugins.yaml",
+            "name": "YAML/Ansible support",
+            "description": "YAML language support with Ansible integration",
+            "priority": "critical",
+            "auto_install": true,
+            "project_types": ["all"]
+          },
+          {
+            "id": "com.intellij.plugins.html",
+            "name": "HTML Tools",
+            "description": "Advanced HTML editing and validation",
+            "priority": "high",
+            "auto_install": true,
+            "project_types": ["web", "full-stack"]
+          },
+          {
+            "id": "JavaScript",
+            "name": "JavaScript and TypeScript",
+            "description": "JavaScript and TypeScript language support",
+            "priority": "critical",
+            "auto_install": true,
+            "project_types": ["web", "api", "full-stack"]
+          },
+          {
+            "id": "NodeJS",
+            "name": "Node.js",
+            "description": "Node.js development support",
+            "priority": "critical",
+            "auto_install": true,
+            "project_types": ["api", "full-stack"]
+          }
+        ]
+      },
+      "code_quality": {
+        "description": "Code quality, formatting, and linting tools",
+        "plugins": [
+          {
+            "id": "com.intellij.plugins.eslint",
+            "name": "ESLint",
+            "description": "JavaScript and TypeScript linting",
+            "priority": "critical",
+            "auto_install": true,
+            "project_types": ["web", "api", "full-stack"],
+            "configuration": {
+              "auto_fix_on_save": true,
+              "show_rule_names": true,
+              "eslint_package": "detect_automatically"
+            }
+          },
+          {
+            "id": "com.intellij.prettierjs",
+            "name": "Prettier",
+            "description": "Code formatting with Prettier",
+            "priority": "critical",
+            "auto_install": true,
+            "project_types": ["web", "api", "full-stack"],
+            "configuration": {
+              "run_for_files": "**/*.{js,ts,jsx,tsx,vue,json,css,scss,less,html,md}",
+              "on_code_reformat": true,
+              "on_save": true
+            }
+          },
+          {
+            "id": "com.sonar.sonarlint.intellij",
+            "name": "SonarLint", 
+            "description": "Code quality and security analysis",
+            "priority": "high",
+            "auto_install": true,
+            "project_types": ["all"]
+          },
+          {
+            "id": "CheckStyle-IDEA",
+            "name": "CheckStyle-IDEA",
+            "description": "CheckStyle integration for Java projects",
+            "priority": "medium",
+            "auto_install": false,
+            "project_types": ["java", "android"]
+          }
+        ]
+      },
+      "version_control": {
+        "description": "Git and version control enhancements",
+        "plugins": [
+          {
+            "id": "Git4Idea",
+            "name": "Git Integration",
+            "description": "Enhanced Git support (built-in)",
+            "priority": "critical",
+            "auto_install": true,
+            "project_types": ["all"]
+          },
+          {
+            "id": "com.github.copilot",
+            "name": "GitHub Copilot",
+            "description": "AI-powered code suggestions",
+            "priority": "high",
+            "auto_install": true,
+            "project_types": ["all"],
+            "license_required": true
+          },
+          {
+            "id": "org.jetbrains.plugins.github",
+            "name": "GitHub",
+            "description": "GitHub integration",
+            "priority": "high",
+            "auto_install": true,
+            "project_types": ["all"]
+          },
+          {
+            "id": "zielu.gittoolbox",
+            "name": "GitToolBox",
+            "description": "Enhanced Git tooling and status",
+            "priority": "medium",
+            "auto_install": false,
+            "project_types": ["all"]
+          }
+        ]
+      },
+      "testing_debugging": {
+        "description": "Testing frameworks and debugging tools",
+        "plugins": [
+          {
+            "id": "com.intellij.junit",
+            "name": "JUnit",
+            "description": "JUnit testing framework support",
+            "priority": "critical",
+            "auto_install": true,
+            "project_types": ["java", "android"]
+          },
+          {
+            "id": "mocha-intellij-plugin",
+            "name": "Mocha",
+            "description": "Mocha test framework support",
+            "priority": "high",
+            "auto_install": true,
+            "project_types": ["web", "api", "full-stack"]
+          },
+          {
+            "id": "com.intellij.javascript.debugger",
+            "name": "JavaScript Debugger",
+            "description": "JavaScript debugging support",
+            "priority": "critical",
+            "auto_install": true,
+            "project_types": ["web", "api", "full-stack"]
+          },
+          {
+            "id": "org.jetbrains.plugins.rest-client",
+            "name": "HTTP Client",
+            "description": "REST API testing (built-in)",
+            "priority": "high",
+            "auto_install": true,
+            "project_types": ["api", "full-stack"]
+          }
+        ]
+      },
+      "database_tools": {
+        "description": "Database integration and management",
+        "plugins": [
+          {
+            "id": "com.intellij.database",
+            "name": "Database Tools and SQL",
+            "description": "Database integration and SQL support",
+            "priority": "high",
+            "auto_install": true,
+            "project_types": ["api", "full-stack"],
+            "ultimate_only": true
+          },
+          {
+            "id": "com.intellij.plugins.mongodb",
+            "name": "MongoDB Plugin",
+            "description": "MongoDB database support",
+            "priority": "medium",
+            "auto_install": false,
+            "project_types": ["api", "full-stack"]
+          }
+        ]
+      },
+      "framework_specific": {
+        "description": "Framework-specific development tools",
+        "plugins": [
+          {
+            "id": "com.intellij.spring",
+            "name": "Spring",
+            "description": "Spring Framework support",
+            "priority": "high",
+            "auto_install": true,
+            "project_types": ["java", "api"],
+            "ultimate_only": true
+          },
+          {
+            "id": "com.intellij.react",
+            "name": "React",
+            "description": "React development support",
+            "priority": "critical",
+            "auto_install": true,
+            "project_types": ["web", "full-stack"]
+          },
+          {
+            "id": "org.jetbrains.plugins.vue",
+            "name": "Vue.js",
+            "description": "Vue.js development support",
+            "priority": "medium",
+            "auto_install": false,
+            "project_types": ["web"]
+          },
+          {
+            "id": "com.intellij.plugins.angular",
+            "name": "Angular and AngularJS",
+            "description": "Angular framework support",
+            "priority": "medium",
+            "auto_install": false,
+            "project_types": ["web"]
+          }
+        ]
+      },
+      "productivity_tools": {
+        "description": "Developer productivity and utility plugins",
+        "plugins": [
+          {
+            "id": "com.intellij.plugins.rainbow.brackets",
+            "name": "Rainbow Brackets",
+            "description": "Colorful bracket pairs",
+            "priority": "low",
+            "auto_install": false,
+            "project_types": ["all"]
+          },
+          {
+            "id": "com.intellij.plugins.indent-rainbow",
+            "name": "Indent Rainbow",
+            "description": "Colorful indentation guide",
+            "priority": "low",
+            "auto_install": false,
+            "project_types": ["all"]
+          },
+          {
+            "id": "com.intellij.plugins.key-promoter-x",
+            "name": "Key Promoter X",
+            "description": "Keyboard shortcut learning assistant",
+            "priority": "low",
+            "auto_install": false,
+            "project_types": ["all"]
+          },
+          {
+            "id": "com.intellij.plugins.translation",
+            "name": "Translation",
+            "description": "Text translation within IDE",
+            "priority": "low",
+            "auto_install": false,
+            "project_types": ["all"]
+          }
+        ]
+      }
+    },
+    "installation_management": {
+      "auto_detection": {
+        "project_type_detection": {
+          "enabled": true,
+          "detection_patterns": [
+            {
+              "pattern": "package.json with react dependencies",
+              "project_type": "web",
+              "required_plugins": ["JavaScript", "com.intellij.react", "NodeJS"]
+            },
+            {
+              "pattern": "pom.xml or build.gradle",
+              "project_type": "java",
+              "required_plugins": ["com.intellij.junit", "com.intellij.spring"]
+            },
+            {
+              "pattern": "package.json with express dependencies",
+              "project_type": "api", 
+              "required_plugins": ["JavaScript", "NodeJS", "org.jetbrains.plugins.rest-client"]
+            }
+          ]
+        },
+        "intelligent_suggestions": {
+          "enabled": true,
+          "suggestion_triggers": [
+            "project_import",
+            "file_type_detection",
+            "dependency_analysis",
+            "usage_pattern_recognition"
+          ]
+        }
+      },
+      "installation_strategies": {
+        "bulk_installation": {
+          "enabled": true,
+          "installation_profiles": {
+            "frontend_developer": ["JavaScript", "com.intellij.react", "com.intellij.prettierjs", "com.intellij.plugins.eslint"],
+            "backend_developer": ["NodeJS", "com.intellij.database", "org.jetbrains.plugins.rest-client"],
+            "full_stack_developer": ["JavaScript", "NodeJS", "com.intellij.react", "com.intellij.database", "com.intellij.prettierjs"]
+          }
+        },
+        "dependency_resolution": {
+          "enabled": true,
+          "auto_install_dependencies": true,
+          "conflict_resolution": "user_choice_with_recommendation"
+        }
+      }
+    },
+    "configuration_management": {
+      "shared_configurations": {
+        "code_style": {
+          "sync_enabled": true,
+          "configuration_files": [
+            ".editorconfig",
+            "intellij-code-style.xml",
+            "prettier.config.js",
+            ".eslintrc.js"
+          ],
+          "inheritance_priority": ["project", "team", "user"]
+        },
+        "inspection_profiles": {
+          "sync_enabled": true,
+          "custom_profiles": {
+            "security_focused": "enhanced_security_inspections.xml",
+            "performance_focused": "performance_inspections.xml",
+            "code_quality": "quality_inspections.xml"
+          }
+        },
+        "live_templates": {
+          "sync_enabled": true,
+          "template_groups": [
+            "react_components",
+            "api_endpoints", 
+            "testing_templates",
+            "documentation_templates"
+          ]
+        }
+      },
+      "workspace_settings": {
+        "project_specific": {
+          "enabled": true,
+          "settings_files": [
+            ".idea/workspace.xml",
+            ".idea/vcs.xml",
+            ".idea/modules.xml"
+          ],
+          "exclude_from_vcs": ["workspace.xml", "usage.statistics.xml"]
+        }
+      }
+    },
+    "integration_features": {
+      "cross_ide_compatibility": {
+        "settings_migration": {
+          "from_vscode": {
+            "enabled": true,
+            "migrated_settings": [
+              "code_formatting",
+              "keybindings",
+              "color_schemes",
+              "extension_equivalents"
+            ]
+          },
+          "to_vscode": {
+            "enabled": true,
+            "export_formats": ["settings.json", "keybindings.json", "extensions.json"]
+          }
+        },
+        "project_compatibility": {
+          "shared_configuration_files": [
+            ".editorconfig",
+            "prettier.config.js",
+            ".eslintrc.js",
+            "tsconfig.json"
+          ],
+          "ide_specific_ignores": [
+            ".idea/",
+            ".vscode/",
+            "*.iml"
+          ]
+        }
+      },
+      "external_tool_integration": {
+        "build_tools": {
+          "maven": "built_in_support",
+          "gradle": "built_in_support", 
+          "npm": "nodejs_plugin_integration",
+          "webpack": "javascript_plugin_integration"
+        },
+        "version_control": {
+          "git": "enhanced_built_in_support",
+          "github": "github_plugin_integration",
+          "gitlab": "third_party_plugin_support"
+        },
+        "containerization": {
+          "docker": "docker_plugin_integration",
+          "kubernetes": "kubernetes_plugin_integration"
+        }
+      }
+    },
+    "performance_optimization": {
+      "memory_management": {
+        "heap_size_recommendations": {
+          "small_projects": "2GB",
+          "medium_projects": "4GB", 
+          "large_projects": "8GB",
+          "enterprise_projects": "16GB"
+        },
+        "gc_optimization": {
+          "gc_algorithm": "G1GC",
+          "additional_vm_options": [
+            "-XX:+UseG1GC",
+            "-XX:MaxGCPauseMillis=200",
+            "-XX:+UseStringDeduplication"
+          ]
+        }
+      },
+      "indexing_optimization": {
+        "excluded_directories": [
+          "node_modules",
+          ".git", 
+          "build",
+          "dist",
+          "coverage"
+        ],
+        "file_type_exclusions": [
+          "*.log",
+          "*.tmp",
+          "*.cache"
+        ]
+      },
+      "plugin_performance": {
+        "monitoring_enabled": true,
+        "performance_thresholds": {
+          "startup_time": "30_seconds",
+          "indexing_time": "5_minutes",
+          "response_time": "200_milliseconds"
+        }
+      }
+    },
+    "troubleshooting": {
+      "common_issues": {
+        "plugin_conflicts": {
+          "detection": "automatic_conflict_detection",
+          "resolution": "guided_conflict_resolution",
+          "prevention": "compatibility_checking"
+        },
+        "performance_issues": {
+          "profiling": "built_in_performance_profiler",
+          "optimization": "automatic_optimization_suggestions",
+          "monitoring": "continuous_performance_monitoring"
+        },
+        "configuration_issues": {
+          "validation": "configuration_validation_on_load",
+          "repair": "automatic_configuration_repair",
+          "reset": "safe_configuration_reset"
+        }
+      },
+      "diagnostic_tools": {
+        "plugin_manager": "built_in_plugin_diagnostics",
+        "performance_profiler": "ide_performance_analysis",
+        "log_analyzer": "intelligent_log_analysis",
+        "configuration_validator": "settings_validation_tools"
+      }
+    }
+  }
+}

@@ -1,0 +1,372 @@
+{
+  "extensionAutoInstallConfig": {
+    "version": "1.0.0",
+    "description": "Automated extension installation and management for VS Code, Cursor, and Windsurf",
+    "supported_editors": {
+      "vscode": {
+        "identifier": "vscode",
+        "extension_marketplace": "https://marketplace.visualstudio.com",
+        "install_command": "code --install-extension",
+        "list_command": "code --list-extensions",
+        "settings_sync": ".vscode/extensions.json"
+      },
+      "cursor": {
+        "identifier": "cursor",
+        "extension_marketplace": "https://marketplace.visualstudio.com",
+        "install_command": "cursor --install-extension",
+        "list_command": "cursor --list-extensions",
+        "settings_sync": ".cursor/extensions.json"
+      },
+      "windsurf": {
+        "identifier": "windsurf", 
+        "extension_marketplace": "https://marketplace.visualstudio.com",
+        "install_command": "windsurf --install-extension",
+        "list_command": "windsurf --list-extensions",
+        "settings_sync": ".windsurf/extensions.json"
+      }
+    },
+    "essential_extensions": {
+      "development_core": {
+        "category": "Core Development Tools",
+        "extensions": [
+          {
+            "id": "ms-vscode.vscode-typescript-next",
+            "name": "TypeScript Importer",
+            "description": "Enhanced TypeScript support",
+            "priority": "critical",
+            "all_projects": true
+          },
+          {
+            "id": "bradlc.vscode-tailwindcss",
+            "name": "Tailwind CSS IntelliSense",
+            "description": "Tailwind CSS class completion",
+            "priority": "high",
+            "project_types": ["web", "mobile"]
+          },
+          {
+            "id": "ms-vscode.vscode-json",
+            "name": "JSON Language Features",
+            "description": "JSON syntax and validation",
+            "priority": "critical",
+            "all_projects": true
+          },
+          {
+            "id": "redhat.vscode-yaml",
+            "name": "YAML Language Support",
+            "description": "YAML syntax and validation",
+            "priority": "high",
+            "all_projects": true
+          }
+        ]
+      },
+      "code_quality": {
+        "category": "Code Quality & Linting",
+        "extensions": [
+          {
+            "id": "dbaeumer.vscode-eslint",
+            "name": "ESLint",
+            "description": "JavaScript and TypeScript linting",
+            "priority": "critical",
+            "project_types": ["web", "api", "mobile"]
+          },
+          {
+            "id": "esbenp.prettier-vscode",
+            "name": "Prettier",
+            "description": "Code formatting",
+            "priority": "critical",
+            "all_projects": true
+          },
+          {
+            "id": "streetsidesoftware.code-spell-checker",
+            "name": "Code Spell Checker",
+            "description": "Spelling checker for code",
+            "priority": "medium",
+            "all_projects": true
+          },
+          {
+            "id": "SonarSource.sonarlint-vscode",
+            "name": "SonarLint",
+            "description": "Code quality and security analysis",
+            "priority": "high",
+            "all_projects": true
+          }
+        ]
+      },
+      "testing": {
+        "category": "Testing & Debugging",
+        "extensions": [
+          {
+            "id": "ms-vscode.vscode-jest",
+            "name": "Jest",
+            "description": "Jest testing framework support",
+            "priority": "high",
+            "project_types": ["web", "api"]
+          },
+          {
+            "id": "ms-playwright.playwright",
+            "name": "Playwright Test for VS Code",
+            "description": "End-to-end testing with Playwright",
+            "priority": "high",
+            "project_types": ["web"]
+          },
+          {
+            "id": "ms-vscode.vscode-node-debug2",
+            "name": "Node.js Debugger",
+            "description": "Node.js debugging support",
+            "priority": "critical",
+            "project_types": ["api"]
+          }
+        ]
+      },
+      "git_collaboration": {
+        "category": "Git & Collaboration",
+        "extensions": [
+          {
+            "id": "eamodio.gitlens",
+            "name": "GitLens",
+            "description": "Enhanced Git capabilities",
+            "priority": "critical",
+            "all_projects": true
+          },
+          {
+            "id": "GitHub.vscode-pull-request-github",
+            "name": "GitHub Pull Requests and Issues",
+            "description": "GitHub integration",
+            "priority": "high",
+            "all_projects": true
+          },
+          {
+            "id": "ms-vsliveshare.vsliveshare",
+            "name": "Live Share",
+            "description": "Real-time collaborative development",
+            "priority": "medium",
+            "all_projects": true
+          }
+        ]
+      },
+      "ai_development": {
+        "category": "AI-Enhanced Development",
+        "extensions": [
+          {
+            "id": "GitHub.copilot",
+            "name": "GitHub Copilot",
+            "description": "AI-powered code suggestions",
+            "priority": "high",
+            "all_projects": true
+          },
+          {
+            "id": "GitHub.copilot-chat",
+            "name": "GitHub Copilot Chat",
+            "description": "AI chat for development assistance",
+            "priority": "medium",
+            "all_projects": true
+          },
+          {
+            "id": "tabnine.tabnine-vscode",
+            "name": "Tabnine",
+            "description": "AI code completion",
+            "priority": "low",
+            "all_projects": false
+          }
+        ]
+      }
+    },
+    "project_specific_extensions": {
+      "web": {
+        "description": "React/TypeScript web development extensions",
+        "extensions": [
+          {
+            "id": "ms-vscode.vscode-react-native",
+            "name": "React Native Tools",
+            "description": "React Native development support"
+          },
+          {
+            "id": "formulahendry.auto-rename-tag",
+            "name": "Auto Rename Tag",
+            "description": "Automatic HTML/JSX tag renaming"
+          },
+          {
+            "id": "christian-kohler.path-intellisense",
+            "name": "Path Intellisense",
+            "description": "File path autocomplete"
+          }
+        ]
+      },
+      "api": {
+        "description": "Node.js/Express API development extensions",
+        "extensions": [
+          {
+            "id": "humao.rest-client",
+            "name": "REST Client",
+            "description": "HTTP request testing"
+          },
+          {
+            "id": "ms-vscode.vscode-docker",
+            "name": "Docker",
+            "description": "Docker container management"
+          },
+          {
+            "id": "mongodb.mongodb-vscode",
+            "name": "MongoDB for VS Code",
+            "description": "MongoDB database integration"
+          }
+        ]
+      },
+      "mobile": {
+        "description": "React Native mobile development extensions",
+        "extensions": [
+          {
+            "id": "ms-vscode.vscode-react-native",
+            "name": "React Native Tools",
+            "description": "React Native development support"
+          },
+          {
+            "id": "expo.vscode-expo-tools",
+            "name": "Expo Tools",
+            "description": "Expo development support"
+          },
+          {
+            "id": "ms-vscode.vscode-android",
+            "name": "Android iOS Emulator",
+            "description": "Mobile device emulation"
+          }
+        ]
+      },
+      "desktop": {
+        "description": "Electron desktop development extensions",
+        "extensions": [
+          {
+            "id": "ms-vscode.vscode-electron",
+            "name": "Electron",
+            "description": "Electron development support"
+          },
+          {
+            "id": "ms-vscode.vscode-docker",
+            "name": "Docker",
+            "description": "Container support for packaging"
+          }
+        ]
+      }
+    },
+    "installation_strategies": {
+      "new_project_setup": {
+        "trigger": "project_initialization",
+        "method": "automatic_with_confirmation",
+        "install_order": ["critical", "high", "medium", "low"],
+        "rollback_on_failure": true
+      },
+      "workspace_detection": {
+        "trigger": "workspace_file_analysis",
+        "method": "intelligent_recommendation",
+        "analysis_patterns": [
+          {
+            "pattern": "package.json with react dependencies",
+            "project_type": "web",
+            "confidence": 0.9
+          },
+          {
+            "pattern": "package.json with express dependencies", 
+            "project_type": "api",
+            "confidence": 0.8
+          },
+          {
+            "pattern": "metro.config.js or react-native dependencies",
+            "project_type": "mobile",
+            "confidence": 0.95
+          },
+          {
+            "pattern": "electron-builder or electron dependencies",
+            "project_type": "desktop",
+            "confidence": 0.9
+          }
+        ]
+      },
+      "manual_installation": {
+        "trigger": "user_command",
+        "method": "interactive_selection",
+        "ui_interface": "command_palette_or_settings"
+      },
+      "batch_installation": {
+        "trigger": "team_onboarding",
+        "method": "configuration_file_based",
+        "configuration_sharing": "via_git_repository"
+      }
+    },
+    "installation_automation": {
+      "scripts": {
+        "install_all_critical": {
+          "description": "Install all critical priority extensions",
+          "command": "npm run install:extensions:critical",
+          "script_path": "scripts/install-critical-extensions.js"
+        },
+        "install_project_specific": {
+          "description": "Install extensions based on project type detection",
+          "command": "npm run install:extensions:project",
+          "script_path": "scripts/install-project-extensions.js"
+        },
+        "sync_team_extensions": {
+          "description": "Sync extensions with team configuration",
+          "command": "npm run sync:extensions:team",
+          "script_path": "scripts/sync-team-extensions.js"
+        }
+      },
+      "hooks": {
+        "pre_install": {
+          "description": "Verification hooks before extension installation",
+          "actions": [
+            "check_editor_availability",
+            "verify_extension_marketplace_access",
+            "validate_system_requirements"
+          ]
+        },
+        "post_install": {
+          "description": "Configuration hooks after extension installation",
+          "actions": [
+            "apply_extension_settings",
+            "verify_extension_functionality",
+            "update_workspace_configuration"
+          ]
+        }
+      }
+    },
+    "error_handling": {
+      "installation_failures": {
+        "retry_strategy": {
+          "max_retries": 3,
+          "retry_delay": "exponential_backoff",
+          "fallback_action": "manual_installation_guidance"
+        },
+        "failure_reporting": {
+          "log_location": "logs/extension-installation.log",
+          "error_categorization": ["network", "permissions", "compatibility"],
+          "user_notification": "detailed_error_with_resolution_steps"
+        }
+      },
+      "compatibility_issues": {
+        "detection": "version_compatibility_matrix",
+        "resolution": "suggest_alternative_extensions",
+        "documentation": "compatibility_troubleshooting_guide"
+      }
+    },
+    "configuration_management": {
+      "settings_synchronization": {
+        "enabled": true,
+        "sync_settings": true,
+        "sync_keybindings": true,
+        "sync_snippets": true,
+        "sync_extensions": true,
+        "excluded_settings": ["personal_tokens", "local_paths"]
+      },
+      "workspace_settings": {
+        "shared_settings": ".ide/shared-settings.json",
+        "local_overrides": ".ide/local-settings.json",
+        "team_standards": ".ide/team-standards.json"
+      },
+      "version_management": {
+        "extension_versions": "track_and_pin_versions",
+        "update_policy": "manual_approval_required",
+        "rollback_capability": "previous_version_restoration"
+      }
+    }
+  }
+}

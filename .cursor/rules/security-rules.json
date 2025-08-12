@@ -1,0 +1,80 @@
+{
+  "securityRules": {
+    "version": "1.0.0",
+    "enabled": true,
+    "rules": [
+      {
+        "id": "no-hardcoded-secrets",
+        "severity": "error",
+        "category": "secrets",
+        "description": "Prevent hardcoded secrets and API keys",
+        "pattern": "(api[_-]?key|secret|password|token)\\s*[=:]\\s*['\"`][^'`\"\\s]+['\"`]",
+        "action": "block",
+        "message": "Hardcoded secrets detected. Use environment variables instead."
+      },
+      {
+        "id": "require-input-validation",
+        "severity": "warning",
+        "category": "validation",
+        "description": "Require input validation for user data",
+        "pattern": "(req\\.(body|query|params)|request\\.(json|form))",
+        "requireFollowup": "validateInput|sanitizeInput|joi\\.validate|z\\.parse",
+        "action": "warn",
+        "message": "Input validation required. Use established validation patterns."
+      },
+      {
+        "id": "secure-headers",
+        "severity": "warning",
+        "category": "headers",
+        "description": "Ensure security headers are configured",
+        "filePattern": "**/*server*.{js,ts}",
+        "requirePattern": "helmet|cors|csp",
+        "action": "suggest",
+        "message": "Configure security headers using helmet middleware."
+      },
+      {
+        "id": "no-eval",
+        "severity": "error",
+        "category": "code-injection",
+        "description": "Prevent eval() usage",
+        "pattern": "\\beval\\s*\\(",
+        "action": "block",
+        "message": "eval() is dangerous and can lead to code injection."
+      },
+      {
+        "id": "https-only",
+        "severity": "warning",
+        "category": "transport",
+        "description": "Enforce HTTPS in production",
+        "pattern": "http://(?!localhost|127\\.0\\.0\\.1)",
+        "action": "warn",
+        "message": "Use HTTPS instead of HTTP for external connections."
+      },
+      {
+        "id": "sql-injection-prevention",
+        "severity": "error",
+        "category": "injection",
+        "description": "Prevent SQL injection vulnerabilities",
+        "pattern": "(query|execute)\\s*\\(\\s*['\"`].*\\$\\{|\\+.*['\"`]",
+        "action": "block",
+        "message": "Use parameterized queries to prevent SQL injection."
+      }
+    ],
+    "exemptions": {
+      "patterns": [
+        "test/**",
+        "*.test.{js,ts}",
+        "*.spec.{js,ts}",
+        "examples/**"
+      ],
+      "rules": ["no-hardcoded-secrets", "https-only"]
+    },
+    "enforcement": {
+      "onSave": true,
+      "onCommit": true,
+      "onBuild": true,
+      "blocking": ["error"],
+      "nonBlocking": ["warning", "info"]
+    }
+  }
+}

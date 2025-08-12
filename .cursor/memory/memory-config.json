@@ -1,0 +1,264 @@
+{
+  "persistentMemory": {
+    "enabled": true,
+    "storageType": "hybrid",
+    "maxStorageSize": "500MB",
+    "compressionEnabled": true,
+    "encryptionEnabled": false,
+    "retentionPolicy": {
+      "shortTerm": "7d",
+      "mediumTerm": "30d", 
+      "longTerm": "90d",
+      "permanent": "indefinite"
+    }
+  },
+  "knowledgeBase": {
+    "projectContext": {
+      "enabled": true,
+      "priority": 1,
+      "categories": [
+        "project_structure",
+        "coding_patterns",
+        "architecture_decisions",
+        "security_configurations",
+        "protocol_implementations"
+      ],
+      "sources": [
+        "CLAUDE.md",
+        "docs/protocols/",
+        ".bmad-core/",
+        ".claude/",
+        "templates/"
+      ]
+    },
+    "bmadIntegration": {
+      "enabled": true,
+      "priority": 2,
+      "agentDefinitions": true,
+      "workflowPatterns": true,
+      "templateStructures": true,
+      "taskRelationships": true,
+      "checklistData": true
+    },
+    "interactionHistory": {
+      "enabled": true,
+      "priority": 3,
+      "trackingCategories": [
+        "command_patterns",
+        "error_resolutions",
+        "common_workflows",
+        "debugging_patterns",
+        "optimization_preferences"
+      ],
+      "learningEnabled": true,
+      "patternRecognition": true
+    }
+  },
+  "learningSystem": {
+    "adaptiveMemory": {
+      "enabled": true,
+      "learningRate": 0.1,
+      "forgetRate": 0.05,
+      "reinforcementThreshold": 3,
+      "decayFunction": "exponential"
+    },
+    "patternRecognition": {
+      "enabled": true,
+      "codePatterns": true,
+      "workflowPatterns": true,
+      "errorPatterns": true,
+      "usagePatterns": true,
+      "successPatterns": true
+    },
+    "contextualLearning": {
+      "fileTypeContext": true,
+      "projectTypeContext": true,
+      "taskTypeContext": true,
+      "protocolContext": true,
+      "userPreferences": true
+    }
+  },
+  "ruleEngine": {
+    "enabled": true,
+    "ruleTypes": {
+      "security": {
+        "priority": 1,
+        "autoEnforce": true,
+        "rulesPath": ".cursor/rules/security-rules.json"
+      },
+      "coding": {
+        "priority": 2,
+        "autoEnforce": true,
+        "rulesPath": ".cursor/rules/coding-rules.json"
+      },
+      "bmad": {
+        "priority": 3,
+        "autoEnforce": true,
+        "rulesPath": ".cursor/rules/bmad-rules.json"
+      },
+      "protocol": {
+        "priority": 2,
+        "autoEnforce": true,
+        "rulesPath": ".cursor/rules/protocol-rules.json"
+      },
+      "custom": {
+        "priority": 4,
+        "autoEnforce": false,
+        "rulesPath": ".cursor/rules/custom-rules.json"
+      }
+    },
+    "ruleExecution": {
+      "triggerEvents": [
+        "file_save",
+        "code_completion",
+        "command_execution",
+        "workflow_start"
+      ],
+      "executionTimeout": "5s",
+      "fallbackBehavior": "warn"
+    }
+  },
+  "knowledgeManagement": {
+    "indexing": {
+      "semanticIndexing": true,
+      "relationshipMapping": true,
+      "conceptClustering": true,
+      "similaritySearch": true,
+      "vectorEmbeddings": true
+    },
+    "retrieval": {
+      "contextualRetrieval": true,
+      "relevanceRanking": true,
+      "multiModalRetrieval": true,
+      "temporalRelevance": true,
+      "usageBasedRanking": true
+    },
+    "synthesis": {
+      "knowledgeFusion": true,
+      "contradictionResolution": true,
+      "confidenceScoring": true,
+      "sourceAttribution": true,
+      "uncertaintyHandling": true
+    }
+  },
+  "sessionPersistence": {
+    "enabled": true,
+    "sessionTimeout": "24h",
+    "autoSave": true,
+    "saveInterval": "5m",
+    "recoveryEnabled": true,
+    "contextPreservation": {
+      "workingFiles": true,
+      "activeProjects": true,
+      "recentCommands": true,
+      "workflowState": true,
+      "agentContext": true
+    }
+  },
+  "memoryCategories": {
+    "codebase": {
+      "retention": "permanent",
+      "priority": 1,
+      "includes": [
+        "function_signatures",
+        "class_definitions",
+        "module_dependencies",
+        "api_endpoints",
+        "database_schemas"
+      ]
+    },
+    "protocols": {
+      "retention": "permanent",
+      "priority": 1,
+      "includes": [
+        "security_patterns",
+        "tdd_workflows",
+        "debugging_procedures",
+        "task_decomposition",
+        "debt_management"
+      ]
+    },
+    "bmadContext": {
+      "retention": "permanent",
+      "priority": 2,
+      "includes": [
+        "agent_roles",
+        "workflow_definitions",
+        "template_structures",
+        "checklist_items",
+        "task_relationships"
+      ]
+    },
+    "interactions": {
+      "retention": "longTerm",
+      "priority": 3,
+      "includes": [
+        "command_history",
+        "error_solutions",
+        "optimization_choices",
+        "user_preferences",
+        "success_patterns"
+      ]
+    },
+    "temporary": {
+      "retention": "shortTerm",
+      "priority": 4,
+      "includes": [
+        "current_session",
+        "active_tasks",
+        "recent_changes",
+        "working_memory",
+        "context_cache"
+      ]
+    }
+  },
+  "automation": {
+    "ruleBasedActions": {
+      "enabled": true,
+      "actionTypes": [
+        "code_formatting",
+        "import_organization",
+        "security_validation",
+        "test_generation",
+        "documentation_update"
+      ],
+      "triggerConditions": [
+        "file_save",
+        "project_open",
+        "workflow_start",
+        "rule_violation"
+      ]
+    },
+    "intelligentDefaults": {
+      "enabled": true,
+      "contextAware": true,
+      "learningEnabled": true,
+      "categories": [
+        "project_settings",
+        "code_style",
+        "security_config",
+        "test_framework",
+        "deployment_options"
+      ]
+    }
+  },
+  "performance": {
+    "caching": {
+      "enabled": true,
+      "cacheSize": "100MB",
+      "cacheStrategy": "LRU",
+      "preloadCritical": true
+    },
+    "compression": {
+      "enabled": true,
+      "algorithm": "zstd",
+      "compressionLevel": 3
+    },
+    "optimization": {
+      "backgroundProcessing": true,
+      "lazyLoading": true,
+      "memoryPooling": true,
+      "garbageCollection": "generational"
+    }
+  }
+}

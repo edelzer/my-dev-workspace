@@ -1,0 +1,436 @@
+{
+  "environmentConfigurations": {
+    "version": "1.0.0",
+    "description": "Environment-specific configurations for different development contexts",
+    "environments": {
+      "development": {
+        "cursor_rules": {
+          "enabled": ["development-agent-workflow-rules", "code-quality-standards-rules", "team-collaboration-rules"],
+          "disabled": ["security-enforcement-rules"],
+          "severity_overrides": {
+            "code_quality": "warning",
+            "collaboration": "info", 
+            "security": "warning"
+          }
+        },
+        "hooks": {
+          "pre_tool_use": {
+            "enabled": true,
+            "aggressive_validation": false,
+            "skip_slow_checks": true
+          },
+          "post_tool_use": {
+            "auto_format": true,
+            "auto_test": false,
+            "auto_commit": false
+          },
+          "quality_gates": {
+            "enabled": false,
+            "blocking": false
+          }
+        },
+        "tooling": {
+          "linting": {
+            "fix_on_save": true,
+            "strict_mode": false,
+            "performance_rules": false
+          },
+          "testing": {
+            "watch_mode": true,
+            "coverage_reporting": false,
+            "parallel_execution": true
+          },
+          "typescript": {
+            "strict_mode": false,
+            "incremental": true,
+            "skip_lib_check": true
+          }
+        },
+        "logging": {
+          "level": "debug",
+          "console_output": true,
+          "file_output": false,
+          "structured_logs": false
+        },
+        "performance": {
+          "hot_reload": true,
+          "source_maps": true,
+          "minification": false,
+          "compression": false
+        }
+      },
+      "testing": {
+        "cursor_rules": {
+          "enabled": ["development-agent-workflow-rules", "code-quality-standards-rules", "security-enforcement-rules"],
+          "disabled": ["project-customization-rules"],
+          "severity_overrides": {
+            "code_quality": "error",
+            "security": "error",
+            "collaboration": "warning"
+          }
+        },
+        "hooks": {
+          "pre_tool_use": {
+            "enabled": true,
+            "aggressive_validation": true,
+            "skip_slow_checks": false
+          },
+          "post_tool_use": {
+            "auto_format": true,
+            "auto_test": true,
+            "auto_commit": false
+          },
+          "quality_gates": {
+            "enabled": true,
+            "blocking": true,
+            "coverage_threshold": 80,
+            "security_scan": true
+          }
+        },
+        "tooling": {
+          "linting": {
+            "fix_on_save": true,
+            "strict_mode": true,
+            "performance_rules": true
+          },
+          "testing": {
+            "watch_mode": false,
+            "coverage_reporting": true,
+            "parallel_execution": true,
+            "timeout_multiplier": 2
+          },
+          "typescript": {
+            "strict_mode": true,
+            "incremental": false,
+            "skip_lib_check": false
+          }
+        },
+        "logging": {
+          "level": "info",
+          "console_output": true,
+          "file_output": true,
+          "structured_logs": true
+        },
+        "performance": {
+          "hot_reload": false,
+          "source_maps": true,
+          "minification": false,
+          "compression": false
+        }
+      },
+      "staging": {
+        "cursor_rules": {
+          "enabled": ["development-agent-workflow-rules", "code-quality-standards-rules", "security-enforcement-rules", "team-collaboration-rules"],
+          "disabled": [],
+          "severity_overrides": {
+            "code_quality": "error",
+            "security": "error",
+            "collaboration": "warning"
+          }
+        },
+        "hooks": {
+          "pre_tool_use": {
+            "enabled": true,
+            "aggressive_validation": true,
+            "skip_slow_checks": false
+          },
+          "post_tool_use": {
+            "auto_format": true,
+            "auto_test": true,
+            "auto_commit": false
+          },
+          "quality_gates": {
+            "enabled": true,
+            "blocking": true,
+            "coverage_threshold": 85,
+            "security_scan": true,
+            "performance_check": true
+          }
+        },
+        "tooling": {
+          "linting": {
+            "fix_on_save": true,
+            "strict_mode": true,
+            "performance_rules": true
+          },
+          "testing": {
+            "watch_mode": false,
+            "coverage_reporting": true,
+            "parallel_execution": true,
+            "integration_tests": true,
+            "e2e_tests": true
+          },
+          "typescript": {
+            "strict_mode": true,
+            "incremental": false,
+            "skip_lib_check": false
+          }
+        },
+        "logging": {
+          "level": "warn",
+          "console_output": false,
+          "file_output": true,
+          "structured_logs": true,
+          "performance_metrics": true
+        },
+        "performance": {
+          "hot_reload": false,
+          "source_maps": false,
+          "minification": true,
+          "compression": true,
+          "bundle_analysis": true
+        }
+      },
+      "production": {
+        "cursor_rules": {
+          "enabled": ["security-enforcement-rules", "code-quality-standards-rules"],
+          "disabled": ["development-agent-workflow-rules"],
+          "severity_overrides": {
+            "security": "error",
+            "code_quality": "error",
+            "collaboration": "error"
+          }
+        },
+        "hooks": {
+          "pre_tool_use": {
+            "enabled": true,
+            "aggressive_validation": true,
+            "skip_slow_checks": false,
+            "production_warnings": true
+          },
+          "post_tool_use": {
+            "auto_format": true,
+            "auto_test": true,
+            "auto_commit": false,
+            "security_scan": true
+          },
+          "quality_gates": {
+            "enabled": true,
+            "blocking": true,
+            "coverage_threshold": 90,
+            "security_scan": true,
+            "performance_check": true,
+            "accessibility_check": true
+          }
+        },
+        "tooling": {
+          "linting": {
+            "fix_on_save": false,
+            "strict_mode": true,
+            "performance_rules": true,
+            "security_rules": true
+          },
+          "testing": {
+            "watch_mode": false,
+            "coverage_reporting": true,
+            "parallel_execution": false,
+            "integration_tests": true,
+            "e2e_tests": true,
+            "load_tests": true
+          },
+          "typescript": {
+            "strict_mode": true,
+            "incremental": false,
+            "skip_lib_check": false,
+            "declaration": true
+          }
+        },
+        "logging": {
+          "level": "error",
+          "console_output": false,
+          "file_output": true,
+          "structured_logs": true,
+          "performance_metrics": true,
+          "audit_trail": true
+        },
+        "performance": {
+          "hot_reload": false,
+          "source_maps": false,
+          "minification": true,
+          "compression": true,
+          "bundle_analysis": true,
+          "cdn_optimization": true
+        },
+        "security": {
+          "content_security_policy": "strict",
+          "https_only": true,
+          "security_headers": "all",
+          "vulnerability_monitoring": true
+        }
+      },
+      "ci_cd": {
+        "cursor_rules": {
+          "enabled": ["security-enforcement-rules", "code-quality-standards-rules", "team-collaboration-rules"],
+          "disabled": ["project-customization-rules"],
+          "severity_overrides": {
+            "security": "error",
+            "code_quality": "error",
+            "collaboration": "error"
+          }
+        },
+        "hooks": {
+          "pre_tool_use": {
+            "enabled": true,
+            "aggressive_validation": true,
+            "skip_slow_checks": false,
+            "ci_optimized": true
+          },
+          "post_tool_use": {
+            "auto_format": false,
+            "auto_test": true,
+            "auto_commit": false,
+            "report_generation": true
+          },
+          "quality_gates": {
+            "enabled": true,
+            "blocking": true,
+            "coverage_threshold": 85,
+            "security_scan": true,
+            "performance_check": true,
+            "dependency_check": true
+          }
+        },
+        "tooling": {
+          "linting": {
+            "fix_on_save": false,
+            "strict_mode": true,
+            "performance_rules": true,
+            "output_format": "json"
+          },
+          "testing": {
+            "watch_mode": false,
+            "coverage_reporting": true,
+            "parallel_execution": true,
+            "timeout_multiplier": 1.5,
+            "retry_failed": true
+          },
+          "typescript": {
+            "strict_mode": true,
+            "incremental": true,
+            "skip_lib_check": false,
+            "build_info": true
+          }
+        },
+        "logging": {
+          "level": "info",
+          "console_output": true,
+          "file_output": false,
+          "structured_logs": true,
+          "ci_formatting": true
+        },
+        "performance": {
+          "parallel_builds": true,
+          "caching": true,
+          "optimized_deps": true
+        }
+      }
+    },
+    "contextualConfigurations": {
+      "project_types": {
+        "web_application": {
+          "additional_rules": ["accessibility-rules", "performance-rules"],
+          "build_targets": ["es2020", "dom"],
+          "bundle_splitting": true
+        },
+        "api_application": {
+          "additional_rules": ["api-security-rules", "database-rules"],
+          "runtime_checks": true,
+          "health_monitoring": true
+        },
+        "mobile_application": {
+          "additional_rules": ["mobile-performance-rules", "platform-specific-rules"],
+          "platform_optimization": true,
+          "offline_support": true
+        },
+        "desktop_application": {
+          "additional_rules": ["desktop-integration-rules", "native-api-rules"],
+          "platform_builds": ["windows", "macos", "linux"],
+          "auto_updater": true
+        }
+      },
+      "team_sizes": {
+        "solo": {
+          "collaboration_rules": "minimal",
+          "review_requirements": "self_review",
+          "documentation_level": "essential"
+        },
+        "small_team": {
+          "collaboration_rules": "lightweight",
+          "review_requirements": "peer_review",
+          "documentation_level": "comprehensive"
+        },
+        "large_team": {
+          "collaboration_rules": "strict",
+          "review_requirements": "multi_stage",
+          "documentation_level": "extensive"
+        }
+      },
+      "development_phases": {
+        "prototype": {
+          "quality_gates": "relaxed",
+          "test_coverage": 50,
+          "documentation": "minimal"
+        },
+        "mvp": {
+          "quality_gates": "moderate",
+          "test_coverage": 70,
+          "documentation": "user_focused"
+        },
+        "production_ready": {
+          "quality_gates": "strict",
+          "test_coverage": 90,
+          "documentation": "comprehensive"
+        }
+      }
+    },
+    "configurationInheritance": {
+      "base_configuration": "development",
+      "inheritance_order": [
+        "base_configuration",
+        "project_type_overrides", 
+        "team_size_overrides",
+        "development_phase_overrides",
+        "environment_specific_overrides",
+        "user_specific_overrides"
+      ],
+      "override_strategy": "merge_with_precedence"
+    },
+    "dynamicConfiguration": {
+      "auto_detection": {
+        "environment_detection": "env_variables_and_context",
+        "project_type_detection": "package_json_and_file_structure",
+        "team_size_detection": "git_contributors_and_org_size"
+      },
+      "adaptive_rules": {
+        "performance_based": "adjust_based_on_system_performance",
+        "usage_based": "adapt_to_developer_patterns",
+        "feedback_based": "incorporate_team_feedback"
+      },
+      "configuration_updates": {
+        "frequency": "daily",
+        "sources": ["team_feedback", "system_metrics", "industry_best_practices"],
+        "validation": "a_b_testing_when_possible"
+      }
+    },
+    "validation": {
+      "configuration_schema": {
+        "version": "json_schema_v7",
+        "strict_validation": true,
+        "error_reporting": "detailed"
+      },
+      "environment_validation": {
+        "required_tools": ["node", "npm", "git"],
+        "optional_tools": ["docker", "playwright"],
+        "version_constraints": {
+          "node": ">=18.0.0",
+          "npm": ">=9.0.0"
+        }
+      },
+      "runtime_validation": {
+        "configuration_health_check": true,
+        "performance_impact_monitoring": true,
+        "rollback_on_failures": true
+      }
+    }
+  }
+}

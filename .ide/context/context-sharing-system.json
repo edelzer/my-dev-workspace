@@ -1,0 +1,178 @@
+{
+  "contextSharingSystem": {
+    "version": "1.0.0",
+    "description": "Intelligent context sharing and optimization system for Claude Code integration",
+    "context_types": {
+      "code_context": {
+        "active_file": "currently_open_file_with_cursor_position",
+        "selection": "selected_text_with_surrounding_context",
+        "related_files": "imported_dependencies_and_usage_files",
+        "project_structure": "relevant_directory_structure_and_key_files"
+      },
+      "workspace_context": {
+        "project_metadata": "package_json_config_files_build_settings",
+        "git_context": "current_branch_recent_commits_modified_files",
+        "environment": "node_version_dependencies_environment_variables",
+        "configuration": "ide_settings_extensions_custom_configurations"
+      },
+      "user_context": {
+        "activity_history": "recent_files_commands_search_queries",
+        "preferences": "coding_style_patterns_common_workflows",
+        "skill_level": "inferred_expertise_based_on_code_patterns",
+        "current_task": "inferred_development_task_and_objectives"
+      }
+    },
+    "intelligent_context_selection": {
+      "relevance_algorithms": {
+        "semantic_analysis": {
+          "code_dependency_analysis": "analyze_import_export_relationships",
+          "function_call_graphs": "trace_function_usage_and_dependencies",
+          "variable_scope_analysis": "identify_variable_usage_patterns",
+          "type_relationship_mapping": "map_type_definitions_and_usage"
+        },
+        "temporal_relevance": {
+          "recent_activity_weighting": "prioritize_recently_accessed_files",
+          "modification_recency": "weight_recently_modified_code_higher",
+          "search_history": "consider_recent_search_queries_and_navigation",
+          "task_context": "maintain_context_for_ongoing_development_tasks"
+        },
+        "structural_importance": {
+          "architectural_significance": "prioritize_core_architectural_components",
+          "error_prone_areas": "include_historically_problematic_code_sections",
+          "interface_boundaries": "include_api_boundaries_and_contracts",
+          "configuration_impact": "include_settings_affecting_current_context"
+        }
+      },
+      "context_filtering": {
+        "noise_reduction": {
+          "generated_code_filtering": "exclude_build_artifacts_and_generated_files",
+          "test_code_separation": "separate_test_code_from_implementation_context",
+          "vendor_code_exclusion": "minimize_third_party_library_code_inclusion",
+          "deprecated_code_identification": "identify_and_deprioritize_deprecated_code"
+        },
+        "privacy_protection": {
+          "sensitive_data_detection": "identify_and_exclude_sensitive_information",
+          "personal_information_filtering": "remove_personal_identifiers_and_keys",
+          "business_logic_protection": "apply_configurable_business_logic_filters",
+          "compliance_enforcement": "ensure_regulatory_compliance_in_shared_context"
+        },
+        "size_optimization": {
+          "context_compression": "intelligently_compress_large_context_blocks",
+          "summary_generation": "generate_summaries_for_large_files",
+          "selective_inclusion": "include_only_most_relevant_code_sections",
+          "hierarchical_context": "provide_context_at_multiple_levels_of_detail"
+        }
+      }
+    },
+    "context_preservation": {
+      "session_continuity": {
+        "context_persistence": {
+          "session_storage": "maintain_context_across_ide_restarts",
+          "project_context_caching": "cache_project_context_for_quick_restoration",
+          "incremental_updates": "update_context_incrementally_rather_than_rebuilding",
+          "context_versioning": "maintain_context_history_for_rollback_capability"
+        },
+        "cross_session_learning": {
+          "pattern_recognition": "learn_user_patterns_across_sessions",
+          "context_preferences": "adapt_context_selection_to_user_preferences",
+          "workflow_optimization": "optimize_context_for_recurring_workflows",
+          "project_familiarity": "build_familiarity_with_project_over_time"
+        }
+      },
+      "context_evolution": {
+        "dynamic_adaptation": {
+          "task_evolution_tracking": "adapt_context_as_development_tasks_evolve",
+          "focus_area_migration": "shift_context_focus_as_work_progresses",
+          "complexity_scaling": "adjust_context_detail_based_on_task_complexity",
+          "collaboration_awareness": "adapt_context_for_team_collaboration_scenarios"
+        },
+        "predictive_context": {
+          "next_likely_context": "predict_and_preload_likely_needed_context",
+          "branching_scenarios": "prepare_context_for_multiple_development_paths",
+          "error_anticipation": "include_context_for_likely_error_scenarios",
+          "refactoring_preparation": "prepare_context_for_anticipated_refactoring"
+        }
+      }
+    },
+    "context_optimization": {
+      "performance_optimization": {
+        "lazy_loading": {
+          "on_demand_context": "load_context_components_only_when_needed",
+          "progressive_enhancement": "start_with_minimal_context_and_expand",
+          "background_prefetching": "preload_likely_needed_context_in_background",
+          "cache_invalidation": "efficiently_invalidate_outdated_context"
+        },
+        "compression_strategies": {
+          "semantic_compression": "compress_while_preserving_semantic_meaning",
+          "reference_optimization": "use_references_instead_of_full_content_duplication",
+          "differential_context": "send_only_changes_from_previous_context",
+          "context_deduplication": "remove_duplicate_information_across_context"
+        },
+        "bandwidth_optimization": {
+          "adaptive_quality": "adjust_context_detail_based_on_connection_speed",
+          "priority_queuing": "prioritize_high_value_context_in_transmission",
+          "batch_optimization": "batch_context_updates_for_efficiency",
+          "compression_negotiation": "negotiate_optimal_compression_with_client"
+        }
+      },
+      "quality_optimization": {
+        "relevance_scoring": {
+          "multi_factor_scoring": "combine_multiple_relevance_factors",
+          "machine_learning_refinement": "continuously_improve_scoring_algorithms",
+          "user_feedback_integration": "incorporate_user_feedback_on_relevance",
+          "context_effectiveness_measurement": "measure_context_contribution_to_outcomes"
+        },
+        "context_completeness": {
+          "gap_detection": "identify_missing_context_that_might_be_needed",
+          "completeness_validation": "validate_context_completeness_before_sharing",
+          "iterative_refinement": "refine_context_based_on_interaction_outcomes",
+          "holistic_view_maintenance": "ensure_context_provides_complete_picture"
+        }
+      }
+    },
+    "sharing_protocols": {
+      "transmission_methods": {
+        "real_time_streaming": {
+          "websocket_connection": "maintain_persistent_connection_for_real_time_updates",
+          "incremental_updates": "stream_context_changes_incrementally",
+          "conflict_resolution": "handle_concurrent_context_updates",
+          "connection_reliability": "implement_connection_recovery_and_redundancy"
+        },
+        "batch_synchronization": {
+          "scheduled_sync": "synchronize_context_at_regular_intervals",
+          "event_triggered_sync": "sync_on_significant_context_changes",
+          "size_based_batching": "batch_context_updates_based_on_size_thresholds",
+          "priority_based_batching": "prioritize_high_importance_context_in_batches"
+        }
+      },
+      "security_measures": {
+        "encryption_at_rest": "encrypt_stored_context_data",
+        "encryption_in_transit": "encrypt_context_during_transmission",
+        "access_control": "implement_granular_access_control_for_context_sharing",
+        "audit_logging": "log_context_access_and_sharing_for_audit_purposes"
+      }
+    },
+    "integration_apis": {
+      "ide_integration": {
+        "vscode_api": {
+          "context_providers": "implement_context_providers_for_different_content_types",
+          "selection_listeners": "listen_for_editor_selection_changes",
+          "file_watchers": "monitor_file_changes_for_context_updates",
+          "workspace_events": "respond_to_workspace_structure_changes"
+        },
+        "jetbrains_api": {
+          "psi_integration": "integrate_with_program_structure_interface",
+          "editor_events": "listen_to_editor_events_for_context_changes",
+          "project_events": "respond_to_project_structure_modifications",
+          "inspection_results": "incorporate_code_inspection_results_into_context"
+        }
+      },
+      "claude_integration": {
+        "context_formatting": "format_context_for_optimal_ai_processing",
+        "context_annotation": "annotate_context_with_metadata_for_better_understanding",
+        "context_prioritization": "indicate_context_importance_and_priority_to_ai",
+        "context_versioning": "provide_context_versioning_for_conversation_continuity"
+      }
+    }
+  }
+}

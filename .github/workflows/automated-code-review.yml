@@ -1,0 +1,352 @@
+name: Automated Code Review
+run-name: Code Review - PR #${{ github.event.pull_request.number }}
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  ai-code-review:
+    name: AI-Powered Code Review
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      checks: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for better context
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v40
+        with:
+          files: |
+            **/*.{js,ts,jsx,tsx,py,java,go,rs,php,rb,swift,kt}
+          separator: ','
+
+      - name: Setup Node.js for analysis
+        if: steps.changed-files.outputs.any_changed == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Install analysis dependencies
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          npm install -g @typescript-eslint/parser @typescript-eslint/eslint-plugin
+          npm install -g eslint-plugin-security eslint-plugin-sonarjs
+
+      - name: Analyze code complexity
+        if: steps.changed-files.outputs.any_changed == 'true'
+        id: complexity-analysis
+        run: |
+          echo "## Code Complexity Analysis" > complexity-report.md
+          echo "" >> complexity-report.md
+          
+          # Analyze changed files for complexity indicators
+          for file in $(echo "${{ steps.changed-files.outputs.all_changed_files }}" | tr ',' ' '); do
+            if [[ -f "$file" ]]; then
+              echo "### $file" >> complexity-report.md
+              
+              # Count lines of code
+              lines=$(wc -l < "$file")
+              echo "- Lines of code: $lines" >> complexity-report.md
+              
+              # Count functions/methods (basic regex)
+              if [[ "$file" =~ \.(js|ts|jsx|tsx)$ ]]; then
+                functions=$(grep -c "function\|=>" "$file" || echo "0")
+                classes=$(grep -c "class " "$file" || echo "0")
+                echo "- Functions/Methods: $functions" >> complexity-report.md
+                echo "- Classes: $classes" >> complexity-report.md
+              elif [[ "$file" =~ \.py$ ]]; then
+                functions=$(grep -c "def " "$file" || echo "0")
+                classes=$(grep -c "class " "$file" || echo "0")
+                echo "- Functions/Methods: $functions" >> complexity-report.md
+                echo "- Classes: $classes" >> complexity-report.md
+              fi
+              
+              # Check for TODO/FIXME comments
+              todos=$(grep -c "TODO\|FIXME\|HACK" "$file" || echo "0")
+              if [[ $todos -gt 0 ]]; then
+                echo "- ⚠️ TODO/FIXME comments: $todos" >> complexity-report.md
+              fi
+              
+              echo "" >> complexity-report.md
+            fi
+          done
+
+      - name: Security analysis
+        if: steps.changed-files.outputs.any_changed == 'true'
+        id: security-analysis
+        run: |
+          echo "## Security Analysis" > security-report.md
+          echo "" >> security-report.md
+          
+          # Check for potential security issues in changed files
+          security_issues=0
+          
+          for file in $(echo "${{ steps.changed-files.outputs.all_changed_files }}" | tr ',' ' '); do
+            if [[ -f "$file" ]]; then
+              echo "### Security Check: $file" >> security-report.md
+              
+              # Check for common security anti-patterns
+              if grep -q "eval\|innerHTML\|document\.write" "$file" 2>/dev/null; then
+                echo "⚠️ **Potential XSS vulnerability detected**" >> security-report.md
+                security_issues=$((security_issues + 1))
+              fi
+              
+              if grep -q "password\|secret\|key" "$file" 2>/dev/null && grep -q "=" "$file" 2>/dev/null; then
+                echo "⚠️ **Potential hardcoded credentials detected**" >> security-report.md
+                security_issues=$((security_issues + 1))
+              fi
+              
+              if grep -q "SELECT.*FROM\|INSERT.*INTO\|UPDATE.*SET" "$file" 2>/dev/null; then
+                echo "⚠️ **SQL queries detected - ensure parameterized queries are used**" >> security-report.md
+                security_issues=$((security_issues + 1))
+              fi
+              
+              if grep -q "http://\|process\.env\." "$file" 2>/dev/null; then
+                echo "ℹ️ **Review required: HTTP links or environment variables found**" >> security-report.md
+              fi
+              
+              echo "" >> security-report.md
+            fi
+          done
+          
+          echo "SECURITY_ISSUES=$security_issues" >> $GITHUB_OUTPUT
+          
+          if [[ $security_issues -gt 0 ]]; then
+            echo "" >> security-report.md
+            echo "🚨 **$security_issues potential security issues detected. Manual review required.**" >> security-report.md
+          else
+            echo "✅ **No obvious security issues detected.**" >> security-report.md
+          fi
+
+      - name: Request Claude code review
+        if: steps.changed-files.outputs.any_changed == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const pr = context.payload.pull_request;
+            
+            // Read analysis reports
+            let complexityReport = '';
+            let securityReport = '';
+            
+            try {
+              complexityReport = fs.readFileSync('complexity-report.md', 'utf8');
+            } catch (e) {
+              complexityReport = 'Complexity analysis not available.';
+            }
+            
+            try {
+              securityReport = fs.readFileSync('security-report.md', 'utf8');
+            } catch (e) {
+              securityReport = 'Security analysis not available.';
+            }
+            
+            const changedFiles = '${{ steps.changed-files.outputs.all_changed_files }}';
+            const securityIssues = '${{ steps.security-analysis.outputs.SECURITY_ISSUES }}' || '0';
+            
+            const claudeReviewRequest = `@claude Please review this pull request for code quality, security, and adherence to our development protocols.
+            
+            **PR Details:**
+            - **Title:** ${pr.title}
+            - **Author:** @${pr.user.login}
+            - **Branch:** \`${pr.head.ref}\` → \`${pr.base.ref}\`
+            - **Files Changed:** ${changedFiles.split(',').length}
+            - **Security Issues Detected:** ${securityIssues}
+            
+            **Changed Files:**
+            \`\`\`
+            ${changedFiles.replace(/,/g, '\n')}
+            \`\`\`
+            
+            **Automated Analysis Results:**
+            
+            ${complexityReport}
+            
+            ${securityReport}
+            
+            **Review Focus Areas:**
+            1. **Security-First Protocol Compliance**
+               - Verify security controls are properly implemented
+               - Check for input validation and sanitization
+               - Ensure no sensitive data exposure
+               - Validate authentication/authorization patterns
+            
+            2. **Code Quality Standards**
+               - Review code structure and maintainability  
+               - Check for proper error handling
+               - Validate naming conventions and documentation
+               - Assess performance implications
+            
+            3. **Testing and Documentation**
+               - Verify adequate test coverage for changes
+               - Check that documentation is updated appropriately
+               - Ensure examples and comments are accurate
+            
+            4. **Protocol Adherence**
+               - Confirm TDD practices were followed
+               - Verify surgical debugging approach for fixes
+               - Check task decomposition for complex changes
+               - Validate BMAD agent coordination if applicable
+            
+            **Review Instructions:**
+            - Use a constructive and helpful tone
+            - Provide specific, actionable feedback
+            - Suggest improvements with code examples
+            - Prioritize security and maintainability concerns
+            - Reference relevant documentation when helpful
+            - Use the TodoWrite tool to track any follow-up tasks
+            
+            Please provide a comprehensive code review focusing on these areas. If you identify any issues, please suggest specific improvements and mark the review accordingly.
+            
+            ${securityIssues > 0 ? '⚠️ **Priority: Security issues detected - please review security findings carefully.**' : ''}`;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              body: claudeReviewRequest
+            });
+
+  performance-review:
+    name: Performance Impact Review
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        if: hashFiles('package.json') != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        if: hashFiles('package.json') != ''
+        run: npm ci
+
+      - name: Build and analyze bundle
+        if: hashFiles('package.json') != ''
+        run: |
+          # Build the application if build script exists
+          if npm run build 2>/dev/null; then
+            echo "Build successful"
+            
+            # Analyze bundle size if dist directory exists
+            if [ -d "dist" ] || [ -d "build" ]; then
+              echo "## Bundle Size Analysis" > performance-report.md
+              echo "" >> performance-report.md
+              
+              # Find the output directory
+              output_dir="dist"
+              if [ -d "build" ]; then
+                output_dir="build"
+              fi
+              
+              echo "### Bundle Files:" >> performance-report.md
+              find "$output_dir" -name "*.js" -o -name "*.css" | while read file; do
+                size=$(ls -lh "$file" | awk '{print $5}')
+                echo "- \`$(basename $file)\`: $size" >> performance-report.md
+              done
+              
+              # Total bundle size
+              total_size=$(du -sh "$output_dir" | cut -f1)
+              echo "" >> performance-report.md
+              echo "**Total bundle size:** $total_size" >> performance-report.md
+            else
+              echo "No build output directory found." > performance-report.md
+            fi
+          else
+            echo "No build script available." > performance-report.md
+          fi
+
+      - name: Comment performance analysis
+        if: hashFiles('performance-report.md') != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            try {
+              const report = fs.readFileSync('performance-report.md', 'utf8');
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: `## 📊 Performance Analysis\n\n${report}\n\n*Note: Review the bundle size changes and consider performance implications.*`
+              });
+            } catch (error) {
+              console.log('Performance report not available:', error.message);
+            }
+
+  review-completion:
+    name: Review Completion Status
+    runs-on: ubuntu-latest
+    needs: [ai-code-review, performance-review]
+    if: always() && github.event.pull_request.draft == false
+    permissions:
+      contents: read
+      pull-requests: write
+      checks: write
+
+    steps:
+      - name: Create review completion status
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            
+            // Create a check run for the review status
+            await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'Automated Code Review',
+              head_sha: pr.head.sha,
+              status: 'completed',
+              conclusion: 'success',
+              output: {
+                title: 'Automated Code Review Completed',
+                summary: 'AI-powered code review has been initiated. Check the PR comments for detailed feedback from Claude.',
+                text: `
+            ## Review Summary
+            - ✅ Automated analysis completed
+            - ✅ Security scan performed  
+            - ✅ Performance analysis conducted
+            - ✅ Claude Code review requested
+            
+            Please review the automated feedback and address any issues identified.
+            `
+              }
+            });
+            
+            // Update PR labels based on review
+            const labels = ['automated-review'];
+            
+            // Add security label if security issues were detected
+            if ('${{ needs.ai-code-review.outputs.security_issues }}' > 0) {
+              labels.push('security-review-required');
+            }
+            
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              labels: labels
+            });

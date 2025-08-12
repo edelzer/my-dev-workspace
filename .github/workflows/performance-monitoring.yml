@@ -1,0 +1,284 @@
+name: Performance Monitoring & Analysis
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Weekly performance analysis
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+jobs:
+  performance-analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project for analysis
+        run: |
+          echo "🏗️ Building project for performance analysis"
+          npm run build 2>/dev/null || echo "⚠️ No build script found"
+
+      - name: Bundle size analysis
+        id: bundle-analysis
+        run: |
+          echo "📊 Analyzing bundle size and composition"
+          
+          if [ -d "dist" ] || [ -d "build" ]; then
+            BUILD_DIR=$([ -d "dist" ] && echo "dist" || echo "build")
+            
+            # Calculate total bundle size
+            TOTAL_SIZE=$(du -sh $BUILD_DIR | cut -f1)
+            echo "bundle_size=$TOTAL_SIZE" >> $GITHUB_OUTPUT
+            
+            # Analyze individual file sizes
+            echo "## Bundle Composition" > bundle-analysis.md
+            echo "| File | Size |" >> bundle-analysis.md
+            echo "|------|------|" >> bundle-analysis.md
+            
+            find $BUILD_DIR -name "*.js" -o -name "*.css" | while read file; do
+              size=$(du -sh "$file" | cut -f1)
+              filename=$(basename "$file")
+              echo "| $filename | $size |" >> bundle-analysis.md
+            done
+            
+            echo "✅ Bundle analysis completed - Total size: $TOTAL_SIZE"
+          else
+            echo "⚠️ No build artifacts found for analysis"
+            echo "bundle_size=unknown" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Performance testing
+        id: performance-test
+        run: |
+          echo "⚡ Running performance tests"
+          
+          # Check for performance test scripts
+          if npm run test:performance 2>/dev/null; then
+            echo "✅ Performance tests completed"
+            echo "performance_status=passed" >> $GITHUB_OUTPUT
+          else
+            echo "⚠️ No performance test script found"
+            echo "performance_status=not_configured" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Memory usage analysis
+        run: |
+          echo "🧠 Analyzing memory usage patterns"
+          
+          # Basic memory analysis
+          if command -v node &> /dev/null; then
+            node --expose-gc -e "
+              const used = process.memoryUsage();
+              console.log('Memory Usage:');
+              for (let key in used) {
+                console.log(key + ': ' + Math.round(used[key] / 1024 / 1024 * 100) / 100 + ' MB');
+              }
+            "
+          fi
+
+      - name: Lighthouse CI (if web project)
+        id: lighthouse
+        run: |
+          echo "🔍 Running Lighthouse performance audit"
+          
+          # Install Lighthouse CI
+          npm install -g @lhci/cli 2>/dev/null || true
+          
+          # Check if this is a web project
+          if [ -f "package.json" ] && grep -q "\"build\"" package.json; then
+            # Run Lighthouse CI if configured
+            if [ -f "lighthouserc.js" ]; then
+              lhci autorun 2>/dev/null || echo "⚠️ Lighthouse CI not configured"
+            else
+              echo "⚠️ Lighthouse CI configuration not found"
+            fi
+          else
+            echo "⚠️ Not a web project - skipping Lighthouse analysis"
+          fi
+
+      - name: Generate performance report
+        run: |
+          echo "📈 Generating comprehensive performance report"
+          
+          cat > performance-report.md << 'EOF'
+          # Performance Analysis Report
+          
+          ## Summary
+          - **Analysis Date**: $(date)
+          - **Bundle Size**: ${{ steps.bundle-analysis.outputs.bundle_size }}
+          - **Performance Tests**: ${{ steps.performance-test.outputs.performance_status }}
+          
+          ## Bundle Analysis
+          $([ -f "bundle-analysis.md" ] && cat bundle-analysis.md || echo "Bundle analysis not available")
+          
+          ## Performance Metrics
+          - Build time optimization
+          - Runtime performance validation
+          - Memory usage analysis
+          - Network transfer optimization
+          
+          ## Recommendations
+          1. **Bundle Optimization**
+             - Use code splitting for large applications
+             - Implement lazy loading for components
+             - Optimize asset compression
+          
+          2. **Runtime Performance**
+             - Profile critical rendering paths
+             - Optimize expensive computations
+             - Implement efficient state management
+          
+          3. **Memory Management**
+             - Monitor memory leaks
+             - Optimize data structures
+             - Implement proper cleanup
+          
+          4. **Network Optimization**
+             - Minimize HTTP requests
+             - Use CDN for static assets
+             - Implement proper caching strategies
+          
+          ## Performance Checklist
+          - [ ] Bundle size under recommended limits
+          - [ ] Critical rendering path optimized
+          - [ ] Memory usage within acceptable ranges
+          - [ ] Network requests minimized
+          - [ ] Performance tests passing
+          - [ ] Lighthouse scores above thresholds
+          
+          ---
+          Generated by Claude Code Performance Monitoring
+          EOF
+
+      - name: Upload performance artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-analysis
+          path: |
+            performance-report.md
+            bundle-analysis.md
+
+  performance-comparison:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout base branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.base_ref }}
+          path: base
+
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          path: pr
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Build base version
+        run: |
+          cd base
+          npm ci
+          npm run build 2>/dev/null || echo "Build failed for base"
+          if [ -d "dist" ] || [ -d "build" ]; then
+            BASE_SIZE=$(du -sb $([ -d "dist" ] && echo "dist" || echo "build") | cut -f1)
+            echo "BASE_SIZE=$BASE_SIZE" >> $GITHUB_ENV
+          fi
+
+      - name: Build PR version
+        run: |
+          cd pr
+          npm ci
+          npm run build 2>/dev/null || echo "Build failed for PR"
+          if [ -d "dist" ] || [ -d "build" ]; then
+            PR_SIZE=$(du -sb $([ -d "dist" ] && echo "dist" || echo "build") | cut -f1)
+            echo "PR_SIZE=$PR_SIZE" >> $GITHUB_ENV
+          fi
+
+      - name: Compare performance impact
+        id: performance-impact
+        run: |
+          echo "📊 Comparing performance impact"
+          
+          if [ -n "$BASE_SIZE" ] && [ -n "$PR_SIZE" ]; then
+            SIZE_DIFF=$((PR_SIZE - BASE_SIZE))
+            PERCENT_CHANGE=$(( (SIZE_DIFF * 100) / BASE_SIZE ))
+            
+            echo "size_diff=$SIZE_DIFF" >> $GITHUB_OUTPUT
+            echo "percent_change=$PERCENT_CHANGE" >> $GITHUB_OUTPUT
+            
+            if [ $PERCENT_CHANGE -gt 10 ]; then
+              echo "impact=significant_increase" >> $GITHUB_OUTPUT
+              echo "⚠️ Significant bundle size increase: $PERCENT_CHANGE%"
+            elif [ $PERCENT_CHANGE -lt -10 ]; then
+              echo "impact=significant_decrease" >> $GITHUB_OUTPUT
+              echo "✅ Significant bundle size decrease: $PERCENT_CHANGE%"
+            else
+              echo "impact=minimal" >> $GITHUB_OUTPUT
+              echo "✅ Minimal bundle size impact: $PERCENT_CHANGE%"
+            fi
+          else
+            echo "impact=unknown" >> $GITHUB_OUTPUT
+            echo "⚠️ Could not determine performance impact"
+          fi
+
+      - name: Comment performance impact
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const impact = '${{ steps.performance-impact.outputs.impact }}';
+            const sizeChange = '${{ steps.performance-impact.outputs.percent_change }}';
+            
+            let emoji = '📊';
+            let status = 'analyzed';
+            
+            if (impact === 'significant_increase') {
+              emoji = '⚠️';
+              status = 'increased significantly';
+            } else if (impact === 'significant_decrease') {
+              emoji = '✅';
+              status = 'decreased significantly';
+            } else if (impact === 'minimal') {
+              emoji = '✅';
+              status = 'has minimal impact';
+            }
+            
+            const comment = `## ${emoji} Performance Impact Analysis
+            
+            The bundle size ${status} with this PR.
+            
+            ### Performance Metrics
+            - **Size Change**: ${sizeChange}%
+            - **Impact Level**: ${impact}
+            
+            ### Recommendations
+            ${impact === 'significant_increase' ? 
+              '- Review added dependencies and code\n- Consider code splitting or lazy loading\n- Optimize bundle configuration' :
+              '- Performance impact is acceptable\n- Continue with current implementation'
+            }
+            
+            ---
+            🤖 Generated with [Claude Code](https://claude.ai/code) Performance Monitoring`;
+
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });

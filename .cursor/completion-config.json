@@ -1,0 +1,163 @@
+{
+  "intelligentCompletion": {
+    "enabled": true,
+    "contextWindow": 8192,
+    "maxSuggestions": 10,
+    "minConfidence": 0.7,
+    "useSemanticSearch": true,
+    "useCodebaseContext": true,
+    "enableLearning": true
+  },
+  "contextProviders": [
+    {
+      "name": "projectStructure",
+      "priority": 10,
+      "paths": [
+        "templates/",
+        ".bmad-core/",
+        ".claude/",
+        "docs/protocols/",
+        "config/"
+      ]
+    },
+    {
+      "name": "securityPatterns",
+      "priority": 9,
+      "paths": [
+        "docs/protocols/security_first_protocol.md",
+        "templates/*/security/",
+        ".bmad-core/checklists/"
+      ]
+    },
+    {
+      "name": "testingPatterns",
+      "priority": 8,
+      "paths": [
+        "docs/protocols/sdd_tdd_integration_guide.md",
+        "docs/protocols/enhanced_tdd_guide.md",
+        "templates/*/tests/"
+      ]
+    },
+    {
+      "name": "bmadIntegration",
+      "priority": 7,
+      "paths": [
+        ".bmad-core/agents/",
+        ".bmad-core/workflows/",
+        ".bmad-core/templates/",
+        ".bmad-core/tasks/"
+      ]
+    }
+  ],
+  "completionRules": {
+    "typescript": {
+      "preferInterfaces": true,
+      "useStrictTypes": true,
+      "enableInlayHints": true,
+      "autoImportPreferences": {
+        "localFirst": true,
+        "relativeImports": true,
+        "typeImports": true
+      }
+    },
+    "javascript": {
+      "modernSyntax": true,
+      "preferConst": true,
+      "useArrowFunctions": true
+    },
+    "react": {
+      "functionalComponents": true,
+      "useHooks": true,
+      "propsInterface": true,
+      "memo": "suggest"
+    },
+    "security": {
+      "requireValidation": true,
+      "suggestSanitization": true,
+      "errorHandling": true,
+      "logging": "security-aware"
+    }
+  },
+  "snippets": {
+    "bmadAgent": {
+      "prefix": "bmad-agent",
+      "body": [
+        "# ${1:Agent Name}",
+        "",
+        "## Role",
+        "${2:Agent role description}",
+        "",
+        "## Responsibilities",
+        "- ${3:Primary responsibility}",
+        "",
+        "## Context Integration",
+        "- Follows security-first protocol",
+        "- Implements TDD practices",
+        "- Uses surgical debugging approach",
+        ""
+      ],
+      "description": "BMad agent template"
+    },
+    "securityMiddleware": {
+      "prefix": "security-mw",
+      "body": [
+        "import { Request, Response, NextFunction } from 'express';",
+        "import { validateInput, sanitizeInput } from '../utils/security';",
+        "",
+        "export const ${1:middlewareName} = async (req: Request, res: Response, next: NextFunction) => {",
+        "  try {",
+        "    // Input validation",
+        "    const validationResult = validateInput(req.${2:body});",
+        "    if (!validationResult.isValid) {",
+        "      return res.status(400).json({ error: 'Invalid input', details: validationResult.errors });",
+        "    }",
+        "",
+        "    // Input sanitization",
+        "    req.${2:body} = sanitizeInput(req.${2:body});",
+        "",
+        "    next();",
+        "  } catch (error) {",
+        "    console.error('Security middleware error:', error);",
+        "    res.status(500).json({ error: 'Internal server error' });",
+        "  }",
+        "};"
+      ],
+      "description": "Security middleware template"
+    },
+    "tddTestStructure": {
+      "prefix": "tdd-test",
+      "body": [
+        "describe('${1:Feature/Component Name}', () => {",
+        "  // Red Phase: Write failing test",
+        "  test('should ${2:expected behavior}', () => {",
+        "    // Arrange",
+        "    ${3:// Setup test data}",
+        "",
+        "    // Act",
+        "    ${4:// Execute the code under test}",
+        "",
+        "    // Assert",
+        "    ${5:// Verify the expected outcome}",
+        "  });",
+        "",
+        "  // Green Phase: Make test pass with minimal code",
+        "  // Refactor Phase: Improve code while keeping tests green",
+        "});"
+      ],
+      "description": "TDD test structure following protocol"
+    }
+  },
+  "fileTypeAssociations": {
+    "*.bmad": "yaml",
+    "*.claude": "markdown",
+    "*.protocol": "markdown",
+    "*.workflow": "yaml"
+  },
+  "performanceOptimizations": {
+    "cacheCompletions": true,
+    "preloadFrequentFiles": true,
+    "backgroundIndexing": true,
+    "smartThrottling": true,
+    "memoryManagement": "aggressive"
+  }
+}

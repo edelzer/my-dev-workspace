@@ -1,0 +1,333 @@
+{
+  "securityEnforcementRules": {
+    "version": "1.0.0",
+    "enabled": true,
+    "description": "Enhanced security guideline enforcement rules for comprehensive application security",
+    "extends": "security-rules.json",
+    "rules": [
+      {
+        "id": "security-first-protocol-enforcement",
+        "severity": "error",
+        "category": "protocol",
+        "description": "Enforce Security-First protocol sequence: ANALYZE → IMPLEMENT → TEST → MONITOR",
+        "phases": {
+          "ANALYZE": {
+            "required": ["threat_model", "security_requirements", "risk_assessment"],
+            "filePatterns": ["**/security-analysis.md", "**/threat-model.json"],
+            "validationChecks": ["threat_vectors_identified", "security_requirements_documented"]
+          },
+          "IMPLEMENT": {
+            "required": ["security_controls", "input_validation", "authentication", "authorization"],
+            "patterns": ["helmet|cors|bcrypt|jsonwebtoken", "validateInput|sanitize|escape"],
+            "forbiddenPatterns": ["eval\\(", "innerHTML\\s*=", "document\\.write"]
+          },
+          "TEST": {
+            "required": ["security_tests", "penetration_tests", "dependency_scan"],
+            "testPatterns": ["security.*test|.*security.*spec", "auth.*test|.*auth.*spec"],
+            "scanRequirements": ["npm audit", "snyk test", "eslint security rules"]
+          },
+          "MONITOR": {
+            "required": ["security_logging", "error_tracking", "performance_monitoring"],
+            "patterns": ["winston|pino|morgan", "sentry|rollbar", "prometheus|datadog"],
+            "alertThresholds": ["failed_logins: 5", "error_rate: 1%", "response_time: 5s"]
+          }
+        },
+        "action": "enforce",
+        "message": "Complete all Security-First protocol phases before proceeding"
+      },
+      {
+        "id": "authentication-authorization-patterns",
+        "severity": "error",
+        "category": "auth",
+        "description": "Enforce secure authentication and authorization patterns",
+        "requiredPatterns": {
+          "password_hashing": "bcrypt|scrypt|argon2",
+          "jwt_security": "jsonwebtoken with secret rotation",
+          "session_management": "express-session with secure options",
+          "oauth_implementation": "passport with secure strategies"
+        },
+        "forbiddenPatterns": [
+          "password.*===|password.*==",
+          "md5|sha1 for passwords",
+          "hardcoded.*secret|secret.*=.*['\"]"
+        ],
+        "requiredConfig": {
+          "session": {
+            "secure": true,
+            "httpOnly": true,
+            "sameSite": "strict"
+          },
+          "jwt": {
+            "expiresIn": "15m",
+            "issuer": "required",
+            "audience": "required"
+          }
+        },
+        "action": "enforce",
+        "message": "Use secure authentication patterns with proper session management"
+      },
+      {
+        "id": "input-validation-enforcement",
+        "severity": "error",
+        "category": "validation",
+        "description": "Enforce comprehensive input validation and sanitization",
+        "inputSources": [
+          "req.body",
+          "req.query", 
+          "req.params",
+          "req.headers",
+          "form inputs",
+          "url parameters"
+        ],
+        "requiredValidation": {
+          "schema_validation": "joi|yup|zod|class-validator",
+          "sanitization": "dompurify|sanitize-html|validator",
+          "type_checking": "typeof checks and type guards",
+          "length_limits": "maxLength validation",
+          "format_validation": "regex patterns for emails, urls, etc"
+        },
+        "validationPipeline": [
+          "type_validation",
+          "schema_validation", 
+          "sanitization",
+          "business_logic_validation"
+        ],
+        "action": "require",
+        "message": "Implement comprehensive input validation pipeline"
+      },
+      {
+        "id": "secure-communication",
+        "severity": "error", 
+        "category": "transport",
+        "description": "Enforce secure communication protocols",
+        "tlsRequirements": {
+          "minimum_version": "TLS 1.2",
+          "preferred_version": "TLS 1.3",
+          "certificate_validation": "required",
+          "hsts_header": "max-age=31536000; includeSubDomains"
+        },
+        "corsConfiguration": {
+          "origin": "explicit_whitelist",
+          "methods": "restricted_to_needed",
+          "allowedHeaders": "explicit_list",
+          "credentials": "secure_context_only"
+        },
+        "securityHeaders": {
+          "x_frame_options": "DENY",
+          "x_content_type_options": "nosniff",
+          "x_xss_protection": "1; mode=block",
+          "referrer_policy": "strict-origin-when-cross-origin",
+          "content_security_policy": "strict-dynamic with nonce"
+        },
+        "action": "enforce",
+        "message": "Configure secure communication with proper TLS and security headers"
+      },
+      {
+        "id": "data-protection-compliance",
+        "severity": "warning",
+        "category": "privacy",
+        "description": "Enforce data protection and privacy compliance",
+        "dataHandling": {
+          "pii_identification": "automatic_detection",
+          "data_classification": "public|internal|confidential|restricted",
+          "encryption_at_rest": "AES-256",
+          "encryption_in_transit": "TLS 1.2+",
+          "data_retention": "explicit_policies"
+        },
+        "privacyPatterns": {
+          "consent_management": "explicit_consent_tracking",
+          "right_to_erasure": "data_deletion_procedures",
+          "data_portability": "export_functionality",
+          "breach_notification": "automated_alerting"
+        },
+        "complianceFrameworks": [
+          "GDPR",
+          "CCPA", 
+          "HIPAA",
+          "SOX"
+        ],
+        "action": "validate",
+        "message": "Ensure data protection compliance and privacy-by-design"
+      },
+      {
+        "id": "dependency-security-management",
+        "severity": "error",
+        "category": "dependencies",
+        "description": "Enforce secure dependency management practices",
+        "scanningTools": [
+          "npm audit",
+          "yarn audit",
+          "snyk test",
+          "retire.js",
+          "owasp dependency-check"
+        ],
+        "vulnerabilityThresholds": {
+          "critical": 0,
+          "high": 0,
+          "medium": 5,
+          "low": 10
+        },
+        "updatePolicies": {
+          "security_patches": "immediate",
+          "major_versions": "after_testing",
+          "deprecated_packages": "replace_within_sprint"
+        },
+        "allowedSources": [
+          "npmjs.org",
+          "github.com",
+          "approved_private_registries"
+        ],
+        "action": "block",
+        "message": "Resolve security vulnerabilities before proceeding"
+      },
+      {
+        "id": "secure-coding-practices",
+        "severity": "warning",
+        "category": "coding",
+        "description": "Enforce secure coding practices and patterns",
+        "codePatterns": {
+          "error_handling": "no_sensitive_info_in_errors",
+          "logging": "no_secrets_in_logs",
+          "random_generation": "crypto.randomBytes not Math.random",
+          "file_operations": "path_traversal_prevention",
+          "database_queries": "parameterized_queries_only"
+        },
+        "forbiddenFunctions": [
+          "eval()",
+          "Function() constructor",
+          "setTimeout with string",
+          "setInterval with string",
+          "document.write()",
+          "innerHTML assignment"
+        ],
+        "secureAlternatives": {
+          "eval": "JSON.parse() or specific parsers",
+          "innerHTML": "textContent or DOM methods",
+          "Math.random": "crypto.randomBytes()",
+          "string_concatenation": "parameterized queries"
+        },
+        "action": "guide",
+        "message": "Use secure coding alternatives and avoid dangerous functions"
+      },
+      {
+        "id": "api-security-enforcement",
+        "severity": "error",
+        "category": "api",
+        "description": "Enforce API security best practices",
+        "rateLimit": {
+          "global": "1000 requests/hour",
+          "per_endpoint": "100 requests/minute",
+          "per_user": "50 requests/minute",
+          "burst_protection": "10 requests/second"
+        },
+        "apiSecurity": {
+          "authentication": "required_for_all_endpoints",
+          "authorization": "role_based_access_control",
+          "input_validation": "strict_schema_validation",
+          "output_encoding": "context_aware_encoding"
+        },
+        "apiDocumentation": {
+          "openapi_spec": "required",
+          "security_schemes": "documented",
+          "example_requests": "sanitized",
+          "error_responses": "no_sensitive_info"
+        },
+        "action": "require",
+        "message": "Implement comprehensive API security controls"
+      },
+      {
+        "id": "infrastructure-security",
+        "severity": "warning",
+        "category": "infrastructure",
+        "description": "Enforce infrastructure security configurations",
+        "containerSecurity": {
+          "base_images": "minimal_and_updated",
+          "user_privileges": "non_root_user",
+          "secrets_management": "external_secrets_store",
+          "image_scanning": "vulnerability_scanning"
+        },
+        "environmentConfiguration": {
+          "secrets": "environment_variables_only",
+          "configuration": "external_config_management", 
+          "logging": "centralized_logging",
+          "monitoring": "security_monitoring"
+        },
+        "deploymentSecurity": {
+          "https_only": "required",
+          "security_headers": "comprehensive_set",
+          "access_logs": "enabled",
+          "error_pages": "custom_without_info_disclosure"
+        },
+        "action": "validate",
+        "message": "Configure secure infrastructure and deployment practices"
+      }
+    ],
+    "securityTestingRequirements": {
+      "staticAnalysis": {
+        "tools": ["eslint-plugin-security", "semgrep", "sonarjs"],
+        "coverage": "100%",
+        "failBuild": "critical_and_high_severity"
+      },
+      "dynamicTesting": {
+        "tools": ["owasp-zap", "burp-suite", "custom-security-tests"],
+        "testTypes": ["authentication", "authorization", "input_validation", "session_management"],
+        "automation": "ci_cd_integration"
+      },
+      "penetrationTesting": {
+        "frequency": "quarterly",
+        "scope": "full_application",
+        "reporting": "detailed_with_remediation"
+      }
+    },
+    "incidentResponse": {
+      "detection": {
+        "monitoring": "real_time_security_monitoring",
+        "alerting": "automated_security_alerts",
+        "logging": "comprehensive_security_logs"
+      },
+      "response": {
+        "isolation": "automatic_threat_isolation",
+        "notification": "security_team_notification",
+        "documentation": "incident_response_documentation"
+      },
+      "recovery": {
+        "remediation": "automated_patch_deployment",
+        "validation": "security_validation_tests",
+        "lessons_learned": "post_incident_review"
+      }
+    },
+    "complianceReporting": {
+      "securityMetrics": [
+        "vulnerability_count_by_severity",
+        "mean_time_to_patch",
+        "security_test_coverage",
+        "incident_response_time"
+      ],
+      "reportingFrequency": "weekly",
+      "dashboards": "real_time_security_dashboard",
+      "auditTrail": "complete_security_audit_trail"
+    },
+    "enforcement": {
+      "checkpoints": [
+        "code_commit",
+        "pull_request",
+        "build_process",
+        "deployment",
+        "runtime_monitoring"
+      ],
+      "actions": {
+        "enforce": "block_insecure_code",
+        "require": "mandate_security_controls",
+        "validate": "check_compliance",
+        "guide": "provide_security_guidance",
+        "block": "prevent_vulnerable_deployments"
+      },
+      "escalation": {
+        "level_1": "developer_notification",
+        "level_2": "team_lead_escalation",
+        "level_3": "security_team_involvement",
+        "level_4": "ciso_notification"
+      }
+    }
+  }
+}

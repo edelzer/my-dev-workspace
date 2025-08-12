@@ -1,0 +1,275 @@
+{
+  "projectCustomizationRules": {
+    "version": "1.0.0",
+    "enabled": true,
+    "description": "Project-specific customization rules for different project types and contexts",
+    "projectTypeRules": {
+      "web_application": {
+        "technology_stack": ["React", "TypeScript", "Vite"],
+        "customRules": {
+          "component_structure": {
+            "pattern": "components/[ComponentName]/index.tsx",
+            "requiredFiles": ["index.tsx", "styles.module.css", "types.ts"],
+            "testPattern": "__tests__/[ComponentName].test.tsx"
+          },
+          "state_management": {
+            "preferred": "Context API for simple, Redux Toolkit for complex",
+            "patterns": ["useReducer for complex state", "useState for simple state"],
+            "forbidden": ["direct state mutation", "prop drilling > 3 levels"]
+          },
+          "styling": {
+            "methodology": "CSS Modules with BEM naming",
+            "responsive": "mobile-first approach required",
+            "accessibility": "WCAG 2.1 AA compliance mandatory"
+          },
+          "performance": {
+            "bundle_size": "initial load < 250KB",
+            "lazy_loading": "required for routes and heavy components",
+            "optimization": "React.memo for expensive components"
+          }
+        }
+      },
+      "api_application": {
+        "technology_stack": ["Node.js", "Express", "TypeScript"],
+        "customRules": {
+          "route_structure": {
+            "pattern": "routes/[version]/[resource]/[action].ts",
+            "middleware": "authentication and validation required",
+            "documentation": "OpenAPI spec for all endpoints"
+          },
+          "data_access": {
+            "pattern": "repository pattern with dependency injection",
+            "orm": "TypeORM or Prisma with migrations",
+            "validation": "Joi or Zod for input validation"
+          },
+          "security": {
+            "authentication": "JWT with refresh tokens",
+            "authorization": "role-based access control",
+            "rate_limiting": "Redis-based rate limiting"
+          },
+          "error_handling": {
+            "pattern": "centralized error handling middleware",
+            "logging": "structured logging with correlation IDs",
+            "monitoring": "health checks and metrics endpoints"
+          }
+        }
+      },
+      "mobile_application": {
+        "technology_stack": ["React Native", "TypeScript", "Expo"],
+        "customRules": {
+          "navigation": {
+            "library": "React Navigation v6",
+            "pattern": "stack and tab navigation hierarchy",
+            "deep_linking": "universal links configuration"
+          },
+          "state_management": {
+            "preferred": "Redux Toolkit with RTK Query",
+            "offline": "Redux Persist for offline capability",
+            "sync": "background sync strategies"
+          },
+          "ui_components": {
+            "design_system": "consistent component library",
+            "platform_specific": "platform-aware components",
+            "accessibility": "screen reader and navigation support"
+          },
+          "performance": {
+            "bundle_optimization": "code splitting by platform",
+            "memory_management": "proper cleanup of listeners",
+            "battery_optimization": "efficient background tasks"
+          }
+        }
+      },
+      "desktop_application": {
+        "technology_stack": ["Electron", "React", "TypeScript"],
+        "customRules": {
+          "architecture": {
+            "process_separation": "main and renderer process separation",
+            "ipc": "secure IPC communication patterns",
+            "security": "context isolation enabled"
+          },
+          "native_integration": {
+            "file_system": "secure file system access",
+            "system_tray": "native system integration",
+            "auto_updater": "automatic update mechanisms"
+          },
+          "packaging": {
+            "distribution": "code signing for releases",
+            "platforms": "Windows, macOS, and Linux builds",
+            "installers": "native installer packages"
+          }
+        }
+      }
+    },
+    "contextualRules": {
+      "development_environment": {
+        "local_development": {
+          "hot_reload": "enabled for rapid development",
+          "debugging": "source maps and dev tools enabled",
+          "testing": "watch mode for tests",
+          "linting": "fix on save enabled"
+        },
+        "ci_cd_environment": {
+          "testing": "full test suite execution",
+          "linting": "strict mode with no warnings",
+          "building": "optimized production builds",
+          "security": "dependency vulnerability scanning"
+        },
+        "production_environment": {
+          "optimization": "minification and compression",
+          "monitoring": "error tracking and performance monitoring",
+          "logging": "structured logging with appropriate levels",
+          "security": "security headers and HTTPS enforcement"
+        }
+      },
+      "team_size": {
+        "small_team": {
+          "processes": "lightweight processes with flexibility",
+          "reviews": "pair programming and informal reviews",
+          "documentation": "essential documentation only",
+          "tooling": "simple toolchain with minimal overhead"
+        },
+        "medium_team": {
+          "processes": "defined processes with some flexibility",
+          "reviews": "formal code review process",
+          "documentation": "comprehensive API and architecture docs",
+          "tooling": "integrated development and deployment tools"
+        },
+        "large_team": {
+          "processes": "standardized processes with governance",
+          "reviews": "multi-stage review and approval process",
+          "documentation": "extensive documentation and training materials",
+          "tooling": "enterprise-grade toolchain with automation"
+        }
+      },
+      "project_phase": {
+        "mvp_prototype": {
+          "flexibility": "rapid iteration and experimentation",
+          "testing": "basic smoke tests and manual testing",
+          "documentation": "minimal documentation",
+          "architecture": "simple and pragmatic architecture"
+        },
+        "growth_phase": {
+          "scalability": "design for scalability and maintainability",
+          "testing": "comprehensive test coverage",
+          "documentation": "thorough documentation and guides",
+          "architecture": "modular and extensible architecture"
+        },
+        "mature_product": {
+          "stability": "emphasis on stability and reliability",
+          "testing": "extensive testing including edge cases",
+          "documentation": "complete documentation ecosystem",
+          "architecture": "enterprise-grade architecture patterns"
+        }
+      }
+    },
+    "customizationPatterns": {
+      "configuration_inheritance": {
+        "base_configuration": "shared rules across all projects",
+        "project_type_overrides": "specific rules for project types",
+        "environment_overrides": "environment-specific customizations",
+        "team_overrides": "team-specific preferences"
+      },
+      "rule_prioritization": {
+        "security_rules": "highest priority - never overridable",
+        "quality_rules": "high priority - overridable with justification",
+        "style_rules": "medium priority - team preference",
+        "preference_rules": "low priority - individual preference"
+      },
+      "adaptive_rules": {
+        "project_analysis": "analyze project to suggest appropriate rules",
+        "usage_patterns": "adapt rules based on code patterns",
+        "team_feedback": "incorporate team feedback into rule suggestions",
+        "continuous_improvement": "evolve rules based on project outcomes"
+      }
+    },
+    "ruleCustomization": {
+      "severity_levels": {
+        "error": "blocks code execution or commits",
+        "warning": "highlights issues but allows progression",
+        "info": "provides guidance and suggestions",
+        "hint": "subtle suggestions for improvement"
+      },
+      "scope_configuration": {
+        "file_patterns": "apply rules to specific file types",
+        "directory_patterns": "scope rules to specific directories",
+        "branch_patterns": "different rules for different branches",
+        "user_patterns": "different rules for different team members"
+      },
+      "timing_configuration": {
+        "on_type": "real-time feedback while typing",
+        "on_save": "validation when saving files",
+        "on_commit": "checks during commit process",
+        "on_push": "validation during push operations"
+      }
+    },
+    "integrationRules": {
+      "ide_integration": {
+        "cursor_specific": "leverage Cursor's AI capabilities",
+        "vscode_compatibility": "ensure VS Code compatibility",
+        "jetbrains_support": "support for IntelliJ-based IDEs"
+      },
+      "tool_integration": {
+        "linters": "integrate with ESLint, Prettier, etc.",
+        "testing_frameworks": "work with Jest, Vitest, Playwright",
+        "build_tools": "integrate with Vite, Webpack, etc.",
+        "ci_cd_systems": "compatible with GitHub Actions, etc."
+      },
+      "workflow_integration": {
+        "git_hooks": "integrate with pre-commit and pre-push hooks",
+        "code_review": "enhance pull request workflows",
+        "deployment": "validate deployment readiness",
+        "monitoring": "integrate with monitoring and observability"
+      }
+    },
+    "ruleManagement": {
+      "rule_discovery": {
+        "project_analysis": "analyze project to recommend rules",
+        "best_practice_suggestions": "suggest industry best practices",
+        "team_pattern_recognition": "learn from team coding patterns"
+      },
+      "rule_maintenance": {
+        "periodic_review": "regular review of rule effectiveness",
+        "update_notifications": "notify of rule updates and improvements",
+        "deprecation_management": "handle deprecation of outdated rules"
+      },
+      "rule_sharing": {
+        "team_templates": "share rule configurations across teams",
+        "organization_standards": "enforce organization-wide standards",
+        "community_contributions": "contribute to community rule sets"
+      }
+    },
+    "projectSpecificOverrides": {
+      "legacy_projects": {
+        "gradual_migration": "allow gradual adoption of modern practices",
+        "compatibility_mode": "support for older technologies",
+        "migration_guidance": "provide migration paths and suggestions"
+      },
+      "experimental_projects": {
+        "relaxed_rules": "more flexible rules for experimentation",
+        "cutting_edge_practices": "support for latest technologies",
+        "rapid_iteration": "optimize for speed of development"
+      },
+      "enterprise_projects": {
+        "strict_compliance": "enforce strict compliance standards",
+        "audit_trail": "maintain detailed audit trails",
+        "governance": "support for governance and approval processes"
+      }
+    },
+    "enforcement": {
+      "checkpoints": [
+        "project_initialization",
+        "rule_configuration_changes",
+        "development_workflow_integration",
+        "team_onboarding"
+      ],
+      "actions": {
+        "customize": "apply project-specific customizations",
+        "adapt": "adjust rules based on project context",
+        "inherit": "apply inherited rule configurations",
+        "override": "allow justified rule overrides",
+        "suggest": "recommend optimal rule configurations",
+        "analyze": "analyze project for rule recommendations"
+      }
+    }
+  }
+}

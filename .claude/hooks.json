@@ -1,0 +1,440 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "black . --quiet 2>/dev/null || true",
+            "description": "Auto-format Python code"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "prettier --write **/*.{js,ts,jsx,tsx} --ignore-unknown 2>/dev/null || true",
+            "description": "Auto-format JavaScript/TypeScript code"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npm run lint:fix 2>/dev/null || eslint --fix . 2>/dev/null || echo 'Linting skipped - no configuration found'",
+            "description": "Auto-fix linting issues"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command", 
+            "command": "git add -A && git status --porcelain | wc -l | awk '{if($1>0) print \"\" $1 \" file(s) staged for commit\"; else print \"No changes to stage\"}'",
+            "description": "Auto-stage changes and report status"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npm test -- --run --reporter=silent 2>/dev/null | tail -3 || echo 'Tests need attention - run npm test for details'",
+            "description": "Run tests and report summary"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "grep -r 'console\\.log\\|debugger\\|alert(' . --include='*.js' --include='*.ts' --include='*.jsx' --include='*.tsx' --exclude-dir=node_modules 2>/dev/null | wc -l | awk '{if($1>0) print \"Warning: \" $1 \" debug statement(s) found\"}'",
+            "description": "Check for debug statements"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'File created: '$CLAUDE_TARGET_FILE' - Consider adding to git if needed'",
+            "description": "New file creation notification"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "git diff --stat \"$CLAUDE_TARGET_FILE\" 2>/dev/null | tail -1 || echo 'File modified: '$CLAUDE_TARGET_FILE",
+            "description": "File modification summary"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Command executed: '$CLAUDE_COMMAND' at '$(date)",
+            "description": "Command execution log"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "find . -name 'package*.json' -exec npm audit --audit-level=high --quiet {} \\; 2>/dev/null | head -5 || true",
+            "description": "Security audit for dependencies"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f 'CLAUDE.md' ]; then echo 'Remember to update CLAUDE.md if project structure changed'; fi",
+            "description": "CLAUDE.md update reminder"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "git log --oneline -1 | awk '{print \"Last commit: \" substr($0,1,50) \"...\"}'",
+            "description": "Show last commit for context"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "git log --oneline -1 | grep -E 'console\\.log' && echo 'Warning: console.log detected in commit' || true",
+            "description": "Check for console.log in recent commits"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "grep -r 'API_KEY\\|SECRET\\|PASSWORD' . --exclude-dir=node_modules --exclude-dir=.git 2>/dev/null | head -5 || true",
+            "description": "Scan for potential hardcoded secrets"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "git diff --cached --name-only | grep -E '\\.(js|ts|jsx|tsx)$' | xargs -r npm run lint:check 2>/dev/null || echo 'Lint check skipped - no linter configured'",
+            "description": "Pre-edit linting validation"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command", 
+            "command": "git status --porcelain | wc -l | awk '{if($1>10) print \"Warning: \" $1 \" uncommitted files. Consider committing changes.\"}'",
+            "description": "Check for excessive uncommitted changes"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ \"$CLAUDE_ENVIRONMENT\" = \"production\" ]; then echo 'CAUTION: Production environment detected. Proceed carefully.'; fi",
+            "description": "Production environment warning"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "find . -name '*.test.js' -o -name '*.test.ts' -o -name '*.spec.js' -o -name '*.spec.ts' | head -1 | grep -q '.' && echo 'Tests found - remember to update if needed' || echo 'No tests found - consider adding tests'",
+            "description": "Test file reminder"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "git branch | grep '\\*' | grep -E 'main|master|production' && echo 'Warning: Working on protected branch. Consider using feature branch.' || true",
+            "description": "Protected branch warning"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|MultiEdit", 
+        "hooks": [
+          {
+            "type": "command",
+            "command": "grep -n 'TODO\\|FIXME\\|HACK\\|XXX' \"$CLAUDE_TARGET_FILE\" 2>/dev/null | head -3 || true",
+            "description": "Check for existing technical debt markers"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f \"$CLAUDE_TARGET_FILE\" ]; then echo 'Warning: File exists and will be overwritten'; else echo 'Creating new file'; fi",
+            "description": "File overwrite warning"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"$CLAUDE_COMMAND\" | grep -E 'rm|del|sudo|chmod.*777' && echo 'Warning: Potentially destructive command detected' || true",
+            "description": "Destructive command detection"
+          }
+        ]
+      }
+    ],
+    "QualityGates": [
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npm run test:coverage 2>/dev/null | grep -E 'Statements.*[0-9]+%' | awk '{if(substr($NF,1,length($NF)-1)+0 < 80) print \"Quality Gate FAILED: Test coverage below 80% (\" $NF \")\"; else print \"Quality Gate PASSED: Test coverage \" $NF}'",
+            "description": "Validate test coverage quality gate"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npm run lint 2>/dev/null | grep -E 'error|Error' | wc -l | awk '{if($1>0) print \"Quality Gate FAILED: \" $1 \" linting errors found\"; else print \"Quality Gate PASSED: No linting errors\"}'",
+            "description": "Validate linting quality gate"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npm audit --audit-level=high 2>/dev/null | grep -E 'high|critical' | wc -l | awk '{if($1>0) print \"Quality Gate FAILED: \" $1 \" high/critical vulnerabilities\"; else print \"Quality Gate PASSED: No high/critical vulnerabilities\"}'",
+            "description": "Validate security quality gate"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "tsc --noEmit 2>/dev/null && echo 'Quality Gate PASSED: TypeScript compilation successful' || echo 'Quality Gate FAILED: TypeScript compilation errors'",
+            "description": "Validate TypeScript compilation quality gate"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "grep -r 'TODO\\|FIXME\\|HACK' . --include='*.js' --include='*.ts' --include='*.jsx' --include='*.tsx' --exclude-dir=node_modules 2>/dev/null | wc -l | awk '{if($1>20) print \"Quality Gate WARNING: \" $1 \" technical debt items (limit: 20)\"; else print \"Quality Gate PASSED: Technical debt within limits (\" $1 \"/20)\"}'",
+            "description": "Validate technical debt quality gate"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "git diff --cached --name-only | grep -E '\\.(js|ts|jsx|tsx)$' | wc -l | awk '{if($1>10) print \"Quality Gate WARNING: Large changeset (\" $1 \" files). Consider breaking into smaller commits.\"; else print \"Quality Gate PASSED: Reasonable changeset size (\" $1 \" files)\"}'",
+            "description": "Validate changeset size quality gate"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "find . -name '*.js' -o -name '*.ts' -o -name '*.jsx' -o -name '*.tsx' | grep -v node_modules | xargs wc -l | tail -1 | awk '{if($1>50000) print \"Quality Gate WARNING: Codebase size \" $1 \" lines (consider refactoring)\"; else print \"Quality Gate PASSED: Codebase size \" $1 \" lines\"}'",
+            "description": "Validate codebase size quality gate"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f 'package.json' ]; then node -e \"const pkg=require('./package.json'); const deps=Object.keys(pkg.dependencies||{}).length; const devDeps=Object.keys(pkg.devDependencies||{}).length; const total=deps+devDeps; console.log(total>100?'Quality Gate WARNING: '+total+' dependencies (consider consolidation)':'Quality Gate PASSED: '+total+' dependencies')\"; fi",
+            "description": "Validate dependency count quality gate"
+          }
+        ]
+      }
+    ],
+    "WorkflowTriggers": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "condition": "git diff --cached --name-only | grep -E 'package\\.json$'",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Workflow Trigger: Package.json changed - Run npm install and audit' && npm install --silent && npm audit --audit-level=moderate",
+            "description": "Package.json change workflow trigger"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "condition": "git diff --cached --name-only | grep -E '\\.(test|spec)\\.(js|ts|jsx|tsx)$'",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Workflow Trigger: Test files changed - Running test suite' && npm test -- --run",
+            "description": "Test file change workflow trigger"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit", 
+        "condition": "git diff --cached --name-only | grep -E 'tsconfig\\.json$'",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Workflow Trigger: TypeScript config changed - Validating compilation' && tsc --noEmit",
+            "description": "TypeScript config change workflow trigger"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "condition": "git diff --cached --name-only | grep -E '\\.(md|txt)$' | grep -iE 'readme|changelog|docs'",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Workflow Trigger: Documentation updated - Consider updating version or changelog'",
+            "description": "Documentation change workflow trigger"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "condition": "echo $CLAUDE_COMMAND | grep -E 'npm install|yarn add|pnpm add'",
+        "hooks": [
+          {
+            "type": "command", 
+            "command": "echo 'Workflow Trigger: New dependency added - Running security audit' && npm audit --audit-level=moderate",
+            "description": "Dependency addition workflow trigger"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "condition": "echo $CLAUDE_TARGET_FILE | grep -E '\\.env'",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Workflow Trigger: Environment file created - Ensure .env is in .gitignore' && grep -q '\\.env' .gitignore || echo '.env' >> .gitignore",
+            "description": "Environment file creation workflow trigger"
+          }
+        ]
+      }
+    ],
+    "CrossPlatformIntegration": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if command -v code >/dev/null 2>&1; then echo 'VS Code detected - Integration available'; fi",
+            "description": "VS Code integration detection"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit", 
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ \"$(uname)\" = 'Darwin' ]; then echo 'macOS platform detected'; elif [ \"$(uname)\" = 'Linux' ]; then echo 'Linux platform detected'; elif [ \"$OS\" = 'Windows_NT' ]; then echo 'Windows platform detected'; fi",
+            "description": "Platform detection for cross-platform compatibility"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f 'docker-compose.yml' ] || [ -f 'Dockerfile' ]; then echo 'Docker configuration detected - Container integration available'; fi",
+            "description": "Docker integration detection"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f '.github/workflows/main.yml' ] || [ -f '.github/workflows/ci.yml' ]; then echo 'GitHub Actions detected - CI/CD integration available'; fi",
+            "description": "GitHub Actions integration detection"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "git status",
+            "description": "Show git status on session end"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Session ended at '$(date)' - Summary: '$(git diff --cached --name-only | wc -l)' staged files, '$(git status --porcelain | wc -l)' total changes'",
+            "description": "Session summary on stop"
+          }
+        ]
+      }
+    ]
+  }
+}

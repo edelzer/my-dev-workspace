@@ -1,0 +1,94 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Production builds
+build/
+dist/
+out/
+.next/
+.nuxt/
+.output/
+
+# Runtime and logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Coverage and test results
+coverage/
+*.lcov
+.nyc_output/
+.coverage/
+junit.xml
+test-results/
+
+# Environment and config
+.env*
+!.env.example
+.DS_Store
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Package manager
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build artifacts and cache
+.cache/
+.parcel-cache/
+.tmp/
+tmp/
+temp/
+
+# Platform-specific
+Thumbs.db
+ehthumbs.db
+
+# Mobile development
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+web-build/
+
+# Desktop development
+dist-electron/
+release/
+
+# Documentation
+docs/build/
+.docusaurus/
+
+# Storybook
+storybook-static/
+
+# Generated files
+generated/
+auto-generated/
+*.generated.*
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+
+# Other
+.git/
+.svn/
+.hg/
+*.min.js
+*.min.css
+*.bundle.js

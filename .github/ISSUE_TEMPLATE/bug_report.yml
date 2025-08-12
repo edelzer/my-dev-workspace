@@ -1,0 +1,136 @@
+name: 🐛 Bug Report
+description: Report a bug or issue
+title: "[BUG] "
+labels: ["bug", "triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a bug! Please provide detailed information to help us identify and fix the issue.
+
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: Bug Description
+      description: Provide a clear and concise description of the bug.
+      placeholder: Describe what happened...
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: List the exact steps to reproduce the behavior.
+      placeholder: |
+        1. Go to...
+        2. Click on...
+        3. Scroll down to...
+        4. See error...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+      placeholder: Expected...
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual Behavior
+      description: What actually happened?
+      placeholder: Instead...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Bug Severity
+      description: How severe is this bug?
+      options:
+        - Critical (system crash, data loss)
+        - High (major feature broken)
+        - Medium (minor feature issues)
+        - Low (cosmetic issues)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: frequency
+    attributes:
+      label: Bug Frequency
+      description: How often does this bug occur?
+      options:
+        - Always (100% of the time)
+        - Often (75% of the time)
+        - Sometimes (50% of the time)
+        - Rarely (25% of the time)
+        - Once (unable to reproduce)
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Provide details about your environment.
+      placeholder: |
+        - OS: [e.g., Windows 11, macOS 13, Ubuntu 22.04]
+        - Browser: [e.g., Chrome 118, Firefox 119, Safari 17]
+        - Node.js version: [e.g., 20.5.0]
+        - Application version: [e.g., 1.2.3]
+    validations:
+      required: true
+
+  - type: textarea
+    id: error-logs
+    attributes:
+      label: Error Logs/Screenshots
+      description: Include any relevant error messages, logs, or screenshots.
+      placeholder: Paste error logs or drag screenshots here...
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: debugging-checks
+    attributes:
+      label: Debugging Checklist
+      description: Please check all debugging steps you've already tried.
+      options:
+        - label: Cleared browser cache/cookies
+        - label: Tried in incognito/private mode
+        - label: Tested in different browser
+        - label: Restarted the application
+        - label: Checked for console errors
+        - label: Updated to latest version
+        - label: Reviewed documentation
+
+  - type: dropdown
+    id: auto-fix
+    attributes:
+      label: Auto-Fix Request
+      description: Would you like Claude to attempt an automatic fix?
+      options:
+        - "No, I prefer manual debugging"
+        - "Yes, if it's a simple fix (Level 1-3)"
+        - "Yes, attempt any level fix"
+      default: 1
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context about the problem here.
+      placeholder: Additional information...
+    validations:
+      required: false

@@ -1,0 +1,221 @@
+{
+  "diagnosticErrorSharingIntegration": {
+    "version": "1.0.0",
+    "description": "Real-time error sharing and diagnostic integration between IDEs and Claude Code",
+    "integration_scope": {
+      "supported_ides": ["vscode", "cursor", "windsurf", "intellij", "pycharm", "webstorm"],
+      "error_types": ["syntax", "semantic", "runtime", "build", "test", "lint", "security"],
+      "sharing_modes": ["real_time", "batch", "on_demand", "triggered"]
+    },
+    "real_time_sharing": {
+      "error_detection": {
+        "ide_integration": {
+          "language_server_protocol": {
+            "enabled": true,
+            "diagnostic_providers": ["typescript", "eslint", "python", "java"],
+            "real_time_updates": true,
+            "batch_threshold": 5
+          },
+          "native_ide_apis": {
+            "vscode_diagnostic_api": "vscode.languages.getDiagnostics",
+            "intellij_inspection_api": "com.intellij.codeInspection.InspectionManager",
+            "error_polling_interval": "1_second"
+          }
+        },
+        "error_classification": {
+          "severity_levels": ["error", "warning", "info", "hint"],
+          "categories": ["syntax", "type", "logic", "style", "performance", "security"],
+          "priority_scoring": "weighted_algorithm_based_on_impact",
+          "context_enrichment": "add_surrounding_code_context"
+        }
+      },
+      "transmission_protocol": {
+        "communication_method": "websocket_with_http_fallback",
+        "data_format": "structured_json_with_metadata",
+        "compression": "gzip_for_large_payloads",
+        "encryption": "tls_1_3_with_certificate_pinning",
+        "authentication": "oauth2_with_refresh_tokens"
+      },
+      "error_aggregation": {
+        "deduplication": {
+          "enabled": true,
+          "matching_criteria": ["file_path", "line_number", "error_message", "rule_id"],
+          "time_window": "30_seconds",
+          "similarity_threshold": 0.8
+        },
+        "batching": {
+          "enabled": true,
+          "batch_size": 10,
+          "time_threshold": "5_seconds",
+          "priority_bypass": "immediate_for_critical_errors"
+        }
+      }
+    },
+    "claude_integration": {
+      "context_preparation": {
+        "code_context": {
+          "surrounding_lines": 10,
+          "related_files": "import_dependencies_and_usage",
+          "project_context": "package_json_tsconfig_relevant_configs",
+          "git_context": "recent_commits_and_branch_info"
+        },
+        "error_context": {
+          "error_history": "recent_similar_errors_in_project",
+          "resolution_history": "previous_successful_resolutions",
+          "team_knowledge": "shared_error_resolution_database",
+          "documentation_links": "relevant_documentation_and_guides"
+        }
+      },
+      "ai_analysis": {
+        "error_interpretation": {
+          "root_cause_analysis": "analyze_underlying_causes",
+          "impact_assessment": "evaluate_error_severity_and_scope",
+          "resolution_suggestions": "provide_multiple_resolution_options",
+          "explanation_quality": "detailed_but_accessible_explanations"
+        },
+        "solution_generation": {
+          "code_fixes": "generate_specific_code_corrections",
+          "configuration_fixes": "suggest_configuration_adjustments",
+          "workflow_improvements": "recommend_process_improvements",
+          "learning_resources": "provide_educational_content"
+        }
+      },
+      "response_delivery": {
+        "response_format": {
+          "structured_response": "categorized_solutions_with_confidence_scores",
+          "code_snippets": "syntax_highlighted_with_explanations",
+          "step_by_step_guides": "numbered_instructions_with_verification",
+          "related_resources": "links_to_documentation_and_examples"
+        },
+        "delivery_channels": {
+          "ide_integration": "display_directly_in_editor_as_code_actions",
+          "side_panel": "dedicated_diagnostic_panel_with_details",
+          "notifications": "non_intrusive_notifications_for_critical_issues",
+          "external_tools": "integration_with_issue_trackers_and_docs"
+        }
+      }
+    },
+    "diagnostic_aggregation_system": {
+      "multi_source_collection": {
+        "ide_diagnostics": {
+          "language_servers": "collect_from_typescript_python_java_servers",
+          "linting_tools": "eslint_pylint_checkstyle_integration",
+          "build_tools": "webpack_maven_gradle_error_collection",
+          "testing_frameworks": "jest_pytest_junit_failure_analysis"
+        },
+        "system_diagnostics": {
+          "performance_metrics": "cpu_memory_disk_usage_correlation",
+          "environment_info": "node_python_java_version_compatibility",
+          "configuration_state": "ide_settings_project_config_validation"
+        }
+      },
+      "correlation_engine": {
+        "error_relationships": {
+          "causal_analysis": "identify_root_cause_and_symptom_relationships",
+          "temporal_correlation": "analyze_error_occurrence_patterns",
+          "spatial_correlation": "identify_errors_in_related_code_sections",
+          "dependency_mapping": "map_errors_to_dependency_issues"
+        },
+        "pattern_recognition": {
+          "recurring_issues": "identify_frequently_occurring_error_patterns",
+          "environmental_factors": "correlate_errors_with_environment_changes",
+          "user_behavior": "analyze_error_patterns_related_to_user_actions",
+          "project_lifecycle": "identify_errors_specific_to_development_phases"
+        }
+      },
+      "prioritization_algorithms": {
+        "severity_weighting": {
+          "blocking_errors": "weight_10_immediate_attention_required",
+          "functionality_breaking": "weight_8_high_priority_resolution",
+          "performance_degrading": "weight_6_medium_priority",
+          "style_quality": "weight_3_low_priority_batch_resolution"
+        },
+        "context_weighting": {
+          "critical_path_code": "multiply_weight_by_2_for_main_functionality",
+          "recently_modified": "increase_weight_for_recent_changes",
+          "team_shared_code": "prioritize_errors_affecting_multiple_developers",
+          "production_bound": "highest_priority_for_deployment_ready_code"
+        },
+        "user_impact": {
+          "workflow_disruption": "prioritize_errors_blocking_development",
+          "learning_opportunity": "balance_educational_value_with_urgency",
+          "team_productivity": "consider_impact_on_overall_team_efficiency"
+        }
+      }
+    },
+    "error_resolution_workflows": {
+      "automated_resolution": {
+        "simple_fixes": {
+          "syntax_corrections": "auto_fix_missing_semicolons_brackets",
+          "import_resolution": "auto_add_missing_imports",
+          "formatting_issues": "auto_apply_code_formatting",
+          "common_typos": "auto_correct_common_variable_function_names"
+        },
+        "configuration_fixes": {
+          "missing_dependencies": "auto_install_missing_npm_packages",
+          "version_conflicts": "suggest_compatible_versions",
+          "configuration_errors": "auto_fix_common_config_mistakes",
+          "path_resolution": "auto_correct_file_path_references"
+        }
+      },
+      "guided_resolution": {
+        "step_by_step_assistance": {
+          "problem_explanation": "clear_explanation_of_error_cause",
+          "solution_options": "multiple_approaches_with_pros_cons",
+          "implementation_guidance": "detailed_steps_with_verification",
+          "testing_suggestions": "how_to_verify_fix_effectiveness"
+        },
+        "interactive_debugging": {
+          "variable_inspection": "guide_through_variable_state_analysis",
+          "execution_flow": "help_trace_code_execution_path",
+          "data_validation": "assist_with_input_output_verification",
+          "performance_analysis": "guide_through_performance_bottleneck_identification"
+        }
+      },
+      "learning_integration": {
+        "educational_content": {
+          "concept_explanation": "explain_underlying_programming_concepts",
+          "best_practices": "teach_practices_to_prevent_similar_errors",
+          "code_examples": "provide_examples_of_correct_implementations",
+          "documentation_links": "curated_links_to_authoritative_resources"
+        },
+        "skill_development": {
+          "debugging_techniques": "teach_systematic_debugging_approaches",
+          "code_review_skills": "help_develop_code_quality_assessment",
+          "testing_strategies": "guide_in_writing_effective_tests",
+          "architecture_patterns": "explain_design_patterns_and_best_practices"
+        }
+      }
+    },
+    "monitoring_and_analytics": {
+      "resolution_tracking": {
+        "success_metrics": {
+          "resolution_time": "measure_time_from_error_to_fix",
+          "resolution_effectiveness": "track_whether_fixes_prevent_recurrence",
+          "user_satisfaction": "collect_feedback_on_resolution_quality",
+          "learning_outcomes": "assess_knowledge_gained_from_resolutions"
+        },
+        "pattern_analysis": {
+          "common_error_types": "identify_most_frequent_error_categories",
+          "resolution_patterns": "analyze_most_effective_solution_approaches",
+          "user_preferences": "learn_preferred_resolution_styles",
+          "project_characteristics": "correlate_errors_with_project_attributes"
+        }
+      },
+      "continuous_improvement": {
+        "ai_model_refinement": {
+          "feedback_incorporation": "use_resolution_outcomes_to_improve_suggestions",
+          "context_learning": "learn_project_specific_patterns",
+          "user_adaptation": "adapt_to_individual_developer_preferences",
+          "domain_specialization": "develop_expertise_in_specific_technologies"
+        },
+        "workflow_optimization": {
+          "response_time_improvement": "optimize_analysis_and_response_generation",
+          "accuracy_enhancement": "improve_solution_relevance_and_correctness",
+          "user_experience": "streamline_interaction_and_presentation",
+          "integration_enhancement": "deepen_ide_integration_capabilities"
+        }
+      }
+    }
+  }
+}

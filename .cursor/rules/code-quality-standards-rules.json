@@ -1,0 +1,331 @@
+{
+  "codeQualityStandardsRules": {
+    "version": "1.0.0",
+    "enabled": true,
+    "description": "Cursor rules for enforcing code quality standards, best practices, and maintainability patterns",
+    "rules": [
+      {
+        "id": "typescript-strict-mode",
+        "severity": "warning",
+        "category": "typescript",
+        "description": "Enforce TypeScript strict mode configuration",
+        "filePattern": "tsconfig.json",
+        "requiredConfig": {
+          "strict": true,
+          "noImplicitAny": true,
+          "noImplicitReturns": true,
+          "noUnusedLocals": true,
+          "noUnusedParameters": true
+        },
+        "action": "enforce",
+        "message": "Enable TypeScript strict mode for better type safety"
+      },
+      {
+        "id": "eslint-configuration",
+        "severity": "warning",
+        "category": "linting",
+        "description": "Ensure ESLint configuration follows established standards",
+        "filePattern": "**/.eslintrc.{js,json,yaml}|eslint.config.{js,mjs}",
+        "requiredRules": [
+          "@typescript-eslint/no-explicit-any",
+          "@typescript-eslint/prefer-nullish-coalescing",
+          "@typescript-eslint/prefer-optional-chain",
+          "prefer-const",
+          "no-var",
+          "no-console"
+        ],
+        "action": "validate",
+        "message": "Follow established ESLint configuration standards"
+      },
+      {
+        "id": "function-complexity-limit",
+        "severity": "warning", 
+        "category": "complexity",
+        "description": "Limit function complexity and encourage decomposition",
+        "pattern": "function|const\\s+\\w+\\s*=\\s*\\(",
+        "maxCyclomaticComplexity": 10,
+        "maxLinesPerFunction": 50,
+        "action": "warn",
+        "message": "Consider breaking down complex functions into smaller, focused units"
+      },
+      {
+        "id": "naming-conventions",
+        "severity": "info",
+        "category": "naming",
+        "description": "Enforce consistent naming conventions",
+        "conventions": {
+          "variables": "camelCase",
+          "functions": "camelCase", 
+          "classes": "PascalCase",
+          "interfaces": "PascalCase",
+          "types": "PascalCase",
+          "constants": "UPPER_SNAKE_CASE",
+          "files": "kebab-case|camelCase"
+        },
+        "patterns": {
+          "react_components": "PascalCase",
+          "hook_functions": "use[A-Z]\\w*",
+          "test_files": ".*\\.(test|spec)\\.(js|ts|tsx)"
+        },
+        "action": "suggest",
+        "message": "Follow established naming conventions for consistency"
+      },
+      {
+        "id": "import-organization",
+        "severity": "info",
+        "category": "imports",
+        "description": "Organize imports in consistent order",
+        "importOrder": [
+          "react",
+          "external_libraries",
+          "internal_utilities",
+          "relative_imports",
+          "type_imports"
+        ],
+        "groupSeparation": true,
+        "sortWithinGroups": true,
+        "action": "format",
+        "message": "Organize imports: React → External → Internal → Relative → Types"
+      },
+      {
+        "id": "error-handling-patterns",
+        "severity": "warning",
+        "category": "error-handling",
+        "description": "Enforce proper error handling patterns",
+        "patterns": {
+          "async_functions": "try-catch required",
+          "promise_chains": "catch handler required",
+          "api_calls": "error boundary pattern",
+          "user_input": "validation and sanitization"
+        },
+        "requiredPatterns": [
+          "catch\\s*\\(",
+          "\\.catch\\s*\\(",
+          "ErrorBoundary",
+          "throw\\s+new\\s+Error"
+        ],
+        "action": "require",
+        "message": "Implement proper error handling for async operations and user interactions"
+      },
+      {
+        "id": "performance-patterns",
+        "severity": "info",
+        "category": "performance",
+        "description": "Encourage performance optimization patterns",
+        "patterns": {
+          "react_memo": "React.memo for expensive components",
+          "use_callback": "useCallback for event handlers in props",
+          "use_memo": "useMemo for expensive calculations",
+          "lazy_loading": "React.lazy for code splitting"
+        },
+        "triggers": {
+          "large_components": ">100 lines",
+          "expensive_operations": "map|filter|reduce on large arrays",
+          "frequent_rerenders": "useEffect without dependencies"
+        },
+        "action": "suggest",
+        "message": "Consider performance optimizations: memoization, lazy loading, code splitting"
+      },
+      {
+        "id": "accessibility-standards",
+        "severity": "warning",
+        "category": "accessibility",
+        "description": "Enforce accessibility best practices",
+        "requiredAttributes": {
+          "button": ["aria-label", "role"],
+          "img": ["alt"],
+          "input": ["aria-label", "aria-describedby"],
+          "form": ["aria-labelledby"],
+          "interactive_elements": ["tabIndex", "onKeyDown"]
+        },
+        "colorContrastMinimum": "4.5:1",
+        "keyboardNavigation": "required",
+        "action": "validate",
+        "message": "Ensure WCAG 2.1 AA compliance for accessibility"
+      },
+      {
+        "id": "test-coverage-requirements",
+        "severity": "warning",
+        "category": "testing",
+        "description": "Maintain adequate test coverage",
+        "coverageThresholds": {
+          "statements": 80,
+          "branches": 75,
+          "functions": 80,
+          "lines": 80
+        },
+        "requiredTestTypes": [
+          "unit_tests",
+          "integration_tests",
+          "component_tests"
+        ],
+        "testFilePattern": "**/*.(test|spec).(js|ts|tsx)",
+        "action": "track",
+        "message": "Maintain minimum 80% test coverage across all code types"
+      },
+      {
+        "id": "documentation-standards",
+        "severity": "info",
+        "category": "documentation",
+        "description": "Encourage proper documentation practices",
+        "requiredDocumentation": {
+          "public_functions": "JSDoc comments",
+          "complex_algorithms": "inline comments",
+          "api_endpoints": "OpenAPI/Swagger docs",
+          "components": "props documentation",
+          "hooks": "usage examples"
+        },
+        "docPatterns": {
+          "jsdoc": "/\\*\\*[\\s\\S]*?\\*/",
+          "typescript_docs": "//\\s*@param|@returns|@example"
+        },
+        "action": "encourage",
+        "message": "Add documentation for public APIs and complex logic"
+      },
+      {
+        "id": "security-code-patterns",
+        "severity": "error",
+        "category": "security",
+        "description": "Prevent insecure coding patterns",
+        "forbiddenPatterns": [
+          "innerHTML\\s*=",
+          "dangerouslySetInnerHTML",
+          "eval\\s*\\(",
+          "new\\s+Function\\s*\\(",
+          "document\\.write"
+        ],
+        "secureAlternatives": {
+          "innerHTML": "textContent or createElement",
+          "dangerouslySetInnerHTML": "sanitized HTML or markdown parser",
+          "eval": "JSON.parse or specific parsers"
+        },
+        "action": "block",
+        "message": "Use secure alternatives to prevent XSS and code injection"
+      },
+      {
+        "id": "dependency-management",
+        "severity": "warning",
+        "category": "dependencies",
+        "description": "Monitor and validate dependencies",
+        "packageJsonRules": {
+          "noDevDependenciesInProduction": true,
+          "lockFileRequired": true,
+          "vulnerabilityScanRequired": true,
+          "outdatedPackageWarning": "30 days"
+        },
+        "allowedLicenses": [
+          "MIT",
+          "Apache-2.0", 
+          "BSD-3-Clause",
+          "ISC"
+        ],
+        "action": "validate",
+        "message": "Validate dependencies for security, licensing, and maintenance"
+      },
+      {
+        "id": "bundle-size-optimization",
+        "severity": "info",
+        "category": "performance",
+        "description": "Monitor and optimize bundle sizes",
+        "sizeThresholds": {
+          "initial_bundle": "250KB",
+          "chunk_size": "100KB",
+          "asset_size": "500KB"
+        },
+        "optimizationTechniques": [
+          "tree_shaking",
+          "code_splitting",
+          "dynamic_imports",
+          "asset_compression"
+        ],
+        "action": "monitor",
+        "message": "Optimize bundle size through code splitting and tree shaking"
+      }
+    ],
+    "fileTypeRules": {
+      "typescript": {
+        "extensions": [".ts", ".tsx"],
+        "requiredConfig": "tsconfig.json",
+        "lintConfig": "eslint with @typescript-eslint",
+        "strictMode": true
+      },
+      "react": {
+        "extensions": [".tsx", ".jsx"],
+        "requiredPatterns": ["import React", "export default"],
+        "componentPatterns": "PascalCase naming",
+        "hooksRules": "prefix with 'use'"
+      },
+      "test": {
+        "extensions": [".test.ts", ".test.tsx", ".spec.ts", ".spec.tsx"],
+        "requiredFramework": "Jest|Vitest|Playwright",
+        "namingPattern": "describe/it pattern",
+        "coverageRequired": true
+      },
+      "configuration": {
+        "extensions": [".json", ".yaml", ".yml"],
+        "validation": "schema_validation",
+        "versionControl": "required",
+        "documentation": "required"
+      }
+    },
+    "qualityGates": {
+      "code_review": {
+        "linting_pass": "required",
+        "type_check_pass": "required", 
+        "test_coverage_met": "required",
+        "documentation_complete": "recommended"
+      },
+      "commit": {
+        "pre_commit_hooks": "required",
+        "conventional_commits": "recommended",
+        "issue_linking": "recommended"
+      },
+      "deployment": {
+        "all_tests_pass": "required",
+        "security_scan_clear": "required",
+        "performance_validated": "required",
+        "accessibility_tested": "required"
+      }
+    },
+    "integrations": {
+      "prettier": {
+        "enabled": true,
+        "configFile": "prettier.config.js",
+        "formatOnSave": true
+      },
+      "eslint": {
+        "enabled": true,
+        "configFile": "eslint.config.js",
+        "fixOnSave": true
+      },
+      "typescript": {
+        "enabled": true,
+        "strictMode": true,
+        "typeCheckOnSave": true
+      },
+      "testing": {
+        "framework": "Jest|Vitest",
+        "runOnSave": false,
+        "coverageReporting": true
+      }
+    },
+    "enforcement": {
+      "checkpoints": [
+        "file_save",
+        "commit_prepare", 
+        "pull_request",
+        "build_process"
+      ],
+      "actions": {
+        "enforce": "block_until_fixed",
+        "validate": "show_validation_errors",
+        "warn": "show_warning_message",
+        "suggest": "show_improvement_suggestions",
+        "format": "auto_format_code",
+        "track": "log_metrics",
+        "monitor": "track_trends",
+        "encourage": "show_best_practices"
+      }
+    }
+  }
+}

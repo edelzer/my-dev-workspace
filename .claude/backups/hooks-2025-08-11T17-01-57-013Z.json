@@ -1,0 +1,63 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "black . --quiet 2>/dev/null || true"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "prettier --write **/*.{js,ts,jsx,tsx} --ignore-unknown 2>/dev/null || true"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npm test 2>/dev/null || echo 'Tests need attention'"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "git log --oneline -1 | grep -E 'console\\.log' && echo 'Warning: console.log detected in commit' || true"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "grep -r 'API_KEY\\|SECRET\\|PASSWORD' . --exclude-dir=node_modules --exclude-dir=.git 2>/dev/null | head -5 || true"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "git status"
+          }
+        ]
+      }
+    ]
+  }
+}
