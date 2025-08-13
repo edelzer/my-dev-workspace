@@ -1,3 +1,8 @@
+---
+name: agents-documentation
+description: Comprehensive guide for Claude Code sub-agent development and best practices
+---
+
 # Claude Code Sub-Agent Best Practices Guide
 
 ## 🎯 Core Best Practices from Anthropic Documentation
