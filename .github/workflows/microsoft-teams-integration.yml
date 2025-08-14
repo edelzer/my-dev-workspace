@@ -1,0 +1,699 @@
+name: Microsoft Teams Enterprise Integration
+run-name: Teams Notification - ${{ github.event_name }} ${{ github.ref_name }}
+
+on:
+  push:
+    branches: [main, develop, release/*]
+  pull_request:
+    types: [opened, closed, reopened, ready_for_review]
+  issues:
+    types: [opened, closed, labeled]
+  release:
+    types: [published, prereleased]
+  deployment_status:
+  workflow_run:
+    workflows: ["Enterprise CI with AI Review Systems", "Enterprise Deployment Pipeline"]
+    types: [completed]
+  schedule:
+    # Daily team status update
+    - cron: '0 9 * * 1-5'  # 9 AM UTC on weekdays
+  workflow_dispatch:
+    inputs:
+      notification_type:
+        description: 'Type of Teams notification'
+        required: true
+        default: 'status-update'
+        type: choice
+        options:
+        - status-update
+        - deployment-alert
+        - security-alert
+        - release-announcement
+        - custom-message
+      message:
+        description: 'Custom message (if custom-message type)'
+        required: false
+        type: string
+      urgent:
+        description: 'Mark as urgent notification'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+  TEAMS_WEBHOOK_DEV: ${{ secrets.TEAMS_WEBHOOK_DEV }}
+  TEAMS_WEBHOOK_SECURITY: ${{ secrets.TEAMS_WEBHOOK_SECURITY }}
+  TEAMS_WEBHOOK_LEADERSHIP: ${{ secrets.TEAMS_WEBHOOK_LEADERSHIP }}
+
+jobs:
+  # Intelligent Teams Notification Router
+  teams-notification-router:
+    name: Teams Notification Router
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+
+    outputs:
+      notification_channels: ${{ steps.channel-router.outputs.notification_channels }}
+      message_priority: ${{ steps.channel-router.outputs.message_priority }}
+      notification_data: ${{ steps.channel-router.outputs.notification_data }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Intelligent Channel Router
+        id: channel-router
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const eventName = context.eventName;
+            const ref = context.ref;
+            const actor = context.actor;
+            
+            // Determine notification channels and priority
+            let channels = [];
+            let priority = 'normal';
+            let notificationData = {};
+            
+            // Channel routing logic
+            switch (eventName) {
+              case 'push':
+                if (ref === 'refs/heads/main') {
+                  channels = ['general', 'dev'];
+                  priority = 'high';
+                } else if (ref.includes('release/')) {
+                  channels = ['general', 'dev', 'leadership'];
+                  priority = 'high';
+                } else {
+                  channels = ['dev'];
+                  priority = 'normal';
+                }
+                break;
+                
+              case 'pull_request':
+                if (context.payload.pull_request.draft === false) {
+                  channels = ['dev'];
+                  priority = 'normal';
+                }
+                break;
+                
+              case 'issues':
+                const labels = context.payload.issue.labels?.map(l => l.name) || [];
+                if (labels.includes('security') || labels.includes('urgent')) {
+                  channels = ['security', 'leadership'];
+                  priority = 'urgent';
+                } else if (labels.includes('bug')) {
+                  channels = ['dev'];
+                  priority = 'high';
+                } else {
+                  channels = ['dev'];
+                  priority = 'normal';
+                }
+                break;
+                
+              case 'release':
+                channels = ['general', 'leadership'];
+                priority = 'high';
+                break;
+                
+              case 'deployment_status':
+                if (context.payload.deployment_status.state === 'failure') {
+                  channels = ['dev', 'security', 'leadership'];
+                  priority = 'urgent';
+                } else if (context.payload.deployment_status.environment === 'production') {
+                  channels = ['general', 'leadership'];
+                  priority = 'high';
+                } else {
+                  channels = ['dev'];
+                  priority = 'normal';
+                }
+                break;
+                
+              case 'workflow_run':
+                if (context.payload.workflow_run.conclusion === 'failure') {
+                  channels = ['dev'];
+                  priority = 'high';
+                }
+                break;
+                
+              case 'schedule':
+                channels = ['general'];
+                priority = 'normal';
+                break;
+                
+              case 'workflow_dispatch':
+                const notificationType = '${{ inputs.notification_type }}';
+                const urgent = '${{ inputs.urgent }}' === 'true';
+                
+                switch (notificationType) {
+                  case 'security-alert':
+                    channels = ['security', 'leadership'];
+                    priority = urgent ? 'urgent' : 'high';
+                    break;
+                  case 'deployment-alert':
+                    channels = ['dev', 'leadership'];
+                    priority = urgent ? 'urgent' : 'high';
+                    break;
+                  case 'release-announcement':
+                    channels = ['general', 'leadership'];
+                    priority = 'high';
+                    break;
+                  default:
+                    channels = ['general'];
+                    priority = urgent ? 'high' : 'normal';
+                }
+                break;
+            }
+            
+            // Build notification data
+            notificationData = {
+              event: eventName,
+              ref: ref,
+              actor: actor,
+              repository: context.repo.owner + '/' + context.repo.repo,
+              timestamp: new Date().toISOString(),
+              priority: priority,
+              channels: channels,
+              runId: context.runId,
+              sha: context.sha
+            };
+            
+            core.setOutput('notification_channels', JSON.stringify(channels));
+            core.setOutput('message_priority', priority);
+            core.setOutput('notification_data', JSON.stringify(notificationData));
+            
+            console.log(`Channels: ${channels.join(', ')}`);
+            console.log(`Priority: ${priority}`);
+
+  # Development Team Notifications
+  teams-dev-notifications:
+    name: Development Team Notifications
+    runs-on: ubuntu-latest
+    needs: teams-notification-router
+    if: contains(fromJson(needs.teams-notification-router.outputs.notification_channels), 'dev')
+    
+    steps:
+      - name: Send Development Team Notification
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const notificationData = JSON.parse('${{ needs.teams-notification-router.outputs.notification_data }}');
+            const priority = '${{ needs.teams-notification-router.outputs.message_priority }}';
+            
+            // Build Teams adaptive card
+            let card = {};
+            let webhookUrl = process.env.TEAMS_WEBHOOK_DEV || process.env.TEAMS_WEBHOOK_URL;
+            
+            switch (context.eventName) {
+              case 'push':
+                card = {
+                  "@type": "MessageCard",
+                  "@context": "http://schema.org/extensions",
+                  "themeColor": notificationData.ref === 'refs/heads/main' ? "0076D7" : "36a64f",
+                  "summary": `Code Push to ${notificationData.ref.replace('refs/heads/', '')}`,
+                  "sections": [{
+                    "activityTitle": `📝 Code Push by ${notificationData.actor}`,
+                    "activitySubtitle": `Repository: ${notificationData.repository}`,
+                    "activityImage": `https://github.com/${notificationData.actor}.png`,
+                    "facts": [
+                      { "name": "Branch", "value": notificationData.ref.replace('refs/heads/', '') },
+                      { "name": "Commit", "value": notificationData.sha.substring(0, 7) },
+                      { "name": "Priority", "value": priority.toUpperCase() }
+                    ],
+                    "markdown": true
+                  }],
+                  "potentialAction": [{
+                    "@type": "OpenUri",
+                    "name": "View Changes",
+                    "targets": [{
+                      "os": "default",
+                      "uri": `https://github.com/${notificationData.repository}/commit/${notificationData.sha}`
+                    }]
+                  }]
+                };
+                break;
+                
+              case 'pull_request':
+                const pr = context.payload.pull_request;
+                const prAction = context.payload.action;
+                
+                card = {
+                  "@type": "MessageCard",
+                  "@context": "http://schema.org/extensions",
+                  "themeColor": prAction === 'opened' ? "36a64f" : prAction === 'closed' ? (pr.merged ? "6f42c1" : "d73a49") : "fbca04",
+                  "summary": `Pull Request ${prAction}: ${pr.title}`,
+                  "sections": [{
+                    "activityTitle": `🔄 Pull Request ${prAction.toUpperCase()}`,
+                    "activitySubtitle": pr.title,
+                    "activityImage": `https://github.com/${pr.user.login}.png`,
+                    "facts": [
+                      { "name": "Author", "value": pr.user.login },
+                      { "name": "Target Branch", "value": pr.base.ref },
+                      { "name": "Source Branch", "value": pr.head.ref },
+                      { "name": "Files Changed", "value": pr.changed_files?.toString() || "N/A" },
+                      { "name": "Status", "value": pr.draft ? "Draft" : "Ready for Review" }
+                    ],
+                    "text": pr.body ? pr.body.substring(0, 200) + (pr.body.length > 200 ? "..." : "") : "No description provided",
+                    "markdown": true
+                  }],
+                  "potentialAction": [{
+                    "@type": "OpenUri",
+                    "name": "Review Pull Request",
+                    "targets": [{
+                      "os": "default",
+                      "uri": pr.html_url
+                    }]
+                  }]
+                };
+                break;
+                
+              case 'workflow_run':
+                const workflowRun = context.payload.workflow_run;
+                
+                card = {
+                  "@type": "MessageCard",
+                  "@context": "http://schema.org/extensions",
+                  "themeColor": workflowRun.conclusion === 'success' ? "36a64f" : workflowRun.conclusion === 'failure' ? "d73a49" : "fbca04",
+                  "summary": `Workflow ${workflowRun.name} ${workflowRun.conclusion}`,
+                  "sections": [{
+                    "activityTitle": `⚙️ CI/CD Workflow ${workflowRun.conclusion?.toUpperCase() || 'COMPLETED'}`,
+                    "activitySubtitle": workflowRun.name,
+                    "facts": [
+                      { "name": "Workflow", "value": workflowRun.name },
+                      { "name": "Branch", "value": workflowRun.head_branch },
+                      { "name": "Actor", "value": workflowRun.actor?.login || 'System' },
+                      { "name": "Duration", "value": `${Math.round((new Date(workflowRun.updated_at) - new Date(workflowRun.created_at)) / 1000 / 60)}m` },
+                      { "name": "Status", "value": workflowRun.conclusion?.toUpperCase() || 'UNKNOWN' }
+                    ],
+                    "markdown": true
+                  }],
+                  "potentialAction": [{
+                    "@type": "OpenUri",
+                    "name": "View Workflow Run",
+                    "targets": [{
+                      "os": "default",
+                      "uri": workflowRun.html_url
+                    }]
+                  }]
+                };
+                break;
+                
+              default:
+                card = {
+                  "@type": "MessageCard",
+                  "@context": "http://schema.org/extensions",
+                  "themeColor": "0076D7",
+                  "summary": `GitHub Event: ${context.eventName}`,
+                  "sections": [{
+                    "activityTitle": `📢 ${context.eventName.toUpperCase()} Event`,
+                    "activitySubtitle": `Repository: ${notificationData.repository}`,
+                    "facts": [
+                      { "name": "Event", "value": context.eventName },
+                      { "name": "Actor", "value": notificationData.actor },
+                      { "name": "Priority", "value": priority.toUpperCase() }
+                    ],
+                    "markdown": true
+                  }]
+                };
+            }
+            
+            // Send to Teams
+            if (webhookUrl) {
+              const response = await fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(card)
+              });
+              
+              if (response.ok) {
+                console.log('✅ Teams notification sent successfully to dev channel');
+              } else {
+                console.error('❌ Failed to send Teams notification:', response.statusText);
+              }
+            } else {
+              console.log('⚠️ Teams webhook URL not configured for dev channel');
+            }
+
+  # Security Team Notifications
+  teams-security-notifications:
+    name: Security Team Notifications
+    runs-on: ubuntu-latest
+    needs: teams-notification-router
+    if: contains(fromJson(needs.teams-notification-router.outputs.notification_channels), 'security')
+    
+    steps:
+      - name: Send Security Team Notification
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const notificationData = JSON.parse('${{ needs.teams-notification-router.outputs.notification_data }}');
+            const priority = '${{ needs.teams-notification-router.outputs.message_priority }}';
+            
+            let card = {};
+            let webhookUrl = process.env.TEAMS_WEBHOOK_SECURITY || process.env.TEAMS_WEBHOOK_URL;
+            
+            if (context.eventName === 'issues') {
+              const issue = context.payload.issue;
+              const labels = issue.labels?.map(l => l.name) || [];
+              const isSecurityIssue = labels.includes('security') || labels.includes('vulnerability');
+              
+              card = {
+                "@type": "MessageCard",
+                "@context": "http://schema.org/extensions",
+                "themeColor": priority === 'urgent' ? "d73a49" : "ff6d00",
+                "summary": `🔒 Security Issue: ${issue.title}`,
+                "sections": [{
+                  "activityTitle": "🚨 SECURITY ALERT",
+                  "activitySubtitle": issue.title,
+                  "activityImage": `https://github.com/${issue.user.login}.png`,
+                  "facts": [
+                    { "name": "Reporter", "value": issue.user.login },
+                    { "name": "Priority", "value": priority.toUpperCase() },
+                    { "name": "Labels", "value": labels.join(', ') || 'None' },
+                    { "name": "Issue #", "value": issue.number.toString() }
+                  ],
+                  "text": issue.body ? issue.body.substring(0, 300) + (issue.body.length > 300 ? "..." : "") : "No description provided",
+                  "markdown": true
+                }],
+                "potentialAction": [{
+                  "@type": "OpenUri",
+                  "name": "🔍 Investigate Issue",
+                  "targets": [{
+                    "os": "default",
+                    "uri": issue.html_url
+                  }]
+                }]
+              };
+            } else if (context.eventName === 'deployment_status') {
+              const deployment = context.payload.deployment_status;
+              
+              card = {
+                "@type": "MessageCard",
+                "@context": "http://schema.org/extensions",
+                "themeColor": deployment.state === 'failure' ? "d73a49" : "36a64f",
+                "summary": `🚀 Deployment ${deployment.state}: ${deployment.environment}`,
+                "sections": [{
+                  "activityTitle": `🔐 Deployment Security Alert`,
+                  "activitySubtitle": `Environment: ${deployment.environment}`,
+                  "facts": [
+                    { "name": "Environment", "value": deployment.environment },
+                    { "name": "Status", "value": deployment.state.toUpperCase() },
+                    { "name": "Target URL", "value": deployment.target_url || 'N/A' },
+                    { "name": "Description", "value": deployment.description || 'No description' }
+                  ],
+                  "markdown": true
+                }],
+                "potentialAction": [{
+                  "@type": "OpenUri",
+                  "name": "🔍 Security Dashboard",
+                  "targets": [{
+                    "os": "default",
+                    "uri": deployment.target_url || `https://github.com/${notificationData.repository}`
+                  }]
+                }]
+              };
+            }
+            
+            // Send to Teams Security Channel
+            if (webhookUrl && Object.keys(card).length > 0) {
+              const response = await fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(card)
+              });
+              
+              if (response.ok) {
+                console.log('✅ Teams security notification sent successfully');
+              } else {
+                console.error('❌ Failed to send Teams security notification:', response.statusText);
+              }
+            }
+
+  # Leadership Notifications
+  teams-leadership-notifications:
+    name: Leadership Notifications
+    runs-on: ubuntu-latest
+    needs: teams-notification-router
+    if: contains(fromJson(needs.teams-notification-router.outputs.notification_channels), 'leadership')
+    
+    steps:
+      - name: Send Leadership Notification
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const notificationData = JSON.parse('${{ needs.teams-notification-router.outputs.notification_data }}');
+            const priority = '${{ needs.teams-notification-router.outputs.message_priority }}';
+            
+            let card = {};
+            let webhookUrl = process.env.TEAMS_WEBHOOK_LEADERSHIP || process.env.TEAMS_WEBHOOK_URL;
+            
+            if (context.eventName === 'release') {
+              const release = context.payload.release;
+              
+              card = {
+                "@type": "MessageCard",
+                "@context": "http://schema.org/extensions",
+                "themeColor": release.prerelease ? "fbca04" : "6f42c1",
+                "summary": `🚀 Release ${release.tag_name} Published`,
+                "sections": [{
+                  "activityTitle": `📦 ${release.prerelease ? 'Pre-Release' : 'Release'} Published`,
+                  "activitySubtitle": release.name || release.tag_name,
+                  "facts": [
+                    { "name": "Version", "value": release.tag_name },
+                    { "name": "Type", "value": release.prerelease ? "Pre-Release" : "Production Release" },
+                    { "name": "Published By", "value": release.author?.login || 'System' },
+                    { "name": "Assets", "value": release.assets?.length?.toString() || '0' }
+                  ],
+                  "text": release.body ? release.body.substring(0, 400) + (release.body.length > 400 ? "..." : "") : "No release notes provided",
+                  "markdown": true
+                }],
+                "potentialAction": [{
+                  "@type": "OpenUri",
+                  "name": "📋 View Release",
+                  "targets": [{
+                    "os": "default",
+                    "uri": release.html_url
+                  }]
+                }]
+              };
+            } else if (context.eventName === 'deployment_status') {
+              const deployment = context.payload.deployment_status;
+              
+              if (deployment.environment === 'production') {
+                card = {
+                  "@type": "MessageCard",
+                  "@context": "http://schema.org/extensions",
+                  "themeColor": deployment.state === 'success' ? "36a64f" : "d73a49",
+                  "summary": `🚀 Production Deployment ${deployment.state}`,
+                  "sections": [{
+                    "activityTitle": `🏢 Production Deployment ${deployment.state?.toUpperCase()}`,
+                    "activitySubtitle": `Environment: ${deployment.environment}`,
+                    "facts": [
+                      { "name": "Environment", "value": deployment.environment },
+                      { "name": "Status", "value": deployment.state?.toUpperCase() || 'UNKNOWN' },
+                      { "name": "Deployer", "value": notificationData.actor },
+                      { "name": "Repository", "value": notificationData.repository }
+                    ],
+                    "text": deployment.description || "Production deployment status update",
+                    "markdown": true
+                  }],
+                  "potentialAction": [{
+                    "@type": "OpenUri",
+                    "name": "🔍 View Deployment",
+                    "targets": [{
+                      "os": "default",
+                      "uri": deployment.target_url || `https://github.com/${notificationData.repository}/deployments`
+                    }]
+                  }]
+                };
+              }
+            } else if (context.eventName === 'issues') {
+              const issue = context.payload.issue;
+              const labels = issue.labels?.map(l => l.name) || [];
+              
+              if (labels.includes('urgent') || labels.includes('security') || labels.includes('critical')) {
+                card = {
+                  "@type": "MessageCard",
+                  "@context": "http://schema.org/extensions",
+                  "themeColor": "d73a49",
+                  "summary": `🚨 Critical Issue: ${issue.title}`,
+                  "sections": [{
+                    "activityTitle": "🚨 CRITICAL ISSUE ALERT",
+                    "activitySubtitle": issue.title,
+                    "facts": [
+                      { "name": "Issue #", "value": issue.number.toString() },
+                      { "name": "Reporter", "value": issue.user.login },
+                      { "name": "Priority", "value": "CRITICAL" },
+                      { "name": "Labels", "value": labels.join(', ') }
+                    ],
+                    "text": issue.body ? issue.body.substring(0, 200) + (issue.body.length > 200 ? "..." : "") : "No description provided",
+                    "markdown": true
+                  }],
+                  "potentialAction": [{
+                    "@type": "OpenUri",
+                    "name": "🔍 Review Issue",
+                    "targets": [{
+                      "os": "default",
+                      "uri": issue.html_url
+                    }]
+                  }]
+                };
+              }
+            }
+            
+            // Send to Teams Leadership Channel
+            if (webhookUrl && Object.keys(card).length > 0) {
+              const response = await fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(card)
+              });
+              
+              if (response.ok) {
+                console.log('✅ Teams leadership notification sent successfully');
+              } else {
+                console.error('❌ Failed to send Teams leadership notification:', response.statusText);
+              }
+            }
+
+  # General Team Notifications
+  teams-general-notifications:
+    name: General Team Notifications
+    runs-on: ubuntu-latest
+    needs: teams-notification-router
+    if: contains(fromJson(needs.teams-notification-router.outputs.notification_channels), 'general')
+    
+    steps:
+      - name: Daily Status Update
+        if: github.event_name == 'schedule'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Generate daily team status update
+            const today = new Date().toISOString().split('T')[0];
+            const yesterday = new Date(Date.now() - 24*60*60*1000).toISOString().split('T')[0];
+            
+            // Get recent activity (simplified for demo)
+            const { data: commits } = await github.rest.repos.listCommits({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              since: `${yesterday}T00:00:00Z`,
+              until: `${today}T00:00:00Z`
+            });
+            
+            const { data: prs } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'all',
+              sort: 'updated',
+              direction: 'desc',
+              per_page: 10
+            });
+            
+            const recentPRs = prs.filter(pr => 
+              new Date(pr.updated_at) > new Date(Date.now() - 24*60*60*1000)
+            );
+            
+            const card = {
+              "@type": "MessageCard",
+              "@context": "http://schema.org/extensions",
+              "themeColor": "0076D7",
+              "summary": `Daily Development Status - ${today}`,
+              "sections": [{
+                "activityTitle": "📊 Daily Development Status",
+                "activitySubtitle": `Repository: ${context.repo.owner}/${context.repo.repo}`,
+                "facts": [
+                  { "name": "📝 Commits (24h)", "value": commits.length.toString() },
+                  { "name": "🔄 PR Activity", "value": recentPRs.length.toString() },
+                  { "name": "📅 Date", "value": today },
+                  { "name": "📊 Report Type", "value": "Daily Status" }
+                ],
+                "text": `**Recent Activity Summary:**\n- ${commits.length} commits pushed\n- ${recentPRs.length} pull requests updated\n- Repository health: Good ✅`,
+                "markdown": true
+              }],
+              "potentialAction": [{
+                "@type": "OpenUri",
+                "name": "📈 View Repository",
+                "targets": [{
+                  "os": "default",
+                  "uri": `https://github.com/${context.repo.owner}/${context.repo.repo}`
+                }]
+              }]
+            };
+            
+            const webhookUrl = process.env.TEAMS_WEBHOOK_URL;
+            if (webhookUrl) {
+              const response = await fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(card)
+              });
+              
+              if (response.ok) {
+                console.log('✅ Daily status update sent to Teams');
+              } else {
+                console.error('❌ Failed to send daily status update:', response.statusText);
+              }
+            }
+
+      - name: Custom Notification
+        if: github.event_name == 'workflow_dispatch' && inputs.notification_type == 'custom-message'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const customMessage = '${{ inputs.message }}';
+            const urgent = '${{ inputs.urgent }}' === 'true';
+            
+            const card = {
+              "@type": "MessageCard",
+              "@context": "http://schema.org/extensions",
+              "themeColor": urgent ? "d73a49" : "0076D7",
+              "summary": `${urgent ? '🚨 URGENT: ' : '📢 '}Custom Notification`,
+              "sections": [{
+                "activityTitle": `${urgent ? '🚨 URGENT NOTIFICATION' : '📢 Team Notification'}`,
+                "activitySubtitle": `From: ${context.actor}`,
+                "facts": [
+                  { "name": "Sender", "value": context.actor },
+                  { "name": "Priority", "value": urgent ? "URGENT" : "Normal" },
+                  { "name": "Repository", "value": `${context.repo.owner}/${context.repo.repo}` }
+                ],
+                "text": customMessage || "No message provided",
+                "markdown": true
+              }],
+              "potentialAction": [{
+                "@type": "OpenUri",
+                "name": "📋 View Repository",
+                "targets": [{
+                  "os": "default",
+                  "uri": `https://github.com/${context.repo.owner}/${context.repo.repo}`
+                }]
+              }]
+            };
+            
+            const webhookUrl = process.env.TEAMS_WEBHOOK_URL;
+            if (webhookUrl) {
+              const response = await fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(card)
+              });
+              
+              if (response.ok) {
+                console.log('✅ Custom notification sent to Teams');
+              } else {
+                console.error('❌ Failed to send custom notification:', response.statusText);
+              }
+            }

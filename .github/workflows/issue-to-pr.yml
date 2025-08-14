@@ -100,10 +100,131 @@ jobs:
           git checkout -b "${{ steps.analysis.outputs.branch_name }}"
           git push origin "${{ steps.analysis.outputs.branch_name }}"
 
-  implement-solution:
-    name: Claude Implementation
+  bmad-analysis:
+    name: BMAD Multi-Agent Analysis
     runs-on: ubuntu-latest
     needs: analyze-issue
+    if: needs.analyze-issue.outputs.should_implement == 'true'
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+    outputs:
+      bmad_recommendation: ${{ steps.bmad-analysis.outputs.bmad_recommendation }}
+      agent_assignment: ${{ steps.bmad-analysis.outputs.agent_assignment }}
+      coordination_plan: ${{ steps.bmad-analysis.outputs.coordination_plan }}
+
+    steps:
+      - name: Checkout implementation branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.analyze-issue.outputs.branch_name }}
+
+      - name: BMAD Multi-Agent Coordination Analysis
+        id: bmad-analysis
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const implementationPlan = JSON.parse('${{ needs.analyze-issue.outputs.implementation_plan }}');
+            const issueBody = issue.body || '';
+            const issueTitle = issue.title || '';
+            
+            // Analyze issue content for BMAD agent assignment
+            const content = (issueTitle + ' ' + issueBody).toLowerCase();
+            
+            // Define agent assignment patterns
+            const agentPatterns = {
+              frontend: ['ui', 'component', 'react', 'vue', 'frontend', 'interface', 'styling', 'css', 'design'],
+              backend: ['api', 'server', 'database', 'endpoint', 'service', 'backend', 'auth', 'middleware'],
+              security: ['security', 'auth', 'permission', 'vulnerability', 'encryption', 'token', 'oauth'],
+              testing: ['test', 'testing', 'spec', 'coverage', 'validation', 'e2e', 'integration'],
+              architecture: ['architecture', 'design', 'structure', 'refactor', 'system', 'framework'],
+              devops: ['deploy', 'ci', 'cd', 'pipeline', 'docker', 'build', 'release']
+            };
+            
+            // Determine primary agent assignment
+            let primaryAgent = 'spec-developer'; // Default full-stack agent
+            let secondaryAgents = [];
+            
+            Object.entries(agentPatterns).forEach(([agent, keywords]) => {
+              const matches = keywords.filter(keyword => content.includes(keyword)).length;
+              if (matches > 0) {
+                if (agent === 'frontend' || agent === 'backend') {
+                  primaryAgent = `${agent}-developer`;
+                } else if (agent === 'security') {
+                  primaryAgent = 'security-specialist';
+                  secondaryAgents.push('spec-reviewer');
+                } else if (agent === 'testing') {
+                  primaryAgent = 'spec-tester';
+                  secondaryAgents.push('spec-reviewer');
+                } else if (agent === 'architecture') {
+                  primaryAgent = 'spec-architect';
+                  secondaryAgents.push('spec-planner');
+                }
+              }
+            });
+            
+            // Create BMAD coordination plan
+            const coordinationPlan = {
+              primaryAgent: primaryAgent,
+              secondaryAgents: secondaryAgents,
+              requiresBMAD: implementationPlan.complexity === 'high' || secondaryAgents.length > 0,
+              planningPhase: implementationPlan.complexity === 'high',
+              securityReview: implementationPlan.securityConsiderations,
+              testingRequired: implementationPlan.testingRequired,
+              estimatedAgents: 1 + secondaryAgents.length + (implementationPlan.complexity === 'high' ? 2 : 0)
+            };
+            
+            // Generate BMAD recommendation
+            const bmadRecommendation = {
+              useMultiAgent: coordinationPlan.requiresBMAD,
+              workflow: coordinationPlan.planningPhase ? 'full-bmad' : 'targeted-implementation',
+              phases: [
+                ...(coordinationPlan.planningPhase ? ['spec-analyst', 'spec-architect', 'spec-planner'] : []),
+                coordinationPlan.primaryAgent,
+                ...coordinationPlan.secondaryAgents,
+                ...(coordinationPlan.testingRequired ? ['spec-tester'] : []),
+                ...(coordinationPlan.securityReview ? ['security-specialist'] : []),
+                'spec-validator'
+              ]
+            };
+            
+            core.setOutput('bmad_recommendation', JSON.stringify(bmadRecommendation));
+            core.setOutput('agent_assignment', JSON.stringify(coordinationPlan));
+            core.setOutput('coordination_plan', JSON.stringify(coordinationPlan));
+            
+            // Comment with BMAD analysis
+            const bmadComment = `## 🤖 BMAD Multi-Agent Coordination Analysis
+            
+            **Primary Agent Assignment:** \`${coordinationPlan.primaryAgent}\`
+            **Secondary Agents:** ${coordinationPlan.secondaryAgents.length > 0 ? coordinationPlan.secondaryAgents.map(a => `\`${a}\``).join(', ') : 'None'}
+            **Multi-Agent Workflow:** ${bmadRecommendation.useMultiAgent ? '✅ Recommended' : '❌ Single agent sufficient'}
+            
+            **Coordination Plan:**
+            - **Workflow Type:** ${bmadRecommendation.workflow}
+            - **Estimated Agents:** ${coordinationPlan.estimatedAgents}
+            - **Planning Phase Required:** ${coordinationPlan.planningPhase ? 'Yes' : 'No'}
+            - **Security Review:** ${coordinationPlan.securityReview ? 'Required' : 'Standard'}
+            - **Testing Coordination:** ${coordinationPlan.testingRequired ? 'Comprehensive' : 'Basic'}
+            
+            **Implementation Phases:**
+            ${bmadRecommendation.phases.map((phase, index) => `${index + 1}. \`${phase}\``).join('\n')}
+            
+            **Next Steps:** ${bmadRecommendation.useMultiAgent ? 'Initiating multi-agent coordination workflow' : 'Proceeding with single-agent implementation'}`;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              body: bmadComment
+            });
+
+  implement-solution:
+    name: Enterprise AI Implementation
+    runs-on: ubuntu-latest
+    needs: [analyze-issue, bmad-analysis]
     if: needs.analyze-issue.outputs.should_implement == 'true'
     permissions:
       contents: write
@@ -116,41 +237,125 @@ jobs:
         with:
           ref: ${{ needs.analyze-issue.outputs.branch_name }}
 
-      - name: Request Claude implementation
+      - name: Enterprise-Grade Implementation Request
         uses: actions/github-script@v7
         with:
           script: |
             const issue = context.payload.issue;
             const implementationPlan = JSON.parse('${{ needs.analyze-issue.outputs.implementation_plan }}');
+            const bmadRecommendation = JSON.parse('${{ needs.bmad-analysis.outputs.bmad_recommendation }}');
+            const coordinationPlan = JSON.parse('${{ needs.bmad-analysis.outputs.coordination_plan }}');
             
-            const claudeRequest = `@claude Please implement the solution for this issue.
+            const claudeRequest = `@claude **ENTERPRISE IMPLEMENTATION REQUEST**
             
-            **Issue:** ${issue.title}
-            **Description:** 
+            ## 📋 Issue Implementation Brief
+            **Issue #${issue.number}:** ${issue.title}
+            **Branch:** \`${{ needs.analyze-issue.outputs.branch_name }}\`
+            **Priority Level:** ${implementationPlan.complexity.toUpperCase()}
+            
+            **Description:**
             ${issue.body}
             
-            **Implementation Guidance:**
-            - Complexity Level: ${implementationPlan.complexity}
-            - Approach: ${implementationPlan.suggestedApproach}
-            - Security Review: ${implementationPlan.securityConsiderations ? 'Required - follow Security-First Protocol' : 'Standard security practices'}
-            - Testing: ${implementationPlan.testingRequired ? 'Implement comprehensive tests following TDD' : 'Basic validation sufficient'}
+            ## 🏗️ BMAD Multi-Agent Coordination Plan
+            **Workflow Type:** ${bmadRecommendation.workflow}
+            **Primary Agent:** \`${coordinationPlan.primaryAgent}\`
+            **Secondary Agents:** ${coordinationPlan.secondaryAgents.length > 0 ? coordinationPlan.secondaryAgents.map(a => \`\${a}\`).join(', ') : 'None'}
+            **Total Phases:** ${bmadRecommendation.phases.length}
             
-            **Development Protocol:**
-            1. Follow the Security-First Protocol (ANALYZE → IMPLEMENT → TEST → MONITOR)
-            2. Use TDD approach if testing is required
-            3. Apply Surgical Debugging methodology for any fixes
-            4. Use TodoWrite to track implementation progress
-            5. Follow BMAD multi-agent coordination if needed
+            **Implementation Sequence:**
+            ${bmadRecommendation.phases.map((phase, index) => `${index + 1}. **${phase}** - ${getAgentDescription(phase)}`).join('\n')}
             
-            **Branch:** This should be implemented in branch \`${{ needs.analyze-issue.outputs.branch_name }}\`
+            ## 🔒 Security-First Protocol Compliance
+            **Security Level:** ${implementationPlan.securityConsiderations ? 'HIGH - Enhanced Security Required' : 'STANDARD - Normal Security Practices'}
+            **Authorization Required:** ${implementationPlan.requiresHumanReview ? 'YES - Human approval needed before merge' : 'NO - Automated approval sufficient'}
             
-            When complete, create a pull request that:
-            - Links to this issue (#${issue.number})
-            - Includes comprehensive testing if required
-            - Documents any security considerations
-            - Follows our established code quality standards
+            ## 📋 Development Protocol Requirements
             
-            Please start implementation now.`;
+            ### MANDATORY Phase Sequence:
+            1. **ANALYZE** → Complete security analysis before implementation
+            2. **IMPLEMENT** → Apply security controls during development  
+            3. **TEST** → Comprehensive testing following TDD methodology
+            4. **MONITOR** → Implement monitoring and validation
+            
+            ### Quality Gates:
+            - [x] Security-First Protocol (ANALYZE → IMPLEMENT → TEST → MONITOR)
+            - [x] ${implementationPlan.testingRequired ? 'TDD Integration (SPECIFY → TEST → IMPLEMENT → REFACTOR)' : 'Basic Testing Integration'}
+            - [x] Surgical Debugging (Level 1-7 systematic escalation)
+            - [x] Task Decomposition (15-30 minute micro-tasks)
+            - [x] TodoWrite Progress Tracking
+            
+            ### Agent Coordination Protocol:
+            ${bmadRecommendation.useMultiAgent ? `
+            **Multi-Agent Workflow Required:**
+            - Use TodoWrite for cross-agent task coordination
+            - Maintain shared context in .bmad-workspace/
+            - Follow quality gates at each agent handoff
+            - Document all agent communications and decisions
+            ` : `
+            **Single-Agent Implementation:**
+            - Use ${coordinationPlan.primaryAgent} for primary implementation
+            - Follow standard development protocols
+            - Coordinate with secondary review agents as needed
+            `}
+            
+            ## 📊 Implementation Specifications
+            
+            **Complexity Assessment:** ${implementationPlan.complexity}
+            **Estimated Time:** ${implementationPlan.estimatedTime}
+            **Testing Strategy:** ${implementationPlan.testingRequired ? 'Comprehensive (Unit + Integration + E2E)' : 'Basic Validation'}
+            **Documentation Level:** ${implementationPlan.complexity === 'high' ? 'Comprehensive documentation required' : 'Standard documentation'}
+            
+            **Success Criteria:**
+            1. Functional requirements met with zero regressions
+            2. Security validation passes all checks
+            3. Test coverage meets project standards
+            4. Code quality standards maintained
+            5. Documentation updated appropriately
+            6. Performance impact assessed and documented
+            
+            ## 🚀 Implementation Instructions
+            
+            **Start Implementation Now:**
+            1. Begin with security analysis phase
+            2. Create TodoWrite tracking for all phases
+            3. Follow BMAD agent coordination if multi-agent workflow
+            4. Implement comprehensive testing
+            5. Document all decisions and trade-offs
+            6. Create pull request with full compliance documentation
+            
+            **Enterprise Requirements:**
+            - Full audit trail of all changes
+            - Comprehensive security documentation
+            - Performance impact assessment
+            - Rollback plan documentation
+            - Compliance verification checklist
+            
+            When implementation is complete, create a pull request that includes:
+            - **Links:** Issue #${issue.number} resolution
+            - **Security:** Full security compliance documentation
+            - **Testing:** Comprehensive test suite with coverage reports
+            - **Documentation:** Updated technical documentation
+            - **Compliance:** Enterprise-grade compliance checklist
+            - **Review:** ${implementationPlan.requiresHumanReview ? 'Human review required before merge' : 'Automated review and merge approved'}
+            
+            **CRITICAL:** This is an enterprise-grade implementation. Follow all protocols exactly as specified. No shortcuts or compromises on security, testing, or documentation.`;
+            
+            // Helper function for agent descriptions
+            function getAgentDescription(agent) {
+              const descriptions = {
+                'spec-analyst': 'Requirements analysis and user story creation',
+                'spec-architect': 'Technical architecture and system design',
+                'spec-planner': 'Task decomposition and effort estimation',
+                'frontend-developer': 'UI/UX implementation and React development',
+                'backend-developer': 'Server-side logic and API development',
+                'spec-developer': 'Full-stack implementation and integration',
+                'spec-tester': 'Comprehensive testing and quality validation',
+                'spec-reviewer': 'Code quality review and standards enforcement',
+                'security-specialist': 'Security analysis and threat modeling',
+                'spec-validator': 'Final quality gates and deployment readiness'
+              };
+              return descriptions[agent] || 'Specialized development task';
+            }
             
             await github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -162,7 +367,7 @@ jobs:
   create-pr-on-completion:
     name: Create PR When Implementation Complete  
     runs-on: ubuntu-latest
-    needs: [analyze-issue, implement-solution]
+    needs: [analyze-issue, bmad-analysis, implement-solution]
     if: always() && needs.analyze-issue.outputs.should_implement == 'true'
     
     steps:

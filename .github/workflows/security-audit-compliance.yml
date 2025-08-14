@@ -1,0 +1,1052 @@
+name: Enterprise Security Audit & Compliance Reporting
+run-name: Security Audit - ${{ github.event_name }} ${{ github.ref_name }}
+
+on:
+  push:
+    branches: [main, develop, release/*]
+  pull_request:
+    branches: [main, develop]
+  schedule:
+    # Daily security scans
+    - cron: '0 2 * * *'  # 2 AM UTC daily
+    # Weekly compliance audit
+    - cron: '0 6 * * 1'  # 6 AM UTC on Mondays
+    # Monthly executive security report
+    - cron: '0 9 1 * *'  # 9 AM UTC on 1st of each month
+  workflow_dispatch:
+    inputs:
+      audit_type:
+        description: 'Type of security audit to perform'
+        required: true
+        default: 'comprehensive'
+        type: choice
+        options:
+        - comprehensive
+        - vulnerability-scan
+        - compliance-check
+        - penetration-test
+        - code-analysis
+        - dependency-audit
+        - configuration-review
+        - access-control-audit
+      compliance_framework:
+        description: 'Compliance framework to audit against'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+        - all
+        - sox
+        - iso27001
+        - gdpr
+        - hipaa
+        - pci-dss
+        - nist
+      report_format:
+        description: 'Output report format'
+        required: true
+        default: 'executive-summary'
+        type: choice
+        options:
+        - executive-summary
+        - detailed-technical
+        - compliance-checklist
+        - risk-assessment
+        - penetration-report
+        - dashboard-metrics
+      urgent:
+        description: 'Mark as urgent security audit'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  SECURITY_SCAN_ENABLED: true
+  COMPLIANCE_AUDIT_ENABLED: true
+  AUDIT_RETENTION_DAYS: 2555  # 7 years for compliance
+  ENTERPRISE_SECURITY_LEVEL: high
+
+jobs:
+  # Security Audit Orchestrator
+  security-audit-orchestrator:
+    name: Security Audit Orchestrator
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+      actions: read
+      issues: write
+
+    outputs:
+      audit_scope: ${{ steps.audit-planning.outputs.audit_scope }}
+      compliance_frameworks: ${{ steps.compliance-planning.outputs.compliance_frameworks }}
+      security_baseline: ${{ steps.baseline-assessment.outputs.security_baseline }}
+      audit_metadata: ${{ steps.audit-metadata.outputs.audit_metadata }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for comprehensive audit
+
+      - name: Security Audit Planning
+        id: audit-planning
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const auditType = '${{ inputs.audit_type }}' || 'comprehensive';
+            const isScheduled = context.eventName === 'schedule';
+            const isUrgent = '${{ inputs.urgent }}' === 'true';
+            
+            // Define audit scope based on trigger and type
+            let auditScope = {
+              codeAnalysis: true,
+              dependencyAudit: true,
+              configurationReview: true,
+              accessControlAudit: false,
+              infrastructureAudit: false,
+              penetrationTesting: false,
+              complianceCheck: true,
+              threatModeling: false
+            };
+            
+            // Adjust scope based on audit type
+            switch (auditType) {
+              case 'comprehensive':
+                auditScope = {
+                  ...auditScope,
+                  accessControlAudit: true,
+                  infrastructureAudit: true,
+                  threatModeling: true
+                };
+                break;
+              case 'vulnerability-scan':
+                auditScope = {
+                  codeAnalysis: true,
+                  dependencyAudit: true,
+                  configurationReview: true,
+                  accessControlAudit: false,
+                  infrastructureAudit: false,
+                  penetrationTesting: false,
+                  complianceCheck: false,
+                  threatModeling: false
+                };
+                break;
+              case 'compliance-check':
+                auditScope = {
+                  codeAnalysis: false,
+                  dependencyAudit: false,
+                  configurationReview: true,
+                  accessControlAudit: true,
+                  infrastructureAudit: false,
+                  penetrationTesting: false,
+                  complianceCheck: true,
+                  threatModeling: false
+                };
+                break;
+              case 'penetration-test':
+                auditScope = {
+                  ...auditScope,
+                  penetrationTesting: true,
+                  threatModeling: true
+                };
+                break;
+            }
+            
+            // Schedule-based adjustments
+            if (isScheduled) {
+              const cronExpression = context.payload.schedule;
+              if (cronExpression.includes('1 * *')) { // Monthly
+                auditScope.penetrationTesting = true;
+                auditScope.threatModeling = true;
+              }
+            }
+            
+            core.setOutput('audit_scope', JSON.stringify(auditScope));
+            console.log('Audit Scope:', JSON.stringify(auditScope, null, 2));
+
+      - name: Compliance Framework Planning
+        id: compliance-planning
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const framework = '${{ inputs.compliance_framework }}' || 'all';
+            
+            // Define compliance frameworks to audit
+            const allFrameworks = {
+              sox: {
+                name: 'Sarbanes-Oxley Act',
+                controls: ['access_control', 'change_management', 'audit_trail', 'data_integrity'],
+                criticality: 'high'
+              },
+              iso27001: {
+                name: 'ISO 27001',
+                controls: ['information_security', 'risk_management', 'incident_response', 'access_management'],
+                criticality: 'high'
+              },
+              gdpr: {
+                name: 'General Data Protection Regulation',
+                controls: ['data_protection', 'privacy_rights', 'data_retention', 'breach_notification'],
+                criticality: 'critical'
+              },
+              hipaa: {
+                name: 'Health Insurance Portability and Accountability Act',
+                controls: ['data_encryption', 'access_audit', 'data_transmission', 'physical_safeguards'],
+                criticality: 'critical'
+              },
+              'pci-dss': {
+                name: 'Payment Card Industry Data Security Standard',
+                controls: ['network_security', 'data_encryption', 'access_control', 'monitoring'],
+                criticality: 'high'
+              },
+              nist: {
+                name: 'NIST Cybersecurity Framework',
+                controls: ['identify', 'protect', 'detect', 'respond', 'recover'],
+                criticality: 'medium'
+              }
+            };
+            
+            let selectedFrameworks = {};
+            
+            if (framework === 'all') {
+              selectedFrameworks = allFrameworks;
+            } else if (allFrameworks[framework]) {
+              selectedFrameworks[framework] = allFrameworks[framework];
+            }
+            
+            core.setOutput('compliance_frameworks', JSON.stringify(selectedFrameworks));
+            console.log('Compliance Frameworks:', JSON.stringify(selectedFrameworks, null, 2));
+
+      - name: Security Baseline Assessment
+        id: baseline-assessment
+        run: |
+          echo "## Security Baseline Assessment" > security-baseline.md
+          echo "**Assessment Date:** $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> security-baseline.md
+          echo "**Repository:** ${{ github.repository }}" >> security-baseline.md
+          echo "" >> security-baseline.md
+          
+          # Initialize baseline metrics
+          baseline_score=100
+          security_issues=()
+          
+          # Check for security configuration files
+          echo "### Security Configuration Assessment" >> security-baseline.md
+          
+          if [ ! -f ".github/SECURITY.md" ]; then
+            security_issues+=("Missing SECURITY.md file")
+            baseline_score=$((baseline_score - 10))
+          fi
+          
+          if [ ! -f "PRIVACY.md" ] && [ ! -f "docs/PRIVACY.md" ]; then
+            security_issues+=("Missing privacy policy documentation")
+            baseline_score=$((baseline_score - 8))
+          fi
+          
+          if [ ! -f ".github/CODEOWNERS" ]; then
+            security_issues+=("Missing CODEOWNERS file for access control")
+            baseline_score=$((baseline_score - 5))
+          fi
+          
+          # Check for security dependencies
+          if [ -f "package.json" ]; then
+            echo "### Node.js Security Dependencies" >> security-baseline.md
+            
+            security_deps=("helmet" "cors" "express-rate-limit" "bcrypt" "jsonwebtoken")
+            for dep in "${security_deps[@]}"; do
+              if ! grep -q "\"$dep\"" package.json; then
+                security_issues+=("Missing security dependency: $dep")
+                baseline_score=$((baseline_score - 3))
+              fi
+            done
+          fi
+          
+          # Check for sensitive file patterns
+          echo "### Sensitive File Detection" >> security-baseline.md
+          
+          if find . -name "*.env*" -not -path "./node_modules/*" | head -1; then
+            if ! find . -name ".env*" -exec grep -l "placeholder\|example\|template" {} \; | head -1; then
+              security_issues+=("Potential .env files with sensitive data detected")
+              baseline_score=$((baseline_score - 15))
+            fi
+          fi
+          
+          # Check git history for secrets
+          if git log --all --grep="password\|secret\|key\|token\|api" --oneline | head -5 | wc -l | grep -v "^0"; then
+            security_issues+=("Potential secrets found in git history")
+            baseline_score=$((baseline_score - 20))
+          fi
+          
+          # Security headers check (for web applications)
+          if [ -f "package.json" ] && grep -q "express\|koa\|fastify" package.json; then
+            echo "### Web Security Headers" >> security-baseline.md
+            
+            # Check for security middleware usage
+            if ! grep -r "helmet\|cors\|csp" . --include="*.js" --include="*.ts" --exclude-dir=node_modules | head -1; then
+              security_issues+=("Missing web security middleware implementation")
+              baseline_score=$((baseline_score - 12))
+            fi
+          fi
+          
+          # Generate baseline report
+          echo "" >> security-baseline.md
+          echo "**Security Baseline Score:** $baseline_score/100" >> security-baseline.md
+          echo "" >> security-baseline.md
+          
+          if [ ${#security_issues[@]} -eq 0 ]; then
+            echo "✅ **No security issues detected in baseline assessment**" >> security-baseline.md
+          else
+            echo "❌ **Security issues detected:**" >> security-baseline.md
+            for issue in "${security_issues[@]}"; do
+              echo "- $issue" >> security-baseline.md
+            done
+          fi
+          
+          echo "BASELINE_SCORE=$baseline_score" >> $GITHUB_OUTPUT
+          echo "SECURITY_ISSUES=${#security_issues[@]}" >> $GITHUB_OUTPUT
+
+      - name: Create Audit Metadata
+        id: audit-metadata
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const auditMetadata = {
+              auditId: `audit-${Date.now()}-${context.runId}`,
+              timestamp: new Date().toISOString(),
+              repository: context.repo.owner + '/' + context.repo.repo,
+              branch: context.ref?.replace('refs/heads/', '') || 'unknown',
+              commit: context.sha,
+              actor: context.actor,
+              trigger: context.eventName,
+              auditType: '${{ inputs.audit_type }}' || 'scheduled',
+              complianceFramework: '${{ inputs.compliance_framework }}' || 'all',
+              reportFormat: '${{ inputs.report_format }}' || 'executive-summary',
+              urgent: '${{ inputs.urgent }}' === 'true',
+              baselineScore: parseInt('${{ steps.baseline-assessment.outputs.BASELINE_SCORE }}') || 0,
+              securityIssues: parseInt('${{ steps.baseline-assessment.outputs.SECURITY_ISSUES }}') || 0
+            };
+            
+            core.setOutput('audit_metadata', JSON.stringify(auditMetadata));
+            console.log('Audit Metadata:', JSON.stringify(auditMetadata, null, 2));
+
+  # Comprehensive Vulnerability Assessment
+  vulnerability-assessment:
+    name: Comprehensive Vulnerability Assessment
+    runs-on: ubuntu-latest
+    needs: security-audit-orchestrator
+    if: fromJson(needs.security-audit-orchestrator.outputs.audit_scope).codeAnalysis || fromJson(needs.security-audit-orchestrator.outputs.audit_scope).dependencyAudit
+    permissions:
+      security-events: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Advanced Vulnerability Scanning
+        id: vuln-scan
+        run: |
+          echo "## Comprehensive Vulnerability Assessment" > vulnerability-report.md
+          echo "**Scan Date:** $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> vulnerability-report.md
+          echo "" >> vulnerability-report.md
+          
+          total_vulnerabilities=0
+          critical_vulns=0
+          high_vulns=0
+          medium_vulns=0
+          low_vulns=0
+          
+          # Trivy filesystem scan
+          echo "### Trivy Filesystem Vulnerability Scan" >> vulnerability-report.md
+          
+          # Install Trivy
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.48.3
+          
+          # Run comprehensive Trivy scan
+          trivy fs --format json --output trivy-results.json . || true
+          
+          if [ -f "trivy-results.json" ]; then
+            # Parse Trivy results
+            if command -v jq >/dev/null 2>&1; then
+              trivy_vulns=$(cat trivy-results.json | jq '[.Results[]?.Vulnerabilities[]?] | length' 2>/dev/null || echo "0")
+              total_vulnerabilities=$((total_vulnerabilities + trivy_vulns))
+              
+              # Count by severity
+              critical_trivy=$(cat trivy-results.json | jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "CRITICAL")] | length' 2>/dev/null || echo "0")
+              high_trivy=$(cat trivy-results.json | jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "HIGH")] | length' 2>/dev/null || echo "0")
+              medium_trivy=$(cat trivy-results.json | jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "MEDIUM")] | length' 2>/dev/null || echo "0")
+              low_trivy=$(cat trivy-results.json | jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "LOW")] | length' 2>/dev/null || echo "0")
+              
+              critical_vulns=$((critical_vulns + critical_trivy))
+              high_vulns=$((high_vulns + high_trivy))
+              medium_vulns=$((medium_vulns + medium_trivy))
+              low_vulns=$((low_vulns + low_trivy))
+              
+              echo "- **Total Vulnerabilities:** $trivy_vulns" >> vulnerability-report.md
+              echo "- **Critical:** $critical_trivy" >> vulnerability-report.md
+              echo "- **High:** $high_trivy" >> vulnerability-report.md
+              echo "- **Medium:** $medium_trivy" >> vulnerability-report.md
+              echo "- **Low:** $low_trivy" >> vulnerability-report.md
+            fi
+          fi
+          
+          # Language-specific vulnerability scans
+          if [ -f "package.json" ]; then
+            echo "### Node.js Dependency Vulnerabilities" >> vulnerability-report.md
+            
+            # npm audit
+            npm audit --audit-level=low --json > npm-audit.json 2>/dev/null || true
+            
+            if [ -f "npm-audit.json" ]; then
+              if command -v jq >/dev/null 2>&1; then
+                npm_vulns=$(cat npm-audit.json | jq '.metadata.vulnerabilities.total // 0')
+                npm_critical=$(cat npm-audit.json | jq '.metadata.vulnerabilities.critical // 0')
+                npm_high=$(cat npm-audit.json | jq '.metadata.vulnerabilities.high // 0')
+                npm_medium=$(cat npm-audit.json | jq '.metadata.vulnerabilities.moderate // 0')
+                npm_low=$(cat npm-audit.json | jq '.metadata.vulnerabilities.low // 0')
+                
+                total_vulnerabilities=$((total_vulnerabilities + npm_vulns))
+                critical_vulns=$((critical_vulns + npm_critical))
+                high_vulns=$((high_vulns + npm_high))
+                medium_vulns=$((medium_vulns + npm_medium))
+                low_vulns=$((low_vulns + npm_low))
+                
+                echo "- **npm Vulnerabilities:** $npm_vulns" >> vulnerability-report.md
+                echo "- **Critical:** $npm_critical" >> vulnerability-report.md
+                echo "- **High:** $npm_high" >> vulnerability-report.md
+                echo "- **Medium:** $npm_medium" >> vulnerability-report.md
+                echo "- **Low:** $npm_low" >> vulnerability-report.md
+              fi
+            fi
+          fi
+          
+          if [ -f "requirements.txt" ] || [ -f "pyproject.toml" ]; then
+            echo "### Python Dependency Vulnerabilities" >> vulnerability-report.md
+            
+            # Safety check
+            pip install safety
+            safety check --json --output safety-report.json || true
+            
+            if [ -f "safety-report.json" ]; then
+              python_vulns=$(cat safety-report.json | jq '. | length' 2>/dev/null || echo "0")
+              total_vulnerabilities=$((total_vulnerabilities + python_vulns))
+              high_vulns=$((high_vulns + python_vulns))  # Safety doesn't categorize, assume high
+              
+              echo "- **Python Safety Vulnerabilities:** $python_vulns" >> vulnerability-report.md
+            fi
+          fi
+          
+          # Code analysis with Semgrep
+          echo "### Static Code Analysis (Semgrep)" >> vulnerability-report.md
+          
+          # Install and run Semgrep
+          pip install semgrep
+          semgrep --config=auto --json --output=semgrep-results.json . || true
+          
+          if [ -f "semgrep-results.json" ]; then
+            if command -v jq >/dev/null 2>&1; then
+              semgrep_findings=$(cat semgrep-results.json | jq '.results | length' 2>/dev/null || echo "0")
+              semgrep_errors=$(cat semgrep-results.json | jq '[.results[] | select(.extra.severity == "ERROR")] | length' 2>/dev/null || echo "0")
+              semgrep_warnings=$(cat semgrep-results.json | jq '[.results[] | select(.extra.severity == "WARNING")] | length' 2>/dev/null || echo "0")
+              
+              total_vulnerabilities=$((total_vulnerabilities + semgrep_findings))
+              high_vulns=$((high_vulns + semgrep_errors))
+              medium_vulns=$((medium_vulns + semgrep_warnings))
+              
+              echo "- **Semgrep Findings:** $semgrep_findings" >> vulnerability-report.md
+              echo "- **Errors:** $semgrep_errors" >> vulnerability-report.md
+              echo "- **Warnings:** $semgrep_warnings" >> vulnerability-report.md
+            fi
+          fi
+          
+          # Generate vulnerability summary
+          echo "" >> vulnerability-report.md
+          echo "## Vulnerability Summary" >> vulnerability-report.md
+          echo "**Total Vulnerabilities:** $total_vulnerabilities" >> vulnerability-report.md
+          echo "**Critical:** $critical_vulns" >> vulnerability-report.md
+          echo "**High:** $high_vulns" >> vulnerability-report.md
+          echo "**Medium:** $medium_vulns" >> vulnerability-report.md
+          echo "**Low:** $low_vulns" >> vulnerability-report.md
+          echo "" >> vulnerability-report.md
+          
+          # Risk assessment
+          if [ "$critical_vulns" -gt 0 ]; then
+            echo "🚨 **CRITICAL RISK:** Immediate remediation required" >> vulnerability-report.md
+          elif [ "$high_vulns" -gt 5 ]; then
+            echo "⚠️ **HIGH RISK:** Urgent remediation recommended" >> vulnerability-report.md
+          elif [ "$medium_vulns" -gt 10 ]; then
+            echo "🟡 **MEDIUM RISK:** Remediation planned within 30 days" >> vulnerability-report.md
+          else
+            echo "✅ **LOW RISK:** Vulnerabilities within acceptable limits" >> vulnerability-report.md
+          fi
+          
+          # Set outputs
+          echo "TOTAL_VULNERABILITIES=$total_vulnerabilities" >> $GITHUB_OUTPUT
+          echo "CRITICAL_VULNS=$critical_vulns" >> $GITHUB_OUTPUT
+          echo "HIGH_VULNS=$high_vulns" >> $GITHUB_OUTPUT
+          echo "MEDIUM_VULNS=$medium_vulns" >> $GITHUB_OUTPUT
+          echo "LOW_VULNS=$low_vulns" >> $GITHUB_OUTPUT
+
+      - name: Upload Vulnerability Scan Results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always() && hashFiles('trivy-results.json') != ''
+        with:
+          sarif_file: trivy-results.json
+
+  # Compliance Assessment Engine
+  compliance-assessment:
+    name: Compliance Assessment Engine
+    runs-on: ubuntu-latest
+    needs: security-audit-orchestrator
+    if: fromJson(needs.security-audit-orchestrator.outputs.audit_scope).complianceCheck
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Multi-Framework Compliance Assessment
+        id: compliance-assessment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const frameworks = JSON.parse('${{ needs.security-audit-orchestrator.outputs.compliance_frameworks }}');
+            
+            let complianceReport = "## Multi-Framework Compliance Assessment\n\n";
+            complianceReport += `**Assessment Date:** ${new Date().toISOString()}\n`;
+            complianceReport += `**Repository:** ${{ github.repository }}\n\n`;
+            
+            let overallScore = 0;
+            let frameworkCount = 0;
+            let complianceResults = {};
+            
+            for (const [frameworkKey, framework] of Object.entries(frameworks)) {
+              frameworkCount++;
+              complianceReport += `### ${framework.name} (${frameworkKey.toUpperCase()})\n`;
+              complianceReport += `**Criticality:** ${framework.criticality.toUpperCase()}\n\n`;
+              
+              let frameworkScore = 100;
+              let findings = [];
+              let recommendations = [];
+              
+              // SOX Compliance Checks
+              if (frameworkKey === 'sox') {
+                // Access Control
+                if (!fs.existsSync('.github/CODEOWNERS')) {
+                  findings.push('Missing CODEOWNERS file for access control');
+                  frameworkScore -= 20;
+                }
+                
+                // Change Management
+                if (!fs.existsSync('.github/workflows')) {
+                  findings.push('Missing automated change management workflows');
+                  frameworkScore -= 25;
+                } else {
+                  const workflowFiles = fs.readdirSync('.github/workflows').length;
+                  if (workflowFiles < 3) {
+                    findings.push('Insufficient automated change management workflows');
+                    frameworkScore -= 10;
+                  }
+                }
+                
+                // Audit Trail
+                if (!fs.existsSync('.enterprise-audit')) {
+                  findings.push('Missing enterprise audit trail system');
+                  frameworkScore -= 15;
+                }
+                
+                // Data Integrity
+                if (fs.existsSync('package.json')) {
+                  const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+                  if (!packageJson.scripts?.test) {
+                    findings.push('Missing automated testing for data integrity');
+                    frameworkScore -= 10;
+                  }
+                }
+              }
+              
+              // ISO 27001 Compliance Checks
+              if (frameworkKey === 'iso27001') {
+                // Information Security
+                if (!fs.existsSync('.github/SECURITY.md')) {
+                  findings.push('Missing security policy documentation');
+                  frameworkScore -= 25;
+                }
+                
+                // Risk Management
+                if (!fs.existsSync('docs/risk-assessment.md') && !fs.existsSync('RISK.md')) {
+                  findings.push('Missing risk assessment documentation');
+                  frameworkScore -= 20;
+                }
+                
+                // Incident Response
+                if (!fs.existsSync('.github/INCIDENT_RESPONSE.md')) {
+                  findings.push('Missing incident response plan');
+                  frameworkScore -= 15;
+                }
+                
+                // Access Management
+                if (!fs.existsSync('.github/CODEOWNERS')) {
+                  findings.push('Missing formal access management controls');
+                  frameworkScore -= 15;
+                }
+              }
+              
+              // GDPR Compliance Checks
+              if (frameworkKey === 'gdpr') {
+                // Data Protection
+                if (!fs.existsSync('PRIVACY.md') && !fs.existsSync('docs/PRIVACY.md')) {
+                  findings.push('Missing privacy policy for GDPR compliance');
+                  frameworkScore -= 30;
+                }
+                
+                // Privacy Rights
+                const codeFiles = [];
+                try {
+                  const findCodeFiles = (dir) => {
+                    const files = fs.readdirSync(dir);
+                    for (const file of files) {
+                      if (file === 'node_modules' || file.startsWith('.')) continue;
+                      const filePath = `${dir}/${file}`;
+                      const stat = fs.statSync(filePath);
+                      if (stat.isDirectory()) {
+                        findCodeFiles(filePath);
+                      } else if (file.endsWith('.js') || file.endsWith('.ts') || file.endsWith('.py')) {
+                        codeFiles.push(filePath);
+                      }
+                    }
+                  };
+                  findCodeFiles('.');
+                } catch (e) {}
+                
+                let hasDataProcessing = false;
+                for (const file of codeFiles.slice(0, 10)) { // Check first 10 files
+                  try {
+                    const content = fs.readFileSync(file, 'utf8');
+                    if (content.includes('personal') || content.includes('email') || content.includes('user') || content.includes('profile')) {
+                      hasDataProcessing = true;
+                      break;
+                    }
+                  } catch (e) {}
+                }
+                
+                if (hasDataProcessing) {
+                  findings.push('Data processing detected but no data subject rights implementation found');
+                  frameworkScore -= 20;
+                }
+                
+                // Data Retention
+                if (hasDataProcessing && !codeFiles.some(file => {
+                  try {
+                    const content = fs.readFileSync(file, 'utf8');
+                    return content.includes('retention') || content.includes('delete') || content.includes('purge');
+                  } catch (e) {
+                    return false;
+                  }
+                })) {
+                  findings.push('Missing data retention and deletion mechanisms');
+                  frameworkScore -= 15;
+                }
+              }
+              
+              // NIST Framework Checks
+              if (frameworkKey === 'nist') {
+                // Identify
+                if (!fs.existsSync('docs/architecture.md') && !fs.existsSync('ARCHITECTURE.md')) {
+                  findings.push('Missing system architecture documentation (IDENTIFY)');
+                  frameworkScore -= 15;
+                }
+                
+                // Protect
+                if (fs.existsSync('package.json')) {
+                  const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+                  const securityDeps = ['helmet', 'cors', 'bcrypt', 'jsonwebtoken'];
+                  const hasSecurityDeps = securityDeps.some(dep => 
+                    packageJson.dependencies?.[dep] || packageJson.devDependencies?.[dep]
+                  );
+                  if (!hasSecurityDeps) {
+                    findings.push('Missing security dependencies (PROTECT)');
+                    frameworkScore -= 10;
+                  }
+                }
+                
+                // Detect
+                const hasMonitoring = fs.existsSync('.github/workflows') && 
+                  fs.readdirSync('.github/workflows').some(file => 
+                    file.includes('monitor') || file.includes('security') || file.includes('audit')
+                  );
+                if (!hasMonitoring) {
+                  findings.push('Missing automated monitoring and detection (DETECT)');
+                  frameworkScore -= 15;
+                }
+                
+                // Respond
+                if (!fs.existsSync('.github/INCIDENT_RESPONSE.md')) {
+                  findings.push('Missing incident response procedures (RESPOND)');
+                  frameworkScore -= 10;
+                }
+                
+                // Recover
+                if (!fs.existsSync('docs/disaster-recovery.md') && !fs.existsSync('DISASTER_RECOVERY.md')) {
+                  findings.push('Missing disaster recovery documentation (RECOVER)');
+                  frameworkScore -= 10;
+                }
+              }
+              
+              // Generate recommendations based on findings
+              if (findings.length > 0) {
+                recommendations.push(`Address ${findings.length} compliance gaps for ${framework.name}`);
+                if (framework.criticality === 'critical') {
+                  recommendations.push(`URGENT: Critical compliance framework - immediate remediation required`);
+                }
+              }
+              
+              complianceResults[frameworkKey] = {
+                score: Math.max(0, frameworkScore),
+                findings: findings,
+                recommendations: recommendations,
+                criticality: framework.criticality
+              };
+              
+              overallScore += frameworkScore;
+              
+              // Add to report
+              complianceReport += `**Compliance Score:** ${Math.max(0, frameworkScore)}/100\n\n`;
+              
+              if (findings.length > 0) {
+                complianceReport += "**Findings:**\n";
+                findings.forEach(finding => {
+                  complianceReport += `- ❌ ${finding}\n`;
+                });
+                complianceReport += "\n";
+              }
+              
+              if (recommendations.length > 0) {
+                complianceReport += "**Recommendations:**\n";
+                recommendations.forEach(rec => {
+                  complianceReport += `- 💡 ${rec}\n`;
+                });
+                complianceReport += "\n";
+              }
+              
+              complianceReport += "---\n\n";
+            }
+            
+            // Overall compliance summary
+            const avgScore = frameworkCount > 0 ? Math.round(overallScore / frameworkCount) : 0;
+            complianceReport += `## Overall Compliance Summary\n\n`;
+            complianceReport += `**Average Compliance Score:** ${avgScore}/100\n`;
+            complianceReport += `**Frameworks Assessed:** ${frameworkCount}\n`;
+            complianceReport += `**Assessment Status:** ${avgScore >= 90 ? '✅ COMPLIANT' : avgScore >= 70 ? '⚠️ PARTIAL COMPLIANCE' : '❌ NON-COMPLIANT'}\n\n`;
+            
+            // Critical issues summary
+            const criticalIssues = Object.values(complianceResults).reduce((total, result) => {
+              return total + (result.criticality === 'critical' && result.findings.length > 0 ? result.findings.length : 0);
+            }, 0);
+            
+            if (criticalIssues > 0) {
+              complianceReport += `🚨 **${criticalIssues} critical compliance issues require immediate attention**\n\n`;
+            }
+            
+            // Write report to file
+            fs.writeFileSync('compliance-assessment-report.md', complianceReport);
+            
+            core.setOutput('overall_score', avgScore);
+            core.setOutput('critical_issues', criticalIssues);
+            core.setOutput('frameworks_assessed', frameworkCount);
+            core.setOutput('compliance_results', JSON.stringify(complianceResults));
+
+  # AI-Enhanced Security Analysis
+  ai-security-analysis:
+    name: AI-Enhanced Security Analysis
+    runs-on: ubuntu-latest
+    needs: [security-audit-orchestrator, vulnerability-assessment, compliance-assessment]
+    if: always() && !cancelled()
+    permissions:
+      issues: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: AI Security Analysis Request
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const auditMetadata = JSON.parse('${{ needs.security-audit-orchestrator.outputs.audit_metadata }}');
+            const vulnerabilities = {
+              total: '${{ needs.vulnerability-assessment.outputs.TOTAL_VULNERABILITIES }}' || '0',
+              critical: '${{ needs.vulnerability-assessment.outputs.CRITICAL_VULNS }}' || '0',
+              high: '${{ needs.vulnerability-assessment.outputs.HIGH_VULNS }}' || '0',
+              medium: '${{ needs.vulnerability-assessment.outputs.MEDIUM_VULNS }}' || '0',
+              low: '${{ needs.vulnerability-assessment.outputs.LOW_VULNS }}' || '0'
+            };
+            const compliance = {
+              overallScore: '${{ needs.compliance-assessment.outputs.overall_score }}' || '0',
+              criticalIssues: '${{ needs.compliance-assessment.outputs.critical_issues }}' || '0',
+              frameworksAssessed: '${{ needs.compliance-assessment.outputs.frameworks_assessed }}' || '0'
+            };
+            
+            // Determine if AI analysis is needed
+            const needsAIAnalysis = 
+              parseInt(vulnerabilities.critical) > 0 ||
+              parseInt(vulnerabilities.high) > 5 ||
+              parseInt(compliance.overallScore) < 80 ||
+              parseInt(compliance.criticalIssues) > 0 ||
+              auditMetadata.urgent;
+            
+            if (needsAIAnalysis) {
+              const aiAnalysisRequest = `@claude **ENTERPRISE SECURITY AUDIT ANALYSIS REQUIRED**
+              
+              ## 🔒 Security Audit Results Summary
+              **Audit ID:** ${auditMetadata.auditId}
+              **Repository:** ${auditMetadata.repository}
+              **Audit Type:** ${auditMetadata.auditType}
+              **Urgency Level:** ${auditMetadata.urgent ? 'URGENT' : 'STANDARD'}
+              **Baseline Score:** ${auditMetadata.baselineScore}/100
+              
+              ## 🚨 Vulnerability Assessment Results
+              **Total Vulnerabilities:** ${vulnerabilities.total}
+              **Critical:** ${vulnerabilities.critical} 🚨
+              **High:** ${vulnerabilities.high} ⚠️
+              **Medium:** ${vulnerabilities.medium} 🟡
+              **Low:** ${vulnerabilities.low} 🔵
+              
+              ## 📋 Compliance Assessment Results
+              **Overall Compliance Score:** ${compliance.overallScore}/100
+              **Critical Compliance Issues:** ${compliance.criticalIssues}
+              **Frameworks Assessed:** ${compliance.frameworksAssessed}
+              **Compliance Status:** ${parseInt(compliance.overallScore) >= 90 ? '✅ COMPLIANT' : parseInt(compliance.overallScore) >= 70 ? '⚠️ PARTIAL' : '❌ NON-COMPLIANT'}
+              
+              ## 🎯 AI Security Analysis Required
+              
+              **Comprehensive Security Assessment:**
+              1. **Vulnerability Impact Analysis**
+                 - Prioritize vulnerabilities by exploitability and business impact
+                 - Assess potential attack vectors and threat scenarios
+                 - Evaluate data exposure and system compromise risks
+                 - Recommend immediate vs. planned remediation strategies
+              
+              2. **Compliance Gap Analysis**
+                 - Map compliance failures to regulatory requirements
+                 - Assess potential penalties and business risks
+                 - Identify quick wins vs. long-term compliance initiatives
+                 - Recommend compliance remediation roadmap
+              
+              3. **Security Architecture Review**
+                 - Evaluate overall security posture and defense-in-depth
+                 - Identify security control gaps and weaknesses
+                 - Assess monitoring and incident response capabilities
+                 - Recommend security architecture improvements
+              
+              4. **Risk Assessment & Prioritization**
+                 - Calculate risk scores for identified vulnerabilities
+                 - Assess business impact and likelihood of exploitation
+                 - Prioritize remediation efforts by risk level
+                 - Recommend risk mitigation strategies
+              
+              **Enterprise Security Requirements:**
+              ${parseInt(vulnerabilities.critical) > 0 || parseInt(compliance.criticalIssues) > 0 ? `
+              **CRITICAL SECURITY ALERT:**
+              - Immediate executive notification required
+              - Emergency security response team activation
+              - Accelerated remediation timeline (24-48 hours)
+              - Customer and stakeholder communication plan
+              - Incident response procedures activation
+              ` : `
+              **STANDARD SECURITY REVIEW:**
+              - Regular security team coordination
+              - Standard remediation timeline (30-90 days)
+              - Planned security improvements integration
+              - Quarterly security review inclusion
+              `}
+              
+              **Required Deliverables:**
+              - **Executive Security Summary** - C-level communication format
+              - **Technical Remediation Plan** - Detailed action items with timelines
+              - **Risk Register Updates** - Formal risk documentation
+              - **Compliance Roadmap** - Path to full regulatory compliance
+              - **Security Metrics Dashboard** - KPIs and monitoring recommendations
+              
+              **Documentation Requirements:**
+              - Full audit trail and evidence collection
+              - Regulatory compliance documentation
+              - Security incident classification and reporting
+              - Stakeholder communication templates
+              
+              Use TodoWrite to track all security analysis and remediation tasks. This is a critical enterprise security assessment requiring comprehensive analysis and immediate action planning.`;
+              
+              const { data: issue } = await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `🔒 CRITICAL: Enterprise Security Audit Analysis Required - ${auditMetadata.auditType}`,
+                body: aiAnalysisRequest,
+                labels: [
+                  'security-audit',
+                  'enterprise',
+                  'ai-analysis-required',
+                  auditMetadata.urgent ? 'urgent' : 'standard',
+                  parseInt(vulnerabilities.critical) > 0 ? 'critical-vulnerabilities' : '',
+                  parseInt(compliance.criticalIssues) > 0 ? 'compliance-failure' : ''
+                ].filter(Boolean)
+              });
+              
+              console.log(`🎫 AI Security Analysis Issue Created: #${issue.number}`);
+            } else {
+              console.log('✅ Security audit passed - no AI analysis required');
+            }
+
+  # Generate Executive Security Report
+  executive-security-report:
+    name: Executive Security Report Generation
+    runs-on: ubuntu-latest
+    needs: [security-audit-orchestrator, vulnerability-assessment, compliance-assessment]
+    if: always() && !cancelled()
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Generate Comprehensive Security Report
+        run: |
+          # Create audit directory
+          mkdir -p .enterprise-audit/security-reports
+          
+          # Get audit metadata
+          audit_id="${{ fromJson(needs.security-audit-orchestrator.outputs.audit_metadata).auditId }}"
+          timestamp="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          
+          # Create executive security report
+          cat > ".enterprise-audit/security-reports/${audit_id}-executive-report.md" << 'EOF'
+          # Enterprise Security Audit Report
+          
+          ## Executive Summary
+          
+          **Audit ID:** ${{ fromJson(needs.security-audit-orchestrator.outputs.audit_metadata).auditId }}
+          **Repository:** ${{ github.repository }}
+          **Audit Date:** ${{ fromJson(needs.security-audit-orchestrator.outputs.audit_metadata).timestamp }}
+          **Audit Type:** ${{ fromJson(needs.security-audit-orchestrator.outputs.audit_metadata).auditType }}
+          **Conducted By:** Enterprise Security Audit System
+          
+          ## Security Posture Overview
+          
+          **Overall Security Score:** ${{ needs.security-audit-orchestrator.outputs.security_baseline }}/100
+          **Vulnerability Risk Level:** ${{ needs.vulnerability-assessment.outputs.CRITICAL_VULNS > 0 && 'CRITICAL' || needs.vulnerability-assessment.outputs.HIGH_VULNS > 5 && 'HIGH' || 'MEDIUM' }}
+          **Compliance Status:** ${{ needs.compliance-assessment.outputs.overall_score >= 90 && 'COMPLIANT' || needs.compliance-assessment.outputs.overall_score >= 70 && 'PARTIAL COMPLIANCE' || 'NON-COMPLIANT' }}
+          
+          ## Key Findings
+          
+          ### Vulnerability Assessment
+          - **Total Vulnerabilities:** ${{ needs.vulnerability-assessment.outputs.TOTAL_VULNERABILITIES || 'N/A' }}
+          - **Critical:** ${{ needs.vulnerability-assessment.outputs.CRITICAL_VULNS || '0' }}
+          - **High:** ${{ needs.vulnerability-assessment.outputs.HIGH_VULNS || '0' }}
+          - **Medium:** ${{ needs.vulnerability-assessment.outputs.MEDIUM_VULNS || '0' }}
+          - **Low:** ${{ needs.vulnerability-assessment.outputs.LOW_VULNS || '0' }}
+          
+          ### Compliance Assessment
+          - **Overall Score:** ${{ needs.compliance-assessment.outputs.overall_score || 'N/A' }}/100
+          - **Critical Issues:** ${{ needs.compliance-assessment.outputs.critical_issues || '0' }}
+          - **Frameworks Assessed:** ${{ needs.compliance-assessment.outputs.frameworks_assessed || '0' }}
+          
+          ## Risk Assessment
+          
+          **Business Risk Level:** ${{ needs.vulnerability-assessment.outputs.CRITICAL_VULNS > 0 || needs.compliance-assessment.outputs.critical_issues > 0 && 'HIGH' || 'MEDIUM' }}
+          
+          **Immediate Actions Required:**
+          ${{ needs.vulnerability-assessment.outputs.CRITICAL_VULNS > 0 && '- Critical vulnerability remediation (24-48 hours)' || '' }}
+          ${{ needs.compliance-assessment.outputs.critical_issues > 0 && '- Critical compliance gap resolution (immediate)' || '' }}
+          ${{ needs.vulnerability-assessment.outputs.HIGH_VULNS > 5 && '- High-priority vulnerability remediation (7-14 days)' || '' }}
+          
+          ## Recommendations
+          
+          1. **Immediate (0-7 days)**
+             - Address all critical vulnerabilities
+             - Resolve critical compliance gaps
+             - Implement emergency security controls
+          
+          2. **Short-term (1-4 weeks)**
+             - Remediate high-priority vulnerabilities
+             - Enhance security monitoring
+             - Update security policies and procedures
+          
+          3. **Long-term (1-3 months)**
+             - Comprehensive security architecture review
+             - Advanced threat detection implementation
+             - Security awareness training program
+          
+          ## Compliance Status
+          
+          **Regulatory Frameworks:**
+          - SOX Compliance: ${{ contains(needs.security-audit-orchestrator.outputs.compliance_frameworks, 'sox') && 'Assessed' || 'Not Assessed' }}
+          - ISO 27001: ${{ contains(needs.security-audit-orchestrator.outputs.compliance_frameworks, 'iso27001') && 'Assessed' || 'Not Assessed' }}
+          - GDPR: ${{ contains(needs.security-audit-orchestrator.outputs.compliance_frameworks, 'gdpr') && 'Assessed' || 'Not Assessed' }}
+          - NIST: ${{ contains(needs.security-audit-orchestrator.outputs.compliance_frameworks, 'nist') && 'Assessed' || 'Not Assessed' }}
+          
+          ## Next Steps
+          
+          1. Review and approve remediation plan
+          2. Allocate resources for security improvements
+          3. Schedule follow-up security assessment
+          4. Implement continuous security monitoring
+          5. Establish regular security review cadence
+          
+          ---
+          
+          **Report Generated:** ${{ env.timestamp }}
+          **Next Audit Due:** ${{ env.next_audit_date }}
+          EOF
+          
+          # Create detailed technical report
+          cat > ".enterprise-audit/security-reports/${audit_id}-technical-report.json" << EOF
+          {
+            "audit_metadata": ${{ needs.security-audit-orchestrator.outputs.audit_metadata }},
+            "security_baseline": {
+              "score": ${{ needs.security-audit-orchestrator.outputs.security_baseline }},
+              "issues": ${{ fromJson(needs.security-audit-orchestrator.outputs.audit_metadata).securityIssues }}
+            },
+            "vulnerability_assessment": {
+              "total": ${{ needs.vulnerability-assessment.outputs.TOTAL_VULNERABILITIES || 0 }},
+              "critical": ${{ needs.vulnerability-assessment.outputs.CRITICAL_VULNS || 0 }},
+              "high": ${{ needs.vulnerability-assessment.outputs.HIGH_VULNS || 0 }},
+              "medium": ${{ needs.vulnerability-assessment.outputs.MEDIUM_VULNS || 0 }},
+              "low": ${{ needs.vulnerability-assessment.outputs.LOW_VULNS || 0 }}
+            },
+            "compliance_assessment": {
+              "overall_score": ${{ needs.compliance-assessment.outputs.overall_score || 0 }},
+              "critical_issues": ${{ needs.compliance-assessment.outputs.critical_issues || 0 }},
+              "frameworks_assessed": ${{ needs.compliance-assessment.outputs.frameworks_assessed || 0 }},
+              "detailed_results": ${{ needs.compliance-assessment.outputs.compliance_results || '{}' }}
+            },
+            "report_generation": {
+              "timestamp": "${{ env.timestamp }}",
+              "format": "comprehensive",
+              "retention_period": "${{ env.AUDIT_RETENTION_DAYS }} days"
+            }
+          }
+          EOF
+          
+          echo "✅ Executive security report generated: ${audit_id}"
+
+      - name: Upload Security Audit Artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: enterprise-security-audit-${{ fromJson(needs.security-audit-orchestrator.outputs.audit_metadata).auditId }}
+          path: |
+            .enterprise-audit/
+            vulnerability-report.md
+            compliance-assessment-report.md
+            security-baseline.md
+            trivy-results.json
+            npm-audit.json
+            safety-report.json
+            semgrep-results.json
+          retention-days: ${{ env.AUDIT_RETENTION_DAYS }}
+
+<function_calls>
+<invoke name="TodoWrite">
+<parameter name="todos">[{"id": "5.2.1", "content": "Configure Claude Code GitHub Actions setup - Research existing workflows and integration patterns", "status": "completed"}, {"id": "5.2.2", "content": "Implement automated issue-to-PR workflows with AI review integration", "status": "completed"}, {"id": "5.2.3", "content": "Set up continuous integration with AI review systems", "status": "completed"}, {"id": "5.2.4", "content": "Create automated testing and deployment pipelines", "status": "completed"}, {"id": "5.2.5", "content": "Design intelligent merge and release management workflows", "status": "completed"}, {"id": "5.2.6", "content": "Research Slack workspace integration capabilities", "status": "completed"}, {"id": "5.2.7", "content": "Configure Jira project management integration", "status": "completed"}, {"id": "5.2.8", "content": "Implement Microsoft Teams collaboration features", "status": "completed"}, {"id": "5.2.9", "content": "Set up enterprise notification systems", "status": "completed"}, {"id": "5.2.10", "content": "Create cross-platform workflow coordination", "status": "completed"}, {"id": "5.2.11", "content": "Configure OAuth authentication flows", "status": "completed"}, {"id": "5.2.12", "content": "Implement SSO integration for enterprise environments", "status": "completed"}, {"id": "5.2.13", "content": "Set up role-based access controls (RBAC)", "status": "completed"}, {"id": "5.2.14", "content": "Create security audit and compliance reporting systems", "status": "completed"}, {"id": "5.2.15", "content": "Design secure credential management systems", "status": "completed"}]

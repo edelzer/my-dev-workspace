@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Development Environment Performance Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .dashboard {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-item {
+            text-align: center;
+        }
+
+        .status-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .status-label {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4CAF50;
+        }
+
+        .status-indicator.degraded {
+            background: #FF9800;
+        }
+
+        .status-indicator.error {
+            background: #F44336;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .metric-label {
+            color: #666;
+        }
+
+        .metric-value {
+            font-weight: bold;
+        }
+
+        .chart-container {
+            height: 200px;
+            margin-top: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+
+        .alerts {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .alert-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .alert-severity {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .alert-severity.critical {
+            background: #F44336;
+        }
+
+        .alert-severity.high {
+            background: #FF9800;
+        }
+
+        .alert-severity.medium {
+            background: #2196F3;
+        }
+
+        .recommendations {
+            background: #e8f5e8;
+            border: 1px solid #c3e6c3;
+            border-radius: 5px;
+            padding: 15px;
+        }
+
+        .recommendation-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .recommendation-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .recommendation-description {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .bottleneck-item {
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 3px;
+        }
+
+        .bottleneck-severity {
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.8em;
+        }
+
+        .bottleneck-severity.critical {
+            color: #f44336;
+        }
+
+        .bottleneck-severity.high {
+            color: #ff9800;
+        }
+
+        .bottleneck-severity.medium {
+            color: #2196f3;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #eee;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #4CAF50;
+            transition: width 0.3s ease;
+        }
+
+        .progress-fill.warning {
+            background: #FF9800;
+        }
+
+        .progress-fill.danger {
+            background: #F44336;
+        }
+
+        .controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #2196F3;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1976D2;
+        }
+
+        .btn-secondary {
+            background: #fff;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+        .btn-secondary:hover {
+            background: #f5f5f5;
+        }
+
+        .auto-refresh {
+            margin-left: 10px;
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="header">
+            <h1>🚀 Development Environment Performance Dashboard</h1>
+            <p>Real-time monitoring and optimization insights</p>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" onclick="refreshData()">Refresh</button>
+            <button class="btn btn-secondary" onclick="exportReport()">Export Report</button>
+            <span class="auto-refresh">Auto-refresh: <span id="refresh-timer">30s</span></span>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-value" id="overall-health">95%</div>
+                <div class="status-label">Overall Health</div>
+            </div>
+            <div class="status-item">
+                <div class="status-value" id="active-agents">8</div>
+                <div class="status-label">Active Agents</div>
+            </div>
+            <div class="status-item">
+                <div class="status-value" id="success-rate">92%</div>
+                <div class="status-label">Success Rate</div>
+            </div>
+            <div class="status-item">
+                <div class="status-value" id="avg-response">1.2s</div>
+                <div class="status-label">Avg Response</div>
+            </div>
+            <div class="status-item">
+                <div class="status-value" id="uptime">4h 23m</div>
+                <div class="status-label">Session Uptime</div>
+            </div>
+        </div>
+
+        <div id="alerts-section" class="alerts" style="display: none;">
+            <h3>🚨 Active Alerts</h3>
+            <div id="alerts-list"></div>
+        </div>
+
+        <div class="grid">
+            <!-- Claude Code Performance -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">🤖 Claude Code Performance</span>
+                    <div class="status-indicator" id="claude-status"></div>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Response Time</span>
+                    <span class="metric-value" id="claude-response-time">Loading...</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Tool Usage</span>
+                    <span class="metric-value" id="claude-tool-usage">Loading...</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Success Rate</span>
+                    <span class="metric-value" id="claude-success-rate">Loading...</span>
+                </div>
+                <div class="chart-container">Response Time Trend (24h)</div>
+            </div>
+
+            <!-- MCP Servers -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">🔧 MCP Servers</span>
+                    <div class="status-indicator" id="mcp-status"></div>
+                </div>
+                <div id="mcp-servers-list"></div>
+            </div>
+
+            <!-- Agent Coordination -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">👥 Agent Coordination</span>
+                    <div class="status-indicator" id="agents-status"></div>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Handoff Success</span>
+                    <span class="metric-value" id="handoff-success">Loading...</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Efficiency Score</span>
+                    <span class="metric-value" id="efficiency-score">Loading...</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Active Workflows</span>
+                    <span class="metric-value" id="active-workflows">Loading...</span>
+                </div>
+            </div>
+
+            <!-- System Resources -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">💻 System Resources</span>
+                    <div class="status-indicator" id="system-status"></div>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">CPU Usage</span>
+                    <span class="metric-value" id="cpu-usage">Loading...</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="cpu-progress" style="width: 0%"></div>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Memory Usage</span>
+                    <span class="metric-value" id="memory-usage">Loading...</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="memory-progress" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Workflow Bottlenecks -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">⚠️ Workflow Bottlenecks</span>
+                    <span id="bottleneck-count" class="metric-value">0</span>
+                </div>
+                <div id="bottlenecks-list"></div>
+            </div>
+
+            <!-- Error Tracking -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">🐛 Error Tracking</span>
+                    <span id="error-count" class="metric-value">0</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Last 24h</span>
+                    <span class="metric-value" id="errors-24h">Loading...</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Error Rate</span>
+                    <span class="metric-value" id="error-rate">Loading...</span>
+                </div>
+                <div id="recent-errors"></div>
+            </div>
+        </div>
+
+        <div class="recommendations">
+            <h3>💡 Performance Recommendations</h3>
+            <div id="recommendations-list"></div>
+        </div>
+    </div>
+
+    <script>
+        // Dashboard JavaScript
+        let refreshInterval;
+        let refreshCountdown = 30;
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDashboardData();
+            startAutoRefresh();
+        });
+
+        async function loadDashboardData() {
+            try {
+                // In a real implementation, this would fetch from the performance monitor API
+                const mockData = generateMockData();
+                updateDashboard(mockData);
+            } catch (error) {
+                console.error('Failed to load dashboard data:', error);
+                showError('Failed to load performance data');
+            }
+        }
+
+        function generateMockData() {
+            return {
+                overallHealth: 95,
+                activeAgents: 8,
+                successRate: 92,
+                avgResponse: 1.2,
+                uptime: "4h 23m",
+                claudeCode: {
+                    responseTime: 1200,
+                    toolUsage: "Read (45%), Write (30%), Bash (25%)",
+                    successRate: 94,
+                    status: "healthy"
+                },
+                mcpServers: [
+                    { name: "filesystem", status: "healthy", responseTime: 50 },
+                    { name: "github", status: "healthy", responseTime: 120 },
+                    { name: "memory", status: "degraded", responseTime: 2000 },
+                    { name: "sequential", status: "healthy", responseTime: 80 },
+                    { name: "context7", status: "error", responseTime: null },
+                    { name: "magic", status: "healthy", responseTime: 150 }
+                ],
+                agents: {
+                    handoffSuccess: 96,
+                    efficiency: 88,
+                    activeWorkflows: 3
+                },
+                system: {
+                    cpuUsage: 45,
+                    memoryUsage: 67
+                },
+                bottlenecks: [
+                    { component: "memory-mcp", duration: 2000, severity: "high" },
+                    { component: "context7-mcp", duration: 5000, severity: "critical" }
+                ],
+                errors: {
+                    total: 3,
+                    last24h: 12,
+                    rate: 2.1,
+                    recent: [
+                        { category: "mcp-server", message: "Context7 connection timeout" },
+                        { category: "agent", message: "Handoff timeout: analyst → pm" }
+                    ]
+                },
+                recommendations: [
+                    {
+                        title: "Optimize Memory MCP Server",
+                        description: "Memory MCP response time is above threshold. Consider restarting the server.",
+                        priority: "high"
+                    },
+                    {
+                        title: "Fix Context7 MCP Connection",
+                        description: "Context7 MCP server is not responding. Check installation and configuration.",
+                        priority: "critical"
+                    }
+                ],
+                alerts: [
+                    { severity: "high", message: "Memory MCP server degraded performance" },
+                    { severity: "critical", message: "Context7 MCP server connection failed" }
+                ]
+            };
+        }
+
+        function updateDashboard(data) {
+            // Update status bar
+            document.getElementById('overall-health').textContent = data.overallHealth + '%';
+            document.getElementById('active-agents').textContent = data.activeAgents;
+            document.getElementById('success-rate').textContent = data.successRate + '%';
+            document.getElementById('avg-response').textContent = data.avgResponse + 's';
+            document.getElementById('uptime').textContent = data.uptime;
+
+            // Update Claude Code metrics
+            document.getElementById('claude-response-time').textContent = data.claudeCode.responseTime + 'ms';
+            document.getElementById('claude-tool-usage').textContent = data.claudeCode.toolUsage;
+            document.getElementById('claude-success-rate').textContent = data.claudeCode.successRate + '%';
+            updateStatusIndicator('claude-status', data.claudeCode.status);
+
+            // Update MCP Servers
+            updateMCPServers(data.mcpServers);
+
+            // Update Agent metrics
+            document.getElementById('handoff-success').textContent = data.agents.handoffSuccess + '%';
+            document.getElementById('efficiency-score').textContent = data.agents.efficiency + '%';
+            document.getElementById('active-workflows').textContent = data.agents.activeWorkflows;
+
+            // Update System resources
+            document.getElementById('cpu-usage').textContent = data.system.cpuUsage + '%';
+            document.getElementById('memory-usage').textContent = data.system.memoryUsage + '%';
+            updateProgressBar('cpu-progress', data.system.cpuUsage);
+            updateProgressBar('memory-progress', data.system.memoryUsage);
+
+            // Update Bottlenecks
+            updateBottlenecks(data.bottlenecks);
+
+            // Update Errors
+            document.getElementById('error-count').textContent = data.errors.total;
+            document.getElementById('errors-24h').textContent = data.errors.last24h;
+            document.getElementById('error-rate').textContent = data.errors.rate + '%';
+            updateRecentErrors(data.errors.recent);
+
+            // Update Recommendations
+            updateRecommendations(data.recommendations);
+
+            // Update Alerts
+            updateAlerts(data.alerts);
+        }
+
+        function updateStatusIndicator(elementId, status) {
+            const indicator = document.getElementById(elementId);
+            indicator.className = 'status-indicator ' + status;
+        }
+
+        function updateProgressBar(elementId, value) {
+            const progressBar = document.getElementById(elementId);
+            progressBar.style.width = value + '%';
+            
+            if (value > 80) {
+                progressBar.className = 'progress-fill danger';
+            } else if (value > 60) {
+                progressBar.className = 'progress-fill warning';
+            } else {
+                progressBar.className = 'progress-fill';
+            }
+        }
+
+        function updateMCPServers(servers) {
+            const container = document.getElementById('mcp-servers-list');
+            container.innerHTML = '';
+            
+            servers.forEach(server => {
+                const serverElement = document.createElement('div');
+                serverElement.className = 'metric-row';
+                serverElement.innerHTML = `
+                    <span class="metric-label">
+                        <div class="status-indicator ${server.status}" style="display: inline-block; margin-right: 5px;"></div>
+                        ${server.name}
+                    </span>
+                    <span class="metric-value">${server.responseTime ? server.responseTime + 'ms' : 'Error'}</span>
+                `;
+                container.appendChild(serverElement);
+            });
+        }
+
+        function updateBottlenecks(bottlenecks) {
+            const container = document.getElementById('bottlenecks-list');
+            const countElement = document.getElementById('bottleneck-count');
+            
+            countElement.textContent = bottlenecks.length;
+            container.innerHTML = '';
+            
+            if (bottlenecks.length === 0) {
+                container.innerHTML = '<div style="color: #666; font-style: italic;">No bottlenecks detected</div>';
+                return;
+            }
+            
+            bottlenecks.forEach(bottleneck => {
+                const bottleneckElement = document.createElement('div');
+                bottleneckElement.className = 'bottleneck-item';
+                bottleneckElement.innerHTML = `
+                    <div class="bottleneck-severity ${bottleneck.severity}">${bottleneck.severity}</div>
+                    <div>${bottleneck.component}: ${bottleneck.duration}ms</div>
+                `;
+                container.appendChild(bottleneckElement);
+            });
+        }
+
+        function updateRecentErrors(errors) {
+            const container = document.getElementById('recent-errors');
+            container.innerHTML = '';
+            
+            errors.slice(0, 3).forEach(error => {
+                const errorElement = document.createElement('div');
+                errorElement.style.cssText = 'font-size: 0.9em; margin-bottom: 5px; color: #666;';
+                errorElement.textContent = `[${error.category}] ${error.message}`;
+                container.appendChild(errorElement);
+            });
+        }
+
+        function updateRecommendations(recommendations) {
+            const container = document.getElementById('recommendations-list');
+            container.innerHTML = '';
+            
+            if (recommendations.length === 0) {
+                container.innerHTML = '<div style="color: #666; font-style: italic;">No recommendations at this time</div>';
+                return;
+            }
+            
+            recommendations.forEach(rec => {
+                const recElement = document.createElement('div');
+                recElement.className = 'recommendation-item';
+                recElement.innerHTML = `
+                    <div class="recommendation-title">${rec.title}</div>
+                    <div class="recommendation-description">${rec.description}</div>
+                `;
+                container.appendChild(recElement);
+            });
+        }
+
+        function updateAlerts(alerts) {
+            const section = document.getElementById('alerts-section');
+            const container = document.getElementById('alerts-list');
+            
+            if (alerts.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+            
+            section.style.display = 'block';
+            container.innerHTML = '';
+            
+            alerts.forEach(alert => {
+                const alertElement = document.createElement('div');
+                alertElement.className = 'alert-item';
+                alertElement.innerHTML = `
+                    <div class="alert-severity ${alert.severity}"></div>
+                    <div>${alert.message}</div>
+                `;
+                container.appendChild(alertElement);
+            });
+        }
+
+        function startAutoRefresh() {
+            refreshInterval = setInterval(() => {
+                refreshCountdown--;
+                document.getElementById('refresh-timer').textContent = refreshCountdown + 's';
+                
+                if (refreshCountdown <= 0) {
+                    loadDashboardData();
+                    refreshCountdown = 30;
+                }
+            }, 1000);
+        }
+
+        function refreshData() {
+            loadDashboardData();
+            refreshCountdown = 30;
+        }
+
+        function exportReport() {
+            // In a real implementation, this would generate and download a report
+            alert('Report export functionality would be implemented here');
+        }
+
+        function showError(message) {
+            const alertsSection = document.getElementById('alerts-section');
+            const alertsList = document.getElementById('alerts-list');
+            
+            alertsSection.style.display = 'block';
+            alertsList.innerHTML = `
+                <div class="alert-item">
+                    <div class="alert-severity critical"></div>
+                    <div>${message}</div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

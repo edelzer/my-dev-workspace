@@ -1,0 +1,682 @@
+name: Intelligent Merge & Release Management
+run-name: Smart Merge - ${{ github.event_name }} ${{ github.event.pull_request.title || github.ref_name }}
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, review_requested, ready_for_review]
+    branches: [main, develop, release/*]
+  pull_request_review:
+    types: [submitted]
+  issue_comment:
+    types: [created]
+  schedule:
+    # Daily release readiness check
+    - cron: '0 8 * * 1-5'  # 8 AM UTC on weekdays
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Release management action'
+        required: true
+        default: 'analyze'
+        type: choice
+        options:
+        - analyze
+        - prepare-release
+        - create-release
+        - hotfix-release
+        - rollback-release
+      version_type:
+        description: 'Version increment type'
+        required: false
+        default: 'minor'
+        type: choice
+        options:
+        - patch
+        - minor
+        - major
+        - prerelease
+      force_merge:
+        description: 'Force merge (bypass some checks)'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  AI_MERGE_ENABLED: true
+  ENTERPRISE_RELEASE: true
+  SEMANTIC_VERSIONING: true
+
+jobs:
+  # Intelligent Merge Analysis
+  smart-merge-analysis:
+    name: Smart Merge Analysis
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.event_name == 'pull_request_review'
+    permissions:
+      contents: read
+      pull-requests: write
+      checks: read
+      statuses: read
+
+    outputs:
+      merge_readiness: ${{ steps.merge-analysis.outputs.merge_readiness }}
+      merge_strategy: ${{ steps.merge-analysis.outputs.merge_strategy }}
+      risk_assessment: ${{ steps.merge-analysis.outputs.risk_assessment }}
+      ai_recommendation: ${{ steps.merge-analysis.outputs.ai_recommendation }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Comprehensive Merge Readiness Analysis
+        id: merge-analysis
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            if (!pr) return;
+            
+            // Get PR details and checks
+            const { data: prDetails } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number
+            });
+            
+            // Get check runs
+            const { data: checks } = await github.rest.checks.listForRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: pr.head.sha
+            });
+            
+            // Get reviews
+            const { data: reviews } = await github.rest.pulls.listReviews({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number
+            });
+            
+            // Get files changed
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number
+            });
+            
+            // Analyze merge readiness
+            let readinessScore = 0;
+            let maxScore = 100;
+            let issues = [];
+            let recommendations = [];
+            
+            // 1. Review Status (30 points)
+            const approvedReviews = reviews.filter(r => r.state === 'APPROVED').length;
+            const requestedChanges = reviews.filter(r => r.state === 'CHANGES_REQUESTED').length;
+            const pendingReviews = reviews.filter(r => r.state === 'PENDING').length;
+            
+            if (requestedChanges > 0) {
+              issues.push(`${requestedChanges} reviews requesting changes`);
+              readinessScore -= 30;
+            } else if (approvedReviews >= 2) {
+              readinessScore += 30;
+            } else if (approvedReviews >= 1) {
+              readinessScore += 20;
+              recommendations.push('Consider getting additional review approval');
+            } else {
+              issues.push('No approving reviews');
+              readinessScore -= 10;
+            }
+            
+            // 2. CI/CD Status (25 points)
+            const failedChecks = checks.check_runs.filter(c => c.conclusion === 'failure').length;
+            const successChecks = checks.check_runs.filter(c => c.conclusion === 'success').length;
+            const pendingChecks = checks.check_runs.filter(c => c.status === 'in_progress' || c.status === 'queued').length;
+            
+            if (failedChecks > 0) {
+              issues.push(`${failedChecks} failed CI checks`);
+              readinessScore -= 25;
+            } else if (pendingChecks > 0) {
+              issues.push(`${pendingChecks} pending CI checks`);
+              readinessScore -= 10;
+            } else if (successChecks > 0) {
+              readinessScore += 25;
+            }
+            
+            // 3. Change Analysis (20 points)
+            const linesChanged = files.reduce((sum, file) => sum + file.changes, 0);
+            const filesChanged = files.length;
+            const hasBreakingChanges = files.some(f => 
+              f.filename.includes('package.json') || 
+              f.filename.includes('requirements.txt') ||
+              f.filename.includes('BREAKING') ||
+              f.patch?.includes('BREAKING CHANGE')
+            );
+            
+            if (hasBreakingChanges) {
+              recommendations.push('Breaking changes detected - consider version bump and documentation');
+              readinessScore -= 5;
+            }
+            
+            if (linesChanged > 1000) {
+              recommendations.push('Large changeset - consider breaking into smaller PRs');
+              readinessScore -= 10;
+            } else if (linesChanged > 500) {
+              recommendations.push('Medium changeset - ensure comprehensive testing');
+              readinessScore -= 5;
+            } else {
+              readinessScore += 20;
+            }
+            
+            // 4. Security & Quality (15 points)
+            const hasSecurityFiles = files.some(f => 
+              f.filename.includes('security') ||
+              f.filename.includes('auth') ||
+              f.filename.includes('.env') ||
+              f.patch?.includes('password') ||
+              f.patch?.includes('secret')
+            );
+            
+            if (hasSecurityFiles) {
+              recommendations.push('Security-related changes detected - ensure security review');
+              readinessScore -= 5;
+            } else {
+              readinessScore += 15;
+            }
+            
+            // 5. Branch Status (10 points)
+            const isBehindBase = prDetails.behind_by > 0;
+            const isConflicted = prDetails.mergeable === false;
+            
+            if (isConflicted) {
+              issues.push('Merge conflicts detected');
+              readinessScore -= 10;
+            } else if (isBehindBase) {
+              recommendations.push(`Branch is ${prDetails.behind_by} commits behind - consider updating`);
+              readinessScore -= 2;
+            } else {
+              readinessScore += 10;
+            }
+            
+            // Determine merge strategy
+            let mergeStrategy = 'merge';
+            if (linesChanged < 10 && filesChanged <= 2) {
+              mergeStrategy = 'squash';
+            } else if (hasBreakingChanges || linesChanged > 500) {
+              mergeStrategy = 'merge';
+            }
+            
+            // Risk assessment
+            let riskLevel = 'LOW';
+            if (hasBreakingChanges || failedChecks > 0 || requestedChanges > 0) {
+              riskLevel = 'HIGH';
+            } else if (linesChanged > 300 || pendingChecks > 0 || approvedReviews === 0) {
+              riskLevel = 'MEDIUM';
+            }
+            
+            // Calculate final readiness
+            const finalReadiness = Math.max(0, Math.min(100, readinessScore));
+            
+            const analysis = {
+              readinessScore: finalReadiness,
+              maxScore: maxScore,
+              issues: issues,
+              recommendations: recommendations,
+              mergeStrategy: mergeStrategy,
+              riskLevel: riskLevel,
+              stats: {
+                approvedReviews,
+                requestedChanges,
+                failedChecks,
+                successChecks,
+                pendingChecks,
+                linesChanged,
+                filesChanged,
+                hasBreakingChanges,
+                isConflicted,
+                isBehindBase
+              }
+            };
+            
+            core.setOutput('merge_readiness', finalReadiness);
+            core.setOutput('merge_strategy', mergeStrategy);
+            core.setOutput('risk_assessment', riskLevel);
+            core.setOutput('ai_recommendation', JSON.stringify(analysis));
+            
+            return analysis;
+
+      - name: AI Merge Decision Request
+        if: steps.merge-analysis.outputs.merge_readiness < 80
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            if (!pr) return;
+            
+            const readiness = '${{ steps.merge-analysis.outputs.merge_readiness }}';
+            const strategy = '${{ steps.merge-analysis.outputs.merge_strategy }}';
+            const risk = '${{ steps.merge-analysis.outputs.risk_assessment }}';
+            const analysis = JSON.parse('${{ steps.merge-analysis.outputs.ai_recommendation }}');
+            
+            const aiMergeRequest = `@claude **INTELLIGENT MERGE ANALYSIS & RECOMMENDATION**
+            
+            ## 🔄 Pull Request Merge Analysis
+            **PR #${pr.number}:** ${pr.title}
+            **Author:** @${pr.user.login}
+            **Target Branch:** ${pr.base.ref}
+            **Readiness Score:** ${readiness}/100
+            **Risk Level:** ${risk}
+            **Recommended Strategy:** ${strategy}
+            
+            ## 📊 Detailed Analysis Results
+            
+            **Review Status:**
+            - ✅ Approved Reviews: ${analysis.stats.approvedReviews}
+            - ❌ Changes Requested: ${analysis.stats.requestedChanges}
+            
+            **CI/CD Status:**
+            - ✅ Successful Checks: ${analysis.stats.successChecks}
+            - ❌ Failed Checks: ${analysis.stats.failedChecks}
+            - ⏳ Pending Checks: ${analysis.stats.pendingChecks}
+            
+            **Change Impact:**
+            - 📝 Files Changed: ${analysis.stats.filesChanged}
+            - 📊 Lines Changed: ${analysis.stats.linesChanged}
+            - ⚠️ Breaking Changes: ${analysis.stats.hasBreakingChanges ? 'Yes' : 'No'}
+            - 🔀 Merge Conflicts: ${analysis.stats.isConflicted ? 'Yes' : 'No'}
+            
+            **Issues Identified:**
+            ${analysis.issues.length > 0 ? analysis.issues.map(issue => `- ❌ ${issue}`).join('\n') : '✅ No blocking issues identified'}
+            
+            **Recommendations:**
+            ${analysis.recommendations.length > 0 ? analysis.recommendations.map(rec => `- 💡 ${rec}`).join('\n') : '✅ No additional recommendations'}
+            
+            ## 🤖 AI Merge Decision Request
+            
+            **Analysis Required:**
+            1. **Code Quality Assessment**
+               - Review code changes for maintainability and best practices
+               - Analyze test coverage and quality of new/modified code
+               - Verify coding standards and documentation compliance
+               - Check for potential technical debt introduction
+            
+            2. **Risk Impact Evaluation**
+               - Assess potential impact on system stability and performance
+               - Review backward compatibility and breaking change implications
+               - Evaluate rollback complexity and deployment risk
+               - Consider integration testing and validation requirements
+            
+            3. **Merge Strategy Optimization**
+               - Validate recommended merge strategy (${strategy})
+               - Consider alternative approaches (squash, rebase, merge)
+               - Evaluate commit history preservation needs
+               - Assess branch management best practices
+            
+            4. **Release Planning Impact**
+               - Consider impact on upcoming releases and deployment schedule
+               - Evaluate feature completeness and user story satisfaction
+               - Review dependencies and integration requirements
+               - Assess documentation and communication needs
+            
+            **Enterprise Merge Criteria:**
+            ${risk === 'HIGH' ? `
+            **HIGH RISK MERGE - Additional Requirements:**
+            - Security review mandatory for security-related changes
+            - Performance testing required for large changes
+            - Stakeholder approval needed for breaking changes
+            - Staged rollout plan required for production deployment
+            ` : `
+            **STANDARD MERGE PROCESS:**
+            - All CI checks must pass
+            - Minimum of 1 approving review required
+            - No unresolved merge conflicts
+            - Documentation updated as needed
+            `}
+            
+            **Decision Output Required:**
+            - **Merge Recommendation:** GO/NO-GO with detailed justification
+            - **Optimal Merge Strategy:** Specific strategy with rationale
+            - **Pre-merge Checklist:** Actions required before merge
+            - **Post-merge Monitoring:** Validation and monitoring recommendations
+            - **Risk Mitigation:** Specific steps to address identified risks
+            
+            Use TodoWrite to track any pre-merge tasks. Provide comprehensive analysis for this enterprise merge decision.`;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              body: aiMergeRequest
+            });
+
+      - name: Auto-Merge Eligibility Check
+        if: steps.merge-analysis.outputs.merge_readiness >= 95 && steps.merge-analysis.outputs.risk_assessment == 'LOW'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            if (!pr) return;
+            
+            // Enable auto-merge for high-confidence merges
+            await github.rest.pulls.createReview({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+              body: `🤖 **Auto-Merge Eligible**\n\nThis PR meets all enterprise merge criteria:\n- Readiness Score: ${{ steps.merge-analysis.outputs.merge_readiness }}/100\n- Risk Level: ${{ steps.merge-analysis.outputs.risk_assessment }}\n- Strategy: ${{ steps.merge-analysis.outputs.merge_strategy }}\n\nAuto-merge will trigger when all checks complete.`,
+              event: 'APPROVE'
+            });
+            
+            // Enable auto-merge
+            await github.rest.pulls.enableAutoMerge({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+              merge_method: '${{ steps.merge-analysis.outputs.merge_strategy }}'
+            });
+
+  # Release Management
+  intelligent-release-management:
+    name: Intelligent Release Management
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    permissions:
+      contents: write
+      pull-requests: write
+      releases: write
+      issues: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js for Release Tools
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Install Release Tools
+        run: |
+          npm install -g conventional-changelog-cli conventional-recommended-bump semantic-release
+          npm install -g @semantic-release/changelog @semantic-release/git @semantic-release/github
+
+      - name: Release Readiness Analysis
+        id: release-analysis
+        run: |
+          echo "## Release Readiness Analysis" > release-analysis.md
+          echo "**Analysis Date:** $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> release-analysis.md
+          echo "" >> release-analysis.md
+          
+          # Get current version
+          current_version=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "**Current Version:** $current_version" >> release-analysis.md
+          
+          # Count commits since last release
+          commits_since_release=$(git rev-list ${current_version}..HEAD --count 2>/dev/null || git rev-list HEAD --count)
+          echo "**Commits Since Last Release:** $commits_since_release" >> release-analysis.md
+          
+          # Analyze commit types using conventional commits
+          feature_commits=$(git log ${current_version}..HEAD --oneline 2>/dev/null | grep -c "^[a-f0-9]* feat" || echo "0")
+          fix_commits=$(git log ${current_version}..HEAD --oneline 2>/dev/null | grep -c "^[a-f0-9]* fix" || echo "0")
+          breaking_commits=$(git log ${current_version}..HEAD --oneline 2>/dev/null | grep -c "BREAKING CHANGE\|!" || echo "0")
+          
+          echo "**Change Analysis:**" >> release-analysis.md
+          echo "- Features: $feature_commits" >> release-analysis.md
+          echo "- Bug Fixes: $fix_commits" >> release-analysis.md
+          echo "- Breaking Changes: $breaking_commits" >> release-analysis.md
+          
+          # Determine recommended version bump
+          if [ "$breaking_commits" -gt 0 ]; then
+            recommended_bump="major"
+          elif [ "$feature_commits" -gt 0 ]; then
+            recommended_bump="minor"
+          elif [ "$fix_commits" -gt 0 ]; then
+            recommended_bump="patch"
+          else
+            recommended_bump="none"
+          fi
+          
+          echo "**Recommended Version Bump:** $recommended_bump" >> release-analysis.md
+          
+          # Calculate next version
+          if [ "$recommended_bump" != "none" ]; then
+            # Extract version numbers
+            version_without_v=${current_version#v}
+            IFS='.' read -r major minor patch <<< "$version_without_v"
+            
+            case $recommended_bump in
+              major) next_version="v$((major + 1)).0.0" ;;
+              minor) next_version="v${major}.$((minor + 1)).0" ;;
+              patch) next_version="v${major}.${minor}.$((patch + 1))" ;;
+            esac
+            
+            echo "**Next Version:** $next_version" >> release-analysis.md
+          else
+            next_version="$current_version"
+            echo "**Next Version:** No release needed" >> release-analysis.md
+          fi
+          
+          # Release readiness score
+          readiness_score=0
+          
+          if [ "$commits_since_release" -ge 5 ]; then
+            readiness_score=$((readiness_score + 30))
+          fi
+          
+          if [ "$feature_commits" -gt 0 ] || [ "$fix_commits" -gt 0 ]; then
+            readiness_score=$((readiness_score + 40))
+          fi
+          
+          if [ "$breaking_commits" -eq 0 ]; then
+            readiness_score=$((readiness_score + 20))
+          fi
+          
+          # Check if main branch is stable (no recent failed CI)
+          readiness_score=$((readiness_score + 10))  # Assume stable for now
+          
+          echo "**Release Readiness Score:** $readiness_score/100" >> release-analysis.md
+          
+          # Set outputs
+          echo "CURRENT_VERSION=$current_version" >> $GITHUB_OUTPUT
+          echo "NEXT_VERSION=$next_version" >> $GITHUB_OUTPUT
+          echo "RECOMMENDED_BUMP=$recommended_bump" >> $GITHUB_OUTPUT
+          echo "COMMITS_SINCE_RELEASE=$commits_since_release" >> $GITHUB_OUTPUT
+          echo "READINESS_SCORE=$readiness_score" >> $GITHUB_OUTPUT
+          echo "FEATURE_COMMITS=$feature_commits" >> $GITHUB_OUTPUT
+          echo "FIX_COMMITS=$fix_commits" >> $GITHUB_OUTPUT
+          echo "BREAKING_COMMITS=$breaking_commits" >> $GITHUB_OUTPUT
+
+      - name: Generate Release Notes
+        if: steps.release-analysis.outputs.RECOMMENDED_BUMP != 'none'
+        run: |
+          echo "## Release Notes Draft" > release-notes.md
+          echo "**Version:** ${{ steps.release-analysis.outputs.NEXT_VERSION }}" >> release-notes.md
+          echo "**Release Date:** $(date -u +%Y-%m-%d)" >> release-notes.md
+          echo "" >> release-notes.md
+          
+          # Generate conventional changelog
+          if [ -f "package.json" ]; then
+            conventional-changelog -p angular -r 0 > changelog-temp.md 2>/dev/null || true
+            if [ -f "changelog-temp.md" ] && [ -s "changelog-temp.md" ]; then
+              cat changelog-temp.md >> release-notes.md
+            fi
+          else
+            # Manual changelog generation
+            echo "### Changes" >> release-notes.md
+            
+            if [ "${{ steps.release-analysis.outputs.FEATURE_COMMITS }}" -gt 0 ]; then
+              echo "#### ✨ Features" >> release-notes.md
+              git log ${{ steps.release-analysis.outputs.CURRENT_VERSION }}..HEAD --oneline --grep="feat" >> release-notes.md 2>/dev/null || true
+              echo "" >> release-notes.md
+            fi
+            
+            if [ "${{ steps.release-analysis.outputs.FIX_COMMITS }}" -gt 0 ]; then
+              echo "#### 🐛 Bug Fixes" >> release-notes.md
+              git log ${{ steps.release-analysis.outputs.CURRENT_VERSION }}..HEAD --oneline --grep="fix" >> release-notes.md 2>/dev/null || true
+              echo "" >> release-notes.md
+            fi
+            
+            if [ "${{ steps.release-analysis.outputs.BREAKING_COMMITS }}" -gt 0 ]; then
+              echo "#### ⚠️ BREAKING CHANGES" >> release-notes.md
+              git log ${{ steps.release-analysis.outputs.CURRENT_VERSION }}..HEAD --oneline | grep -E "BREAKING CHANGE|!" >> release-notes.md 2>/dev/null || true
+              echo "" >> release-notes.md
+            fi
+          fi
+
+      - name: AI Release Decision Request
+        if: steps.release-analysis.outputs.READINESS_SCORE >= 60
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const currentVersion = '${{ steps.release-analysis.outputs.CURRENT_VERSION }}';
+            const nextVersion = '${{ steps.release-analysis.outputs.NEXT_VERSION }}';
+            const recommendedBump = '${{ steps.release-analysis.outputs.RECOMMENDED_BUMP }}';
+            const readinessScore = '${{ steps.release-analysis.outputs.READINESS_SCORE }}';
+            const commitsSince = '${{ steps.release-analysis.outputs.COMMITS_SINCE_RELEASE }}';
+            const featureCommits = '${{ steps.release-analysis.outputs.FEATURE_COMMITS }}';
+            const fixCommits = '${{ steps.release-analysis.outputs.FIX_COMMITS }}';
+            const breakingCommits = '${{ steps.release-analysis.outputs.BREAKING_COMMITS }}';
+            
+            let releaseAnalysis = '';
+            let releaseNotes = '';
+            
+            try {
+              releaseAnalysis = fs.readFileSync('release-analysis.md', 'utf8');
+            } catch (e) {
+              releaseAnalysis = 'Release analysis not available.';
+            }
+            
+            try {
+              releaseNotes = fs.readFileSync('release-notes.md', 'utf8');
+            } catch (e) {
+              releaseNotes = 'Release notes not available.';
+            }
+            
+            const aiReleaseRequest = `@claude **INTELLIGENT RELEASE MANAGEMENT DECISION**
+            
+            ## 🚀 Release Preparation Analysis
+            **Current Version:** ${currentVersion}
+            **Proposed Version:** ${nextVersion}
+            **Version Bump:** ${recommendedBump.toUpperCase()}
+            **Readiness Score:** ${readinessScore}/100
+            **Commits Since Last Release:** ${commitsSince}
+            
+            ${releaseAnalysis}
+            
+            ## 📋 Change Summary
+            **Features Added:** ${featureCommits}
+            **Bug Fixes:** ${fixCommits}
+            **Breaking Changes:** ${breakingCommits}
+            
+            ${releaseNotes}
+            
+            ## 🤖 AI Release Decision Request
+            
+            **Comprehensive Release Analysis Required:**
+            1. **Release Impact Assessment**
+               - Evaluate user-facing changes and their impact
+               - Assess backward compatibility and migration requirements
+               - Review documentation and communication needs
+               - Validate feature completeness and stability
+            
+            2. **Quality Assurance Verification**
+               - Confirm all critical tests are passing
+               - Review test coverage for new features
+               - Validate performance impact and benchmarks
+               - Ensure security and compliance requirements met
+            
+            3. **Release Strategy Validation**
+               - Verify version bump appropriateness (${recommendedBump})
+               - Review release timing and deployment schedule
+               - Assess rollback strategy and risk mitigation
+               - Validate release communication plan
+            
+            4. **Stakeholder Readiness Review**
+               - Confirm development team availability for support
+               - Verify documentation and training materials ready
+               - Review customer communication and support plans
+               - Assess infrastructure and monitoring readiness
+            
+            **Enterprise Release Criteria:**
+            ${breakingCommits > 0 ? `
+            **BREAKING CHANGES DETECTED - Enhanced Requirements:**
+            - Migration guide and backward compatibility plan required
+            - Extended testing period and phased rollout recommended
+            - Customer communication plan with advance notice
+            - Comprehensive rollback procedures documented
+            ` : `
+            **STANDARD RELEASE PROCESS:**
+            - All automated tests passing
+            - Release notes complete and accurate
+            - Deployment infrastructure ready
+            - Standard monitoring and alerting active
+            `}
+            
+            **Decision Output Required:**
+            - **Release Recommendation:** GO/NO-GO with detailed justification
+            - **Optimal Release Timing:** Best deployment window and schedule
+            - **Release Strategy:** Deployment approach and rollout plan
+            - **Risk Assessment:** Potential issues and mitigation strategies
+            - **Success Metrics:** KPIs and monitoring for release validation
+            - **Communication Plan:** Stakeholder and user communication strategy
+            
+            **Actions if Approved:**
+            - Create release branch and tag
+            - Generate final release notes and documentation
+            - Trigger deployment pipeline
+            - Initiate monitoring and validation procedures
+            
+            Use TodoWrite to track all release preparation tasks. This is a critical enterprise release decision requiring comprehensive analysis.`;
+            
+            const { data: issue } = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🚀 Intelligent Release Decision Required - ${nextVersion} (${recommendedBump} release)`,
+              body: aiReleaseRequest,
+              labels: ['release-management', 'enterprise', `version-${recommendedBump}`, 'ai-decision-required']
+            });
+            
+            console.log(`Created release decision issue: #${issue.number}`);
+
+      - name: Automated Release Creation
+        if: |
+          steps.release-analysis.outputs.READINESS_SCORE >= 90 && 
+          steps.release-analysis.outputs.BREAKING_COMMITS == '0' &&
+          (github.event_name == 'workflow_dispatch' && inputs.action == 'create-release')
+        run: |
+          echo "🚀 Creating automated release..."
+          
+          # Create and push tag
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          next_version="${{ steps.release-analysis.outputs.NEXT_VERSION }}"
+          
+          # Create annotated tag
+          git tag -a "$next_version" -m "Release $next_version
+          
+          Features: ${{ steps.release-analysis.outputs.FEATURE_COMMITS }}
+          Bug Fixes: ${{ steps.release-analysis.outputs.FIX_COMMITS }}
+          Breaking Changes: ${{ steps.release-analysis.outputs.BREAKING_COMMITS }}
+          
+          Auto-generated release based on conventional commits."
+          
+          git push origin "$next_version"
+          
+          echo "✅ Release tag created: $next_version"
+
+      - name: Upload Release Artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: release-analysis-${{ github.run_id }}
+          path: |
+            release-analysis.md
+            release-notes.md
+            changelog-temp.md
+          retention-days: 90
