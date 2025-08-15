@@ -1,0 +1,110 @@
+{
+  "handoff_type": "security_validation",
+  "from_agent": "quality-assurance-specialist",
+  "to_agent": "security-specialist", 
+  "final_gate": true,
+  "context_package": {
+    "required_fields": [
+      "quality_assessment_summary",
+      "security_requirements_compliance",
+      "threat_model_validation",
+      "vulnerability_scan_results",
+      "authentication_authorization_testing",
+      "data_protection_validation",
+      "audit_trail_verification",
+      "compliance_checklist"
+    ],
+    "validation_checklist": [
+      "All quality gates have been successfully passed",
+      "Security requirements from foundation phase are addressed",
+      "Threat model assumptions have been validated in implementation",
+      "Vulnerability scans show acceptable risk levels",
+      "Authentication and authorization mechanisms are properly implemented",
+      "Data protection controls (encryption, access control) are functional",
+      "Audit trails are complete and tamper-evident",
+      "Regulatory compliance requirements are satisfied"
+    ],
+    "security_focus_areas": {
+      "authentication_security": {
+        "multi_factor_authentication": "{{mfa_implementation_status}}",
+        "session_management": "{{session_security_validation}}",
+        "password_policies": "{{password_security_compliance}}",
+        "account_lockout": "{{lockout_mechanism_testing}}"
+      },
+      "authorization_security": {
+        "role_based_access": "{{rbac_implementation_validation}}",
+        "principle_of_least_privilege": "{{privilege_escalation_testing}}",
+        "resource_access_controls": "{{resource_authorization_testing}}",
+        "api_endpoint_security": "{{api_security_validation}}"
+      },
+      "data_protection": {
+        "data_encryption": "{{encryption_at_rest_and_transit}}",
+        "data_classification": "{{sensitive_data_handling}}",
+        "data_retention": "{{retention_policy_compliance}}",
+        "data_disposal": "{{secure_deletion_validation}}"
+      },
+      "infrastructure_security": {
+        "network_security": "{{network_segmentation_validation}}",
+        "container_security": "{{container_hardening_verification}}",
+        "secrets_management": "{{secrets_handling_validation}}",
+        "monitoring_alerting": "{{security_monitoring_operational}}"
+      }
+    }
+  },
+  "security_gates": [
+    {
+      "gate_name": "Authentication & Authorization",
+      "validation_required": [
+        "Multi-factor authentication functional",
+        "Role-based access control properly implemented", 
+        "Session management secure and tested",
+        "API endpoint authorization validated"
+      ]
+    },
+    {
+      "gate_name": "Data Protection",
+      "validation_required": [
+        "Encryption at rest and in transit operational",
+        "Sensitive data handling compliant with policies",
+        "Data retention and disposal procedures functional",
+        "Data classification and labeling implemented"
+      ]
+    },
+    {
+      "gate_name": "Infrastructure Security",
+      "validation_required": [
+        "Network segmentation properly configured",
+        "Container/system hardening applied and verified",
+        "Secrets management secure and operational",
+        "Security monitoring and alerting functional"
+      ]
+    },
+    {
+      "gate_name": "Compliance & Audit",
+      "validation_required": [
+        "Regulatory compliance requirements satisfied",
+        "Audit trails complete and tamper-evident",
+        "Security documentation complete and current",
+        "Incident response procedures tested and ready"
+      ]
+    }
+  ],
+  "final_authorization": {
+    "deployment_approval": "Required for production deployment",
+    "risk_acceptance": "Documented acceptance of any residual risks",
+    "monitoring_requirements": "Ongoing security monitoring plan",
+    "incident_response": "Security incident response plan activated"
+  },
+  "success_criteria": [
+    "All security gates pass validation",
+    "Residual risks are documented and accepted",
+    "Security monitoring is operational",
+    "Final deployment authorization granted"
+  ],
+  "escalation_protocol": {
+    "critical_security_issues": "STOP - Project halt until resolution",
+    "high_risk_findings": "Mitigation required before deployment",
+    "compliance_gaps": "Legal/compliance team consultation required",
+    "audit_failures": "Full security review cycle restart"
+  }
+}

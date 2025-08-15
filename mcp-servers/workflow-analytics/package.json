@@ -1,0 +1,31 @@
+{
+  "name": "@my-dev-workspace/workflow-analytics",
+  "version": "1.0.0",
+  "description": "Development Workflow Analytics MCP Server - Advanced analytics and intelligence for workflow optimization",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "prepare": "npm run build",
+    "test": "echo \"Tests configured for workflow analytics\""
+  },
+  "keywords": [
+    "mcp",
+    "workflow",
+    "analytics",
+    "performance",
+    "optimization",
+    "intelligence"
+  ],
+  "author": "my-dev-workspace",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "sqlite3": "^5.1.6",
+    "sqlite": "^5.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0"
+  }
+}

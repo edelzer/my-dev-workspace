@@ -1,0 +1,88 @@
+{
+  "handoff_type": "quality_assurance",
+  "from_agents": ["frontend-developer", "backend-developer", "spec-developer"],
+  "to_agent": "quality-assurance-specialist",
+  "aggregation_mode": "convergent",
+  "context_package": {
+    "required_fields": [
+      "implementation_summary",
+      "code_coverage_report",
+      "test_execution_results",
+      "performance_metrics",
+      "security_scan_results",
+      "integration_status",
+      "documentation_completeness",
+      "deployment_readiness"
+    ],
+    "validation_checklist": [
+      "All planned features are implemented and tested",
+      "Code coverage meets or exceeds 80% threshold",
+      "All tests pass without flakiness or intermittent failures",
+      "Performance metrics meet established benchmarks",
+      "Security scans show no high/critical vulnerabilities",
+      "Integration testing demonstrates end-to-end functionality",
+      "Documentation is complete and up-to-date",
+      "Deployment artifacts are prepared and validated"
+    ],
+    "convergent_aggregation": {
+      "implementation_matrix": {
+        "frontend_deliverables": "{{frontend_completion_status}}",
+        "backend_deliverables": "{{backend_completion_status}}",
+        "integration_deliverables": "{{integration_completion_status}}"
+      },
+      "quality_metrics": {
+        "combined_test_coverage": "{{aggregate_coverage}}",
+        "cross_component_integration": "{{integration_test_results}}",
+        "end_to_end_scenarios": "{{e2e_test_status}}",
+        "performance_validation": "{{performance_test_results}}"
+      },
+      "risk_assessment": {
+        "technical_risks": "{{identified_technical_risks}}",
+        "security_risks": "{{security_assessment_summary}}",
+        "deployment_risks": "{{deployment_readiness_assessment}}",
+        "mitigation_strategies": "{{risk_mitigation_plans}}"
+      }
+    }
+  },
+  "quality_gates": [
+    {
+      "gate_name": "Code Quality",
+      "criteria": [
+        "ESLint/TSC validation with zero errors",
+        "Code coverage >= 80% for all components",
+        "Security scan passes with no high/critical issues",
+        "Performance benchmarks met or exceeded"
+      ]
+    },
+    {
+      "gate_name": "Integration Readiness", 
+      "criteria": [
+        "All API contracts implemented and tested",
+        "Cross-component integration validated",
+        "End-to-end workflows functional",
+        "Database migrations tested and reversible"
+      ]
+    },
+    {
+      "gate_name": "Deployment Readiness",
+      "criteria": [
+        "Build process succeeds without warnings",
+        "Configuration management validated",
+        "Rollback procedures tested and documented",
+        "Monitoring and logging operational"
+      ]
+    }
+  ],
+  "escalation_protocol": {
+    "blocking_issues": "security-specialist consultation required",
+    "performance_concerns": "spec-architect review required", 
+    "integration_failures": "spec-developer investigation required",
+    "deployment_risks": "project-manager coordination required"
+  },
+  "success_criteria": [
+    "All quality gates pass validation",
+    "Risk assessment is complete with mitigation plans",
+    "Deployment readiness is confirmed",
+    "Documentation and handoff to security-specialist is prepared"
+  ]
+}

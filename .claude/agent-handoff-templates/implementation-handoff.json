@@ -1,0 +1,73 @@
+{
+  "handoff_type": "implementation",
+  "from_agent": "spec-architect", 
+  "to_agents": ["frontend-developer", "backend-developer", "spec-developer"],
+  "coordination_mode": "parallel",
+  "context_package": {
+    "required_fields": [
+      "system_architecture",
+      "technology_stack",
+      "component_specifications",
+      "api_contracts",
+      "data_models",
+      "security_requirements",
+      "integration_points",
+      "testing_strategy"
+    ],
+    "validation_checklist": [
+      "Architecture follows established patterns and best practices",
+      "Technology stack is compatible and well-integrated",
+      "Component specifications are detailed and implementable",
+      "API contracts are complete with request/response examples",
+      "Data models include validation rules and relationships",
+      "Security requirements address authentication, authorization, and data protection",
+      "Integration points have clear protocols and error handling",
+      "Testing strategy covers unit, integration, and E2E scenarios"
+    ],
+    "parallel_coordination": {
+      "frontend_context": {
+        "ui_specifications": "{{ui_specs}}",
+        "component_hierarchy": "{{component_tree}}",
+        "state_management": "{{state_approach}}",
+        "api_integration": "{{frontend_api_contracts}}"
+      },
+      "backend_context": {
+        "service_architecture": "{{service_design}}",
+        "database_design": "{{data_architecture}}",
+        "api_endpoints": "{{backend_api_specs}}",
+        "business_logic": "{{domain_logic}}"
+      },
+      "integration_context": {
+        "shared_interfaces": "{{interface_contracts}}",
+        "common_utilities": "{{shared_libs}}",
+        "cross_cutting_concerns": "{{logging_monitoring_etc}}"
+      }
+    }
+  },
+  "coordination_protocol": {
+    "sync_points": [
+      "Architecture review and approval",
+      "API contract finalization",
+      "Integration testing readiness",
+      "Quality gate validation"
+    ],
+    "communication_channels": [
+      "Shared workspace updates",
+      "TodoWrite progress tracking",
+      "Code review notifications",
+      "Integration status reports"
+    ],
+    "conflict_resolution": [
+      "Architecture decision records (ADRs)",
+      "Technology compatibility matrix",
+      "Performance requirement validation",
+      "Security compliance verification"
+    ]
+  },
+  "success_criteria": [
+    "All agents have complete context packages",
+    "Parallel work can begin without blocking dependencies",
+    "Integration points are clearly defined and agreed upon",
+    "Quality gates and testing strategy are established"
+  ]
+}

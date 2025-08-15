@@ -1,75 +1,60 @@
+/**
+ * Base ESLint Configuration
+ * 
+ * Shared configuration for all templates to ensure consistency
+ * and reduce duplication across the workspace.
+ * 
+ * This configuration contains:
+ * - Common TypeScript rules
+ * - Security rules (security-first protocol)
+ * - Code quality rules
+ * - SonarJS rules for code analysis
+ * 
+ * Template-specific configurations extend this base.
+ */
+
 module.exports = {
-  root: true,
   env: {
-    browser: true,
     es2020: true,
     node: true,
   },
   extends: [
     'eslint:recommended',
     '@typescript-eslint/recommended',
-    'plugin:react/recommended',
-    'plugin:react-hooks/recommended',
-    'plugin:jsx-a11y/recommended',
     'plugin:security/recommended',
     'plugin:sonarjs/recommended',
     'prettier',
   ],
-  ignorePatterns: ['dist', '.eslintrc.js'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module',
-    ecmaFeatures: {
-      jsx: true,
-    },
   },
   plugins: [
-    'react-refresh',
-    'react',
-    'react-hooks',
-    'jsx-a11y',
+    '@typescript-eslint',
     'security',
     'sonarjs',
   ],
   rules: {
-    // React-specific rules
-    'react-refresh/only-export-components': [
-      'warn',
-      { allowConstantExport: true },
-    ],
-    'react/react-in-jsx-scope': 'off',
-    'react/jsx-uses-react': 'off',
-    'react/prop-types': 'off', // Using TypeScript for prop validation
-    'react/jsx-props-no-spreading': 'warn',
-    'react/jsx-no-useless-fragment': 'warn',
-    
-    // TypeScript-specific rules
+    // TypeScript-specific rules (common subset)
     '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
-    '@typescript-eslint/explicit-function-return-type': 'off',
-    '@typescript-eslint/explicit-module-boundary-types': 'off',
-    '@typescript-eslint/no-explicit-any': 'warn',
+    '@typescript-eslint/no-explicit-any': 'warn', // More permissive base, templates can override
     '@typescript-eslint/prefer-const': 'error',
     '@typescript-eslint/no-var-requires': 'error',
     
-    // Security rules
-    'security/detect-object-injection': 'warn',
+    // Security rules - Critical for all environments
     'security/detect-non-literal-regexp': 'warn',
     'security/detect-unsafe-regex': 'error',
     'security/detect-buffer-noassert': 'error',
-    'security/detect-child-process': 'warn',
     'security/detect-disable-mustache-escape': 'error',
     'security/detect-eval-with-expression': 'error',
     'security/detect-no-csrf-before-method-override': 'error',
-    'security/detect-non-literal-fs-filename': 'warn',
-    'security/detect-non-literal-require': 'warn',
     'security/detect-possible-timing-attacks': 'warn',
     'security/detect-pseudoRandomBytes': 'error',
     
     // Code quality rules
     'prefer-const': 'error',
     'no-var': 'error',
-    'no-console': 'warn',
     'no-debugger': 'error',
     'no-alert': 'error',
     'no-unused-expressions': 'error',
@@ -81,20 +66,7 @@ module.exports = {
     'prefer-arrow-callback': 'error',
     'arrow-body-style': ['error', 'as-needed'],
     
-    // Accessibility rules
-    'jsx-a11y/alt-text': 'error',
-    'jsx-a11y/aria-props': 'error',
-    'jsx-a11y/aria-proptypes': 'error',
-    'jsx-a11y/aria-unsupported-elements': 'error',
-    'jsx-a11y/role-has-required-aria-props': 'error',
-    'jsx-a11y/role-supports-aria-props': 'error',
-    'jsx-a11y/heading-has-content': 'error',
-    'jsx-a11y/html-has-lang': 'error',
-    'jsx-a11y/lang': 'error',
-    'jsx-a11y/no-aria-hidden-on-focusable': 'error',
-    
-    // SonarJS rules for code quality
-    'sonarjs/cognitive-complexity': ['error', 15],
+    // SonarJS rules for code quality (common configuration)
     'sonarjs/max-switch-cases': ['error', 30],
     'sonarjs/no-all-duplicated-branches': 'error',
     'sonarjs/no-collapsible-if': 'error',
@@ -121,30 +93,4 @@ module.exports = {
     'sonarjs/prefer-single-boolean-return': 'error',
     'sonarjs/prefer-while': 'error',
   },
-  settings: {
-    react: {
-      version: 'detect',
-    },
-  },
-  overrides: [
-    {
-      files: ['**/*.test.{js,jsx,ts,tsx}', '**/*.spec.{js,jsx,ts,tsx}'],
-      env: {
-        jest: true,
-      },
-      extends: ['plugin:testing-library/react'],
-      rules: {
-        'testing-library/await-async-query': 'error',
-        'testing-library/no-await-sync-query': 'error',
-        'testing-library/no-debugging-utils': 'warn',
-        'testing-library/no-dom-import': 'error',
-      },
-    },
-    {
-      files: ['**/*.stories.{js,jsx,ts,tsx}'],
-      rules: {
-        'import/no-anonymous-default-export': 'off',
-      },
-    },
-  ],
 };

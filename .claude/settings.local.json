@@ -28,7 +28,10 @@
       "mcp__memory__create_relations",
       "WebFetch(domain:modelcontextprotocol.io)",
       "mcp__memory__add_observations",
-      "mcp__filesystem__edit_file"
+      "mcp__filesystem__edit_file",
+      "mcp__filesystem__move_file",
+      "Bash(rm:*)",
+      "Bash(del \"C:\\Users\\edelz\\OneDrive\\Documents\\GitHub\\development\\my-dev-workspace\\.claude\\intelligent-hooks.json\")"
     ],
     "deny": []
   },
@@ -39,6 +42,82 @@
     "puppeteer-browser": {
       "command": "mcp-server-puppeteer",
       "args": []
+    },
+    "json-mode-optimizer": {
+      "command": "node",
+      "args": [
+        "./mcp-servers/json-mode-optimizer/dist/index.js"
+      ],
+      "description": "AI JSON mode configuration and optimization system"
+    },
+    "xml-tag-structuring": {
+      "command": "node",
+      "args": [
+        "./mcp-servers/xml-tag-structuring/dist/index.js"
+      ],
+      "description": "Advanced XML-based prompt engineering and structure optimization"
+    }
+  },
+  "toolPermissions": {
+    "create_json_config": {
+      "server": "json-mode-optimizer",
+      "allowed": true
+    },
+    "optimize_json_output": {
+      "server": "json-mode-optimizer",
+      "allowed": true
+    },
+    "validate_json_structure": {
+      "server": "json-mode-optimizer",
+      "allowed": true
+    },
+    "create_workflow_integration": {
+      "server": "json-mode-optimizer",
+      "allowed": true
+    },
+    "analyze_output_consistency": {
+      "server": "json-mode-optimizer",
+      "allowed": true
+    },
+    "get_optimization_analytics": {
+      "server": "json-mode-optimizer",
+      "allowed": true
+    },
+    "auto_improve_schema": {
+      "server": "json-mode-optimizer",
+      "allowed": true
+    },
+    "create_xml_template": {
+      "server": "xml-tag-structuring",
+      "allowed": true
+    },
+    "generate_xml_prompt": {
+      "server": "xml-tag-structuring",
+      "allowed": true
+    },
+    "validate_xml_structure": {
+      "server": "xml-tag-structuring",
+      "allowed": true
+    },
+    "create_workflow_pattern": {
+      "server": "xml-tag-structuring",
+      "allowed": true
+    },
+    "optimize_xml_performance": {
+      "server": "xml-tag-structuring",
+      "allowed": true
+    },
+    "analyze_effectiveness": {
+      "server": "xml-tag-structuring",
+      "allowed": true
+    },
+    "create_template_library": {
+      "server": "xml-tag-structuring",
+      "allowed": true
+    },
+    "get_xml_analytics": {
+      "server": "xml-tag-structuring",
+      "allowed": true
     }
   }
 }

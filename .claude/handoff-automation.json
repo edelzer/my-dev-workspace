@@ -1,0 +1,176 @@
+{
+  "handoff_automation": {
+    "version": "1.0.0",
+    "description": "Automated agent handoff protocols for optimized workflow coordination",
+    "automation_rules": {
+      "context_validation": {
+        "enabled": true,
+        "auto_validate_required_fields": true,
+        "auto_run_validation_checklist": true,
+        "fail_on_incomplete_context": true,
+        "context_package_timeout": "15_minutes"
+      },
+      "progress_tracking": {
+        "enabled": true, 
+        "auto_update_todowrite": true,
+        "create_handoff_logs": true,
+        "track_handoff_duration": true,
+        "alert_on_handoff_delays": true
+      },
+      "quality_gates": {
+        "enabled": true,
+        "auto_run_gate_validation": true,
+        "require_gate_approval": true,
+        "escalate_gate_failures": true,
+        "quality_gate_timeout": "30_minutes"
+      },
+      "failure_recovery": {
+        "enabled": true,
+        "auto_retry_failed_handoffs": true,
+        "escalate_after_retries": 3,
+        "fallback_to_manual_handoff": true,
+        "create_incident_reports": true
+      }
+    },
+    "workflow_sequences": {
+      "standard_development": [
+        {
+          "phase": "foundation",
+          "sequence": "requirements-specialist → spec-architect → project-manager",
+          "handoff_template": "foundation-handoff.json",
+          "parallel_capable": false,
+          "estimated_duration": "2-4_hours"
+        },
+        {
+          "phase": "implementation", 
+          "sequence": "spec-architect → [frontend-developer || backend-developer || spec-developer]",
+          "handoff_template": "implementation-handoff.json",
+          "parallel_capable": true,
+          "coordination_agent": "project-manager",
+          "estimated_duration": "1-3_days"
+        },
+        {
+          "phase": "quality_assurance",
+          "sequence": "[frontend-developer + backend-developer + spec-developer] → quality-assurance-specialist",
+          "handoff_template": "quality-handoff.json", 
+          "parallel_capable": false,
+          "aggregation_mode": "convergent",
+          "estimated_duration": "4-8_hours"
+        },
+        {
+          "phase": "security_validation",
+          "sequence": "quality-assurance-specialist → security-specialist",
+          "handoff_template": "security-validation-handoff.json",
+          "parallel_capable": false,
+          "final_gate": true,
+          "estimated_duration": "2-4_hours"
+        }
+      ],
+      "rapid_prototype": [
+        {
+          "phase": "rapid_foundation",
+          "sequence": "requirements-specialist → spec-developer",
+          "handoff_template": "foundation-handoff.json",
+          "simplified_context": true,
+          "estimated_duration": "30-60_minutes"
+        },
+        {
+          "phase": "rapid_implementation",
+          "sequence": "spec-developer → quality-assurance-specialist",
+          "handoff_template": "quality-handoff.json",
+          "rapid_validation": true,
+          "estimated_duration": "2-4_hours"
+        }
+      ],
+      "security_focused": [
+        {
+          "phase": "security_foundation",
+          "sequence": "requirements-specialist → security-specialist → spec-architect",
+          "handoff_template": "foundation-handoff.json",
+          "security_enhanced": true,
+          "estimated_duration": "4-6_hours"
+        },
+        {
+          "phase": "secure_implementation",
+          "sequence": "spec-architect → [frontend-developer || backend-developer] → security-specialist",
+          "handoff_template": "implementation-handoff.json",
+          "security_gates_required": true,
+          "estimated_duration": "2-4_days"
+        }
+      ]
+    },
+    "intelligent_delegation": {
+      "task_complexity_assessment": {
+        "simple_tasks": {
+          "criteria": ["Single component changes", "Configuration updates", "Documentation fixes"],
+          "recommended_agent": "spec-developer",
+          "skip_architecture_phase": true
+        },
+        "standard_tasks": {
+          "criteria": ["Feature additions", "Bug fixes", "Integration work"],
+          "recommended_sequence": "standard_development",
+          "full_workflow_required": true
+        },
+        "complex_tasks": {
+          "criteria": ["System architecture changes", "New technology integration", "Security implementations"],
+          "recommended_sequence": "security_focused",
+          "enhanced_validation": true
+        }
+      },
+      "agent_specialization_routing": {
+        "ui_ux_focus": "frontend-developer",
+        "api_database_focus": "backend-developer", 
+        "integration_focus": "spec-developer",
+        "security_focus": "security-specialist",
+        "requirements_analysis": "requirements-specialist",
+        "system_design": "spec-architect",
+        "quality_validation": "quality-assurance-specialist",
+        "project_coordination": "project-manager"
+      },
+      "context_intelligence": {
+        "auto_generate_context_packages": true,
+        "intelligent_field_population": true,
+        "context_completeness_scoring": true,
+        "predictive_handoff_preparation": true
+      }
+    },
+    "monitoring_analytics": {
+      "handoff_performance": {
+        "track_handoff_duration": true,
+        "measure_context_completeness": true,
+        "monitor_quality_gate_success_rate": true,
+        "analyze_workflow_bottlenecks": true
+      },
+      "agent_efficiency": {
+        "measure_agent_task_completion_time": true,
+        "track_agent_coordination_effectiveness": true,
+        "monitor_agent_specialization_utilization": true,
+        "analyze_parallel_coordination_efficiency": true
+      },
+      "quality_metrics": {
+        "track_quality_gate_pass_rate": true,
+        "monitor_rework_requirements": true,
+        "measure_security_validation_success": true,
+        "analyze_deployment_readiness_time": true
+      }
+    },
+    "emergency_protocols": {
+      "handoff_failure_escalation": {
+        "level_1": "Auto-retry with extended timeout",
+        "level_2": "Manual handoff with project-manager coordination",
+        "level_3": "Full workflow restart with enhanced validation",
+        "level_4": "Senior developer intervention required"
+      },
+      "quality_gate_failure_response": {
+        "immediate_actions": ["Stop deployment pipeline", "Create incident report", "Notify relevant agents"],
+        "investigation_protocol": ["Analyze failure cause", "Determine remediation scope", "Plan corrective actions"],
+        "recovery_process": ["Implement fixes", "Re-run validation", "Update prevention measures"]
+      },
+      "agent_coordination_breakdown": {
+        "detection_criteria": ["Handoff timeout exceeded", "Context validation repeated failures", "Agent unresponsiveness"],
+        "response_actions": ["Switch to manual coordination", "Escalate to project-manager", "Activate backup workflows"],
+        "recovery_validation": ["Confirm agent availability", "Validate context integrity", "Resume automated handoffs"]
+      }
+    }
+  }
+}

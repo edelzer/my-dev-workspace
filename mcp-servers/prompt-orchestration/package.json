@@ -1,0 +1,38 @@
+{
+  "name": "prompt-orchestration-mcp-server",
+  "version": "1.0.0",
+  "description": "Advanced prompt chaining and orchestration MCP server for AI optimization",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "test": "jest"
+  },
+  "keywords": [
+    "mcp",
+    "prompt-engineering", 
+    "ai-optimization",
+    "multi-agent",
+    "orchestration"
+  ],
+  "author": "Phase 5.5 Development Team",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "latest",
+    "uuid": "^9.0.0",
+    "sqlite3": "^5.1.0",
+    "node-nlp": "^4.27.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/uuid": "^9.0.0",
+    "typescript": "^5.0.0",
+    "jest": "^29.0.0",
+    "@types/jest": "^29.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

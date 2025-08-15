@@ -1,0 +1,40 @@
+{
+  "name": "context-intelligence-mcp-server",
+  "version": "1.0.0",
+  "description": "Advanced context intelligence and semantic optimization for prompt chains",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "test": "jest"
+  },
+  "keywords": [
+    "mcp",
+    "context-intelligence",
+    "semantic-analysis",
+    "nlp",
+    "optimization"
+  ],
+  "author": "Phase 5.5 Development Team",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "latest",
+    "uuid": "^9.0.0",
+    "sqlite3": "^5.1.0",
+    "natural": "^6.7.0",
+    "compromise": "^14.10.0",
+    "stopword": "^2.0.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/uuid": "^9.0.0",
+    "typescript": "^5.0.0",
+    "jest": "^29.0.0",
+    "@types/jest": "^29.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

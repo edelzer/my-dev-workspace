@@ -1,0 +1,55 @@
+{
+  "handoff_type": "foundation",
+  "from_agent": "requirements-specialist",
+  "to_agent": "spec-architect",
+  "context_package": {
+    "required_fields": [
+      "project_requirements",
+      "user_stories",
+      "acceptance_criteria",
+      "business_constraints",
+      "technical_constraints",
+      "risk_assessment",
+      "timeline_estimates"
+    ],
+    "validation_checklist": [
+      "Requirements are SMART (Specific, Measurable, Achievable, Relevant, Time-bound)",
+      "User stories follow standard format (As a... I want... So that...)",
+      "Acceptance criteria are testable and measurable",
+      "Business and technical constraints are clearly defined",
+      "Risk assessment includes mitigation strategies",
+      "Timeline estimates include buffer for uncertainty"
+    ],
+    "handoff_template": {
+      "summary": "Foundation analysis complete for {{project_name}}",
+      "requirements_overview": "{{requirements_count}} requirements identified across {{domain_count}} domains",
+      "key_insights": [
+        "{{primary_business_driver}}",
+        "{{technical_complexity_assessment}}",
+        "{{risk_level_summary}}"
+      ],
+      "architecture_guidance": {
+        "recommended_patterns": ["{{pattern_1}}", "{{pattern_2}}"],
+        "technology_constraints": ["{{constraint_1}}", "{{constraint_2}}"],
+        "scalability_requirements": "{{scalability_needs}}"
+      },
+      "next_steps": [
+        "System architecture design based on requirements",
+        "Technology stack selection with rationale",
+        "Integration strategy planning",
+        "Security architecture design"
+      ]
+    }
+  },
+  "success_criteria": [
+    "All required fields completed with valid data",
+    "Validation checklist 100% satisfied",
+    "Architecture guidance provides clear direction",
+    "Next steps are actionable and specific"
+  ],
+  "automation_triggers": [
+    "TodoWrite task completion notification",
+    "Context package validation",
+    "Handoff readiness assessment"
+  ]
+}

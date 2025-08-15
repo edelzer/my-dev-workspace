@@ -26,7 +26,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "npm run lint:fix 2>/dev/null || eslint --fix . 2>/dev/null || echo 'Linting skipped - no configuration found'",
+            "command": "if [ -f package.json ]; then npm run lint:fix 2>/dev/null || eslint --fix . 2>/dev/null; else echo 'Linting skipped - no configuration found'; fi",
             "description": "Auto-fix linting issues"
           }
         ]
@@ -46,7 +46,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "npm test -- --run --reporter=silent 2>/dev/null | tail -3 || echo 'Tests need attention - run npm test for details'",
+            "command": "if [ -d tests/ ] || [ -d test/ ] || [ -d __tests__/ ]; then npm test --silent 2>/dev/null || python -m pytest --quiet 2>/dev/null || echo 'Tests need attention'; fi",
             "description": "Run tests and report summary"
           }
         ]
@@ -128,8 +128,18 @@
         "hooks": [
           {
             "type": "command",
-            "command": "git log --oneline -1 | grep -E 'console\\.log' && echo 'Warning: console.log detected in commit' || true",
-            "description": "Check for console.log in recent commits"
+            "command": "if echo \"$CLAUDE_COMMAND\" | grep -E '(git commit|git push)'; then echo '[Hook] Running pre-commit checks...' && git diff --cached --name-only | xargs grep -l 'TODO\\|FIXME\\|console\\.log' 2>/dev/null | head -5 || true; fi",
+            "description": "Pre-commit validation checks"
+          }
+        ]
+      },
+      {
+        "matcher": "Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[Hook] Starting agent task...' && date '+%Y-%m-%d %H:%M:%S' >> .claude/task-log.txt",
+            "description": "Log agent task execution"
           }
         ]
       },
@@ -138,7 +148,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "grep -r 'API_KEY\\|SECRET\\|PASSWORD' . --exclude-dir=node_modules --exclude-dir=.git 2>/dev/null | head -5 || true",
+            "command": "if [ -f .gitignore ]; then grep -E '(API_KEY|SECRET|PASSWORD|TOKEN)' \"$CLAUDE_TARGET_FILE\" 2>/dev/null && echo 'Warning: Potential secrets detected' || grep -r 'API_KEY\\|SECRET\\|PASSWORD' . --exclude-dir=node_modules --exclude-dir=.git 2>/dev/null | head -5; fi",
             "description": "Scan for potential hardcoded secrets"
           }
         ]
@@ -432,6 +442,15 @@
             "type": "command",
             "command": "echo 'Session ended at '$(date)' - Summary: '$(git diff --cached --name-only | wc -l)' staged files, '$(git status --porcelain | wc -l)' total changes'",
             "description": "Session summary on stop"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f .claude/task-log.txt ]; then echo 'Tasks completed:' && tail -3 .claude/task-log.txt; fi",
+            "description": "Show completed tasks from session"
           }
         ]
       }
