@@ -1,0 +1,57 @@
+{
+  "template": "web",
+  "description": "React/TypeScript/Vite web application scripts",
+  "scripts": {
+    "core": {
+      "dev": "vite --host",
+      "dev:network": "vite --host 0.0.0.0",
+      "build": "tsc && vite build",
+      "build:analyze": "npm run build && npx vite-bundle-analyzer dist/stats.json",
+      "preview": "vite preview"
+    },
+    "quality": {
+      "lint": "eslint . --ext .js,.jsx,.ts,.tsx --max-warnings 0",
+      "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix", 
+      "lint:staged": "lint-staged",
+      "type-check": "tsc --noEmit",
+      "type-coverage": "typescript-coverage-report",
+      "format": "prettier --write .",
+      "format:check": "prettier --check ."
+    },
+    "testing": {
+      "test": "vitest",
+      "test:watch": "vitest --watch",
+      "test:ui": "vitest --ui",
+      "test:coverage": "vitest run --coverage",
+      "test:e2e": "playwright test",
+      "test:e2e:ui": "playwright test --ui"
+    },
+    "security": {
+      "security:scan": "npm audit --audit-level moderate",
+      "security:fix": "npm audit fix",
+      "security:deps": "npx better-npm-audit audit --level moderate"
+    },
+    "accessibility": {
+      "accessibility:test": "axe-playwright"
+    },
+    "performance": {
+      "performance:audit": "lighthouse-ci autorun"
+    },
+    "storybook": {
+      "storybook": "storybook dev -p 6006",
+      "build-storybook": "storybook build"
+    },
+    "utilities": {
+      "prepare": "husky install"
+    }
+  },
+  "script_order": [
+    "dev", "dev:network", "build", "build:analyze", "preview",
+    "lint", "lint:fix", "lint:staged", "type-check", "type-coverage", 
+    "test", "test:watch", "test:ui", "test:coverage", "test:e2e", "test:e2e:ui",
+    "security:scan", "security:fix", "security:deps",
+    "accessibility:test", "performance:audit",
+    "format", "format:check", "prepare",
+    "storybook", "build-storybook"
+  ]
+}

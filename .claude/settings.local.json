@@ -31,7 +31,13 @@
       "mcp__filesystem__edit_file",
       "mcp__filesystem__move_file",
       "Bash(rm:*)",
-      "Bash(del \"C:\\Users\\edelz\\OneDrive\\Documents\\GitHub\\development\\my-dev-workspace\\.claude\\intelligent-hooks.json\")"
+      "Bash(del \"C:\\Users\\edelz\\OneDrive\\Documents\\GitHub\\development\\my-dev-workspace\\.claude\\intelligent-hooks.json\")",
+      "Bash(git log:*)",
+      "Bash(bash:*)",
+      "Bash(dir:*)",
+      "Bash(test:*)",
+      "Bash(npm run:*)",
+      "Bash(find:*)"
     ],
     "deny": []
   },

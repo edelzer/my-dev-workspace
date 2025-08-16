@@ -1,24 +1,89 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "//": "API Template TypeScript Configuration",
+  "//description": "This configuration extends the base TypeScript configuration with API-specific settings for Node.js backend development.",
+  "//migration": "✅ Migrated to use base configuration with API-specific overrides",
+  "//benefits": ["Eliminated configuration duplication", "Improved maintainability", "Consistent type safety standards", "Centralized compiler settings"],
+  
+  "extends": "../../config/base/typescript.base.json",
+  
   "compilerOptions": {
+    "//": "=== API-SPECIFIC OVERRIDES ===",
+    
+    "//": "Node.js specific module settings",
     "target": "ES2020",
     "module": "commonjs",
     "lib": ["ES2020"],
+    "moduleResolution": "node",
+    
+    "//": "API project structure",
     "outDir": "./dist",
     "rootDir": "./src",
-    "strict": true,
+    
+    "//": "Node.js specific features",
+    "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
-    "removeComments": true,
-    "noImplicitAny": true,
-    "noImplicitReturns": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true
+    
+    "//": "API-specific path mappings (extends base paths)",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@/types": ["src/types/index"],
+      "@/utils": ["src/utils/index"],
+      "@/config": ["src/config/index"],
+      "@/models": ["src/models/index"],
+      "@/routes": ["src/routes/index"],
+      "@/middleware": ["src/middleware/index"],
+      "@/services": ["src/services/index"],
+      "@/database": ["src/database/index"]
+    },
+    
+    "//": "JSX disabled for API projects (inherited from base, no override needed)",
+    
+    "//": "Node.js performance optimizations",
+    "incremental": true,
+    "tsBuildInfoFile": "./dist/.tsbuildinfo"
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts"]
+  
+  "include": [
+    "src/**/*",
+    "types/**/*"
+  ],
+  
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build", 
+    "coverage",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/*.stories.ts",
+    "public",
+    "static",
+    "uploads",
+    "logs"
+  ],
+  
+  "//": "Node.js specific watch options",
+  "watchOptions": {
+    "watchFile": "useFsEvents",
+    "watchDirectory": "useFsEvents",
+    "fallbackPolling": "dynamicPriority",
+    "synchronousWatchDirectory": true,
+    "excludeDirectories": [
+      "**/node_modules",
+      "**/dist",
+      "**/build",
+      "**/coverage",
+      "**/logs",
+      "**/uploads"
+    ]
+  },
+  
+  "//": "API-specific type acquisition",
+  "typeAcquisition": {
+    "enable": false,
+    "include": ["node"],
+    "exclude": ["@types/react", "@types/react-dom"]
+  }
 }

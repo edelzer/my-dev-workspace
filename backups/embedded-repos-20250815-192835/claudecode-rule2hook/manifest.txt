@@ -1,0 +1,4 @@
+Repository: claudecode-rule2hook
+Backup Date: Fri, Aug 15, 2025  7:28:35 PM
+Original URL: https://github.com/zxdxjtu/claudecode-rule2hook.git
+Last Commit: a4f07a6 Enhance rule2hook prompt with comprehensive details

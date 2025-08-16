@@ -1,0 +1,40 @@
+{
+  "name": "@workspace/config-validation",
+  "version": "1.0.0",
+  "description": "Configuration validation and synchronization system",
+  "main": "index.js",
+  "scripts": {
+    "validate": "node cli.js validate-all",
+    "validate:config": "node cli.js validate-config",
+    "validate:sync": "node cli.js validate-sync",
+    "check:drift": "node cli.js check-drift",
+    "fix": "node cli.js fix",
+    "status": "node cli.js status",
+    "watch": "node cli.js watch",
+    "report": "node cli.js generate-report",
+    "test": "node test-validation.js",
+    "install-hooks": "node install-hooks.js"
+  },
+  "bin": {
+    "config-validator": "./cli.js"
+  },
+  "keywords": [
+    "configuration",
+    "validation",
+    "synchronization",
+    "eslint",
+    "quality",
+    "security"
+  ],
+  "dependencies": {
+    "commander": "^9.0.0",
+    "js-yaml": "^4.1.0",
+    "chokidar": "^3.5.3"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

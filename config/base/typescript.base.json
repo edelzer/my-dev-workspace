@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "//": "TypeScript Base Configuration - Security-First & Strict Type Checking",
+  "//description": "This configuration provides common TypeScript compiler options that prioritize type safety, security, and code quality. Projects can extend this base and add project-specific settings.",
+  "//usage": "In your project's tsconfig.json: { \"extends\": \"./config/base/typescript.base.json\", \"compilerOptions\": { /* project-specific overrides */ } }",
+  
+  "compilerOptions": {
+    "//": "=== TARGET & MODULE SETTINGS ===",
+    "target": "ES2020",
+    "lib": ["ES2020"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    
+    "//": "=== STRICT TYPE CHECKING (Security-First) ===",
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    
+    "//": "=== ADDITIONAL CHECKS (Code Quality) ===",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    
+    "//": "=== MODULE RESOLUTION & IMPORTS ===",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": false,
+    
+    "//": "=== EMIT SETTINGS ===",
+    "skipLibCheck": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "removeComments": true,
+    "noEmitOnError": true,
+    "preserveConstEnums": false,
+    "importsNotUsedAsValues": "error",
+    
+    "//": "=== PATH MAPPING (Base - Projects can extend) ===",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@/types": ["src/types/index"],
+      "@/utils": ["src/utils/index"],
+      "@/config": ["src/config/index"]
+    },
+    
+    "//": "=== EXPERIMENTAL FEATURES ===",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    
+    "//": "=== SECURITY & PERFORMANCE ===",
+    "checkJs": false,
+    "allowJs": false,
+    "maxNodeModuleJsDepth": 0,
+    "disableSizeLimit": false,
+    "incremental": true,
+    "tsBuildInfoFile": ".tsbuildinfo",
+    
+    "//": "=== JSX SETTINGS (For React projects - can be overridden) ===",
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
+  },
+  
+  "//": "=== INCLUDE/EXCLUDE PATTERNS (Security-conscious defaults) ===",
+  "include": [
+    "src/**/*",
+    "types/**/*",
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    "coverage",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "**/*.stories.ts",
+    "**/*.stories.tsx",
+    "**/*.config.ts",
+    "**/*.config.js",
+    ".env*",
+    "*.min.js",
+    "public",
+    "static"
+  ],
+  
+  "//": "=== COMPILER DIAGNOSTICS ===",
+  "compileOnSave": false,
+  
+  "//": "=== TYPE ACQUISITION (Security) ===",
+  "typeAcquisition": {
+    "enable": false,
+    "include": [],
+    "exclude": ["node_modules", "@types/node"]
+  },
+  
+  "//": "=== WATCH OPTIONS ===",
+  "watchOptions": {
+    "watchFile": "useFsEvents",
+    "watchDirectory": "useFsEvents",
+    "fallbackPolling": "dynamicPriority",
+    "synchronousWatchDirectory": true,
+    "excludeDirectories": [
+      "**/node_modules",
+      "**/dist",
+      "**/build",
+      "**/coverage"
+    ]
+  }
+}

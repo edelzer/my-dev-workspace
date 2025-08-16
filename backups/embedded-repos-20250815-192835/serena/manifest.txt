@@ -1,0 +1,4 @@
+Repository: serena
+Backup Date: Fri, Aug 15, 2025  7:28:36 PM
+Original URL: https://github.com/oraios/serena.git
+Last Commit: 0f467a6 Merge pull request #454 from oraios/feature/codex_compatibility

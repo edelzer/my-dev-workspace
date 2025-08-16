@@ -15,7 +15,7 @@
     "type-check": "tsc --noEmit",
     "type-coverage": "typescript-coverage-report",
     "test": "vitest",
-    "test:tdd": "vitest --watch",
+    "test:watch": "vitest --watch",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",

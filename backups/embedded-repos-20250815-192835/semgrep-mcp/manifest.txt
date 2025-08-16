@@ -1,0 +1,4 @@
+Repository: semgrep-mcp
+Backup Date: Fri, Aug 15, 2025  7:28:36 PM
+Original URL: https://github.com/semgrep/mcp.git
+Last Commit: 0b5ca14 Merge pull request #113 from semgrep/gha/bump-version-1.131.0-16732786244-1

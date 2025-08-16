@@ -1,21 +1,61 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "//": "Web Template TypeScript Configuration - Extends base config with web-specific settings",
+  "extends": "../../config/base/typescript.base.json",
+  
   "compilerOptions": {
-    "target": "ES2020",
-    "useDefineForClassFields": true,
+    "//": "=== WEB-SPECIFIC OVERRIDES ===",
+    
+    "//": "DOM Support",
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
-    "skipLibCheck": true,
-    "moduleResolution": "bundler",
+    
+    "//": "Vite-specific settings",
     "allowImportingTsExtensions": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
     "noEmit": true,
+    "useDefineForClassFields": true,
+    
+    "//": "React JSX settings",
     "jsx": "react-jsx",
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "jsxImportSource": "react",
+    
+    "//": "Web-specific path mapping (extends base paths)",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@/components": ["src/components/index"],
+      "@/hooks": ["src/hooks/index"],
+      "@/pages": ["src/pages/index"],
+      "@/types": ["src/types/index"],
+      "@/utils": ["src/utils/index"],
+      "@/config": ["src/config/index"],
+      "@/assets": ["src/assets/index"]
+    }
   },
-  "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  
+  "//": "=== WEB-SPECIFIC INCLUDES ===",
+  "include": [
+    "src/**/*",
+    "src/**/*.tsx",
+    "src/**/*.ts",
+    "**/*.d.ts"
+  ],
+  
+  "//": "=== WEB-SPECIFIC EXCLUDES (extends base excludes) ===",
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    "coverage",
+    "public",
+    "static",
+    "**/*.config.*",
+    "vite.config.*",
+    "vitest.config.*",
+    "playwright.config.*"
+  ],
+  
+  "//": "=== PROJECT REFERENCES ===",
+  "references": [
+    { "path": "./tsconfig.node.json" }
+  ]
 }

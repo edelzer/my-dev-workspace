@@ -1,0 +1,54 @@
+{
+  "//": "API Template Prettier Configuration",
+  "//description": "This configuration extends the base Prettier configuration with minimal API-specific overrides.",
+  "//migration": "✅ Migrated to use base configuration for consistency",
+  "//benefits": ["Eliminated configuration duplication", "Consistent formatting across templates", "Centralized style management"],
+  
+  "//": "Extend base Prettier configuration",
+  "extends": "../../config/base/prettier.base.js",
+  
+  "//": "API-specific overrides (minimal)",
+  "printWidth": 100,
+  "semi": true,
+  "singleQuote": true,
+  "trailingComma": "es5",
+  "tabWidth": 2,
+  "useTabs": false,
+  "bracketSpacing": true,
+  "arrowParens": "avoid",
+  
+  "//": "API-specific file overrides",
+  "overrides": [
+    {
+      "files": "*.{js,jsx,ts,tsx}",
+      "options": {
+        "parser": "typescript",
+        "singleQuote": true,
+        "trailingComma": "es5"
+      }
+    },
+    {
+      "files": "*.json",
+      "options": {
+        "parser": "json",
+        "singleQuote": false,
+        "trailingComma": "none"
+      }
+    },
+    {
+      "files": "*.md",
+      "options": {
+        "parser": "markdown",
+        "proseWrap": "preserve",
+        "printWidth": 80
+      }
+    },
+    {
+      "files": "package.json",
+      "options": {
+        "parser": "json-stringify",
+        "printWidth": 120
+      }
+    }
+  ]
+}

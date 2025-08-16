@@ -1,0 +1,47 @@
+{
+  "scripts": {
+    "core": {
+      "dev": "Development server with hot reload",
+      "build": "Production build with type checking",
+      "start": "Production server startup",
+      "clean": "Clean build artifacts and cache"
+    },
+    "quality": {
+      "lint": "ESLint with max-warnings 0",
+      "lint:fix": "ESLint with auto-fix",
+      "lint:staged": "Lint-staged integration",
+      "type-check": "TypeScript type checking (no emit)",
+      "format": "Prettier format all files", 
+      "format:check": "Prettier check only"
+    },
+    "testing": {
+      "test": "Run all tests",
+      "test:watch": "Watch mode testing",
+      "test:coverage": "Coverage reporting with thresholds",
+      "test:e2e": "End-to-end testing"
+    },
+    "security": {
+      "security:scan": "npm audit --audit-level moderate",
+      "security:fix": "npm audit fix",
+      "security:deps": "npx better-npm-audit audit --level moderate"
+    },
+    "utilities": {
+      "prepare": "husky install"
+    }
+  },
+  "patterns": {
+    "development": "dev, dev:*, build, build:*, start, start:*, preview, clean",
+    "quality": "lint, lint:*, type-check, type-*, format, format:*",
+    "testing": "test, test:*",
+    "security": "security:*",
+    "performance": "performance:*",
+    "template_specific": "storybook, db:*, docs:*, logs:*, accessibility:*"
+  },
+  "naming_conventions": {
+    "primary_action": "Single verb (dev, build, test, lint)",
+    "scoped_action": "verb:scope (test:watch, security:scan)",
+    "build_variants": "build:analyze, build:watch",
+    "test_types": "test:unit, test:integration, test:e2e",
+    "environment": "start:prod, dev:debug"
+  }
+}

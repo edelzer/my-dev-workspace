@@ -451,7 +451,6 @@ my-dev-workspace/
 ├── .cursor/           # Advanced Cursor IDE configurations with performance optimization
 ├── .github/           # GitHub Actions CI/CD workflows (5 comprehensive pipelines)
 ├── .ide/              # Cross-platform IDE integration configurations
-├── claudecode-rule2hook/  # Natural language rule automation
 ├── README.md          # Main documentation
 ├── LICENSE            # MIT License
 └── CLAUDE.md          # This file - Claude Code instructions
@@ -464,16 +463,53 @@ my-dev-workspace/
 **Testing**: TDD workflow with AI-enhanced test generation, comprehensive coverage (unit/integration/E2E)
 **Debugging**: Systematic Level 1-7 escalation, minimal-impact interventions, context preservation
 **Task Management**: 15-30 minute micro-sessions, TodoWrite tracking, incremental complexity building
-**Multi-Agent**: Shared `.bmad-workspace/`, 17 task commands, quality gates, Rule2Hook automation
+**Multi-Agent**: Shared `.bmad-workspace/`, 17 task commands, quality gates, External Tool Integration
 
 ## System Capabilities
 
 **Development Teams**: 11 Custom Claude Code agents + 10 BMAD strategic agents with 17 task commands
 **Project Templates**: 7 CLAUDE.md templates + 4 production-ready templates (Web/API/Mobile/Desktop)
-**Automation**: 36+ intelligent hooks, Rule2Hook natural language automation, CI/CD pipelines
+**Automation**: 36+ intelligent hooks, External tool integration, CI/CD pipelines
 **IDE Integration**: VS Code, JetBrains, Cursor, Windsurf with context sharing and diagnostics
 **Knowledge Management**: AI-powered search, learning analytics, comprehensive protocol documentation
 **Security Framework**: Scanning, validation, monitoring across all workflows with security-first protocols
+
+## External Tool Integration
+
+External tools are now integrated via clean external methods rather than embedded repositories. This approach maintains workspace cleanliness while providing full tool functionality.
+
+### claudecode-rule2hook
+**Purpose**: Natural language rule automation for Claude Code hooks
+**Status**: ✅ **INTEGRATED** - Command available in workspace
+**Location**: `.claude/commands/rule2hook.md`
+**Usage**: Use `/project:rule2hook` command directly in Claude Code
+**External Setup**: Clone externally when source inspection needed:
+```bash
+# Clone for development/inspection (external to workspace)
+git clone https://github.com/zxdxjtu/claudecode-rule2hook.git ~/tools/claudecode-rule2hook
+```
+
+### Semgrep MCP
+**Purpose**: Security scanning via Model Context Protocol
+**Status**: 🟡 **READY FOR SETUP** - Setup when needed
+**Integration Method**: MCP server via package manager
+```bash
+# Add to Claude Code MCP configuration
+claude mcp add semgrep uvx semgrep-mcp
+# OR install globally
+uvx semgrep-mcp
+```
+**Repository**: https://github.com/semgrep/mcp.git
+
+### Serena
+**Purpose**: Semantic code analysis and editing toolkit
+**Status**: 🟡 **READY FOR SETUP** - Setup when needed
+**Integration Method**: MCP server via uvx
+```bash
+# Add to Claude Code MCP configuration
+claude mcp add serena -- uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context ide-assistant
+```
+**Repository**: https://github.com/oraios/serena.git
 
 ## Working with Projects
 
@@ -547,6 +583,11 @@ npm run debt:analyze # Debt assessment
 claude --agent spec-analyst → spec-architect → spec-planner  # Technical foundation
 /dev + /ux-expert + custom agents        # Implementation
 /qa → /bmad-orchestrator                 # Quality & deployment
+
+# External Tool Integration
+git clone https://github.com/zxdxjtu/claudecode-rule2hook.git  # Rule2Hook
+uvx semgrep-mcp                          # Semgrep MCP
+uvx --from git+https://github.com/oraios/serena serena start-mcp-server  # Serena
 ```
 
 ## Development Standards
@@ -566,7 +607,7 @@ claude --agent spec-analyst → spec-architect → spec-planner  # Technical fou
 
 **Completed Phases**: All development phases (2-4) successfully implemented and operational
 **Agent Systems**: 21 total agents (11 Custom + 10 BMAD) with 100% coordination success
-**Automation**: 36+ hooks, Rule2Hook system, CI/CD pipelines with 100% test pass rates
+**Automation**: 36+ hooks, External tool integration, CI/CD pipelines with 100% test pass rates
 **Integration**: Cross-platform IDE support, knowledge management, security frameworks
 **Metrics**: Zero critical vulnerabilities, >95% Level 1-3 debugging success, 100% TodoWrite compliance
 

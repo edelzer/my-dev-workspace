@@ -1,0 +1,72 @@
+{
+  "template": "api",
+  "description": "Node.js/Express/TypeScript API application scripts",
+  "scripts": {
+    "core": {
+      "start": "node dist/index.js",
+      "start:prod": "NODE_ENV=production node dist/index.js", 
+      "dev": "tsx watch --clear-screen=false src/index.ts",
+      "dev:debug": "tsx watch --inspect src/index.ts",
+      "build": "tsc && npm run copy-assets",
+      "build:watch": "tsc --watch",
+      "clean": "rimraf dist coverage .nyc_output"
+    },
+    "quality": {
+      "lint": "eslint src --ext .ts --max-warnings 0",
+      "lint:fix": "eslint src --ext .ts --fix",
+      "lint:staged": "lint-staged", 
+      "type-check": "tsc --noEmit",
+      "format": "prettier --write .",
+      "format:check": "prettier --check ."
+    },
+    "testing": {
+      "test": "jest",
+      "test:watch": "jest --watch",
+      "test:tdd": "jest --watch --verbose",
+      "test:coverage": "jest --coverage",
+      "test:integration": "jest --testPathPattern=integration",
+      "test:unit": "jest --testPathPattern=unit", 
+      "test:e2e": "jest --testPathPattern=e2e"
+    },
+    "security": {
+      "security:scan": "npm audit --audit-level moderate",
+      "security:fix": "npm audit fix",
+      "security:snyk": "snyk test",
+      "security:deps": "npx better-npm-audit audit --level moderate"
+    },
+    "performance": {
+      "performance:test": "autocannon -c 100 -d 30 http://localhost:3000"
+    },
+    "database": {
+      "db:migrate": "npx prisma migrate deploy",
+      "db:seed": "npx prisma db seed",
+      "db:studio": "npx prisma studio", 
+      "db:generate": "npx prisma generate"
+    },
+    "logging": {
+      "logs:tail": "pm2 logs --lines 100",
+      "logs:flush": "pm2 flush"
+    },
+    "documentation": {
+      "docs:generate": "swagger-jsdoc -d swaggerDef.js -o swagger.json './src/routes/*.ts'",
+      "docs:serve": "swagger-ui-serve swagger.json"
+    },
+    "utilities": {
+      "prepare": "husky install",
+      "copy-assets": "copyfiles -u 1 src/**/*.{json,yaml,yml,html} dist/",
+      "prestart": "npm run build",
+      "postinstall": "npm run build"
+    }
+  },
+  "script_order": [
+    "start", "start:prod", "dev", "dev:debug", "build", "build:watch", "clean",
+    "lint", "lint:fix", "lint:staged", "type-check",
+    "test", "test:watch", "test:tdd", "test:coverage", "test:integration", "test:unit", "test:e2e", 
+    "security:scan", "security:fix", "security:snyk", "security:deps",
+    "performance:test",
+    "db:migrate", "db:seed", "db:studio", "db:generate",
+    "logs:tail", "logs:flush",
+    "docs:generate", "docs:serve",
+    "format", "format:check", "prepare", "copy-assets", "prestart", "postinstall"
+  ]
+}

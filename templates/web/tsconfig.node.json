@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "//": "Node.js Configuration for Web Template - Build tools and configuration files",
+  "extends": "../../config/base/typescript.base.json",
+  
+  "compilerOptions": {
+    "//": "=== NODE.JS SPECIFIC OVERRIDES ===",
+    
+    "//": "Node.js target environment",
+    "lib": ["ES2020"],
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    
+    "//": "Node.js specific settings",
+    "allowImportingTsExtensions": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    
+    "//": "Build tools settings",
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    
+    "//": "Disable JSX for Node.js files",
+    "jsx": "preserve",
+    
+    "//": "Types for Node.js",
+    "types": ["node", "vite/client"]
+  },
+  
+  "//": "=== NODE.JS FILE INCLUDES ===",
+  "include": [
+    "vite.config.*",
+    "vitest.config.*",
+    "playwright.config.*",
+    "**/*.config.ts",
+    "**/*.config.js",
+    "**/*.config.mjs"
+  ],
+  
+  "//": "=== EXCLUDE PATTERNS ===",
+  "exclude": [
+    "src/**/*",
+    "node_modules",
+    "dist",
+    "build",
+    "coverage"
+  ]
+}
