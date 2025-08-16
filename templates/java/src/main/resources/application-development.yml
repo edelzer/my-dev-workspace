@@ -1,0 +1,201 @@
+# Development Profile Configuration
+# Optimized for local development with enhanced debugging and relaxed security
+
+spring:
+  # Development database configuration
+  datasource:
+    url: jdbc:postgresql://localhost:5432/springapp_dev
+    username: postgres
+    password: postgres
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      
+  # JPA configuration for development
+  jpa:
+    hibernate:
+      ddl-auto: update # Allow schema updates in development
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        generate_statistics: true
+    show-sql: true
+    
+  # Redis configuration for development
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 1 # Use different database for development
+      
+  # DevTools configuration
+  devtools:
+    restart:
+      enabled: true
+      additional-paths: src/main/java
+      exclude: static/**,public/**
+    livereload:
+      enabled: true
+      port: 35729
+    remote:
+      secret: ${DEVTOOLS_SECRET:development-secret}
+      
+  # H2 Console (for testing)
+  h2:
+    console:
+      enabled: false # Disabled for PostgreSQL development
+      path: /h2-console
+      
+  # Web configuration for development
+  web:
+    resources:
+      cache:
+        cachecontrol:
+          max-age: 0 # Disable caching for development
+          cache-public: false
+
+# Server configuration for development
+server:
+  port: 8080
+  servlet:
+    session:
+      cookie:
+        secure: false # Allow non-HTTPS in development
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: on_param
+    include-exception: true
+
+# Management endpoints for development
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*" # Enable all actuator endpoints in development
+  endpoint:
+    health:
+      show-details: always
+    configprops:
+      enabled: true
+    env:
+      enabled: true
+    beans:
+      enabled: true
+    mappings:
+      enabled: true
+    shutdown:
+      enabled: true
+  health:
+    redis:
+      enabled: true
+    db:
+      enabled: true
+
+# Enhanced logging for development
+logging:
+  level:
+    com.company.project: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.springframework.transaction: DEBUG
+    org.springframework.data.jpa: DEBUG
+    org.flywaydb: DEBUG
+    redis.clients.jedis: DEBUG
+    io.jsonwebtoken: DEBUG
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr([%thread]){blue} %clr(%-5level){cyan} %clr([%X{traceId:-},%X{spanId:-}]){yellow} %clr(%logger{36}){magenta} - %msg%n"
+
+# Application-specific development configuration
+app:
+  # JWT configuration for development
+  jwt:
+    secret: ZGV2ZWxvcG1lbnRTZWNyZXRLZXlGb3JKV1RUb2tlblNpZ25pbmdJbkRldmVsb3BtZW50RW52aXJvbm1lbnQ=
+    expiration-ms: 7200000 # 2 hours for development convenience
+    refresh-expiration-ms: 172800000 # 48 hours for development
+    
+  # CORS configuration for development
+  cors:
+    allowed-origins: 
+      - http://localhost:3000
+      - http://localhost:3001
+      - http://localhost:8080
+      - http://localhost:8081
+      - http://127.0.0.1:3000
+      - http://127.0.0.1:8080
+    allowed-methods: "*"
+    allowed-headers: "*"
+    allow-credentials: true
+    max-age: 0 # Disable CORS caching for development
+    
+  # Relaxed security for development
+  security:
+    password-strength:
+      min-length: 4 # Relaxed for development
+      require-uppercase: false
+      require-lowercase: false
+      require-digit: false
+      require-special-char: false
+    account-lockout:
+      max-attempts: 10 # More lenient in development
+      lockout-duration: 5m
+      
+  # Higher rate limits for development
+  rate-limit:
+    default:
+      requests: 1000
+      window: 1m
+    auth:
+      requests: 100
+      window: 1m
+    api:
+      requests: 10000
+      window: 1h
+      
+  # Email configuration for development
+  email:
+    enabled: false # Disabled by default in development
+    from: dev@localhost
+    smtp:
+      host: localhost
+      port: 1025 # MailHog or similar for development
+      auth: false
+      starttls: false
+      
+  # Development feature flags
+  features:
+    registration-enabled: true
+    email-verification-required: false # Disabled for development convenience
+    password-reset-enabled: true
+    remember-me-enabled: true
+
+# OpenAPI/Swagger configuration for development
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    try-it-out-enabled: true
+    filter: true
+    display-request-duration: true
+    persist-authorization: true
+  show-actuator: true
+  cache:
+    disabled: true
+
+# Debug configuration
+debug: false
+
+# Spring Boot Admin (if used)
+spring:
+  boot:
+    admin:
+      client:
+        enabled: false # Enable if using Spring Boot Admin
+        url: http://localhost:9090
+        instance:
+          name: spring-boot-professional-template-dev

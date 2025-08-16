@@ -1,0 +1,109 @@
+{
+  "application": {
+    "environment": "testing",
+    "debug": false
+  },
+  "server": {
+    "port": 8001,
+    "ssl": {
+      "enabled": false
+    }
+  },
+  "database": {
+    "url": "sqlite:///test.db",
+    "driver": "sqlite",
+    "pool": {
+      "size": 5,
+      "minIdle": 1,
+      "maxIdle": 2,
+      "timeout": 10
+    },
+    "migrations": {
+      "autoMigrate": true
+    }
+  },
+  "cache": {
+    "type": "memory",
+    "url": "redis://localhost:6379/15",
+    "database": 15,
+    "ttl": 300
+  },
+  "security": {
+    "jwt": {
+      "secret": "test-secret-key-not-for-production-at-least-32-chars",
+      "accessTokenExpiry": 300,
+      "refreshTokenExpiry": 600
+    },
+    "password": {
+      "minLength": 6,
+      "requireUppercase": false,
+      "requireLowercase": false,
+      "requireNumbers": false,
+      "requireSpecialChars": false,
+      "hashRounds": 4
+    },
+    "session": {
+      "timeout": 600,
+      "maxConcurrent": 10
+    }
+  },
+  "cors": {
+    "allowedOrigins": ["*"],
+    "allowCredentials": false
+  },
+  "rateLimiting": {
+    "enabled": false
+  },
+  "logging": {
+    "level": "ERROR",
+    "format": "console",
+    "file": {
+      "enabled": false
+    },
+    "console": {
+      "enabled": true,
+      "colorize": false
+    }
+  },
+  "monitoring": {
+    "metrics": {
+      "enabled": false
+    },
+    "healthCheck": {
+      "enabled": true,
+      "timeout": 5
+    },
+    "tracing": {
+      "enabled": false
+    }
+  },
+  "external": {
+    "email": {
+      "enabled": false
+    },
+    "storage": {
+      "type": "local",
+      "local": {
+        "path": "test-uploads"
+      }
+    }
+  },
+  "features": {
+    "registration": true,
+    "emailVerification": false,
+    "passwordReset": false,
+    "rememberMe": false,
+    "apiDocumentation": false,
+    "fileUpload": true
+  },
+  "validation": {
+    "maxRequestSize": "1MB",
+    "maxJsonDepth": 5,
+    "sanitizeInput": false,
+    "fileUpload": {
+      "maxFileSize": "1MB",
+      "allowedExtensions": [".txt", ".json"],
+      "maxFiles": 1
+    }
+  }
+}

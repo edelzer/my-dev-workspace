@@ -1,0 +1,271 @@
+# Docker Compose for Spring Boot Professional Template
+# Complete development and testing environment with all dependencies
+
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: spring-app-postgres
+    environment:
+      POSTGRES_DB: springapp
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - spring-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d springapp"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp
+      - /var/run/postgresql
+    
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: spring-app-redis
+    command: redis-server --appendonly yes --requirepass redispassword
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+      - ./docker/redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - spring-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "redispassword", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+    sysctls:
+      - net.core.somaxconn=1024
+
+  # Spring Boot Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    container_name: spring-app
+    environment:
+      # Database configuration
+      DATABASE_URL: jdbc:postgresql://postgres:5432/springapp
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: postgres
+      
+      # Redis configuration
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: redispassword
+      REDIS_DATABASE: 0
+      
+      # Application configuration
+      SPRING_PROFILES_ACTIVE: docker
+      SERVER_PORT: 8080
+      MANAGEMENT_PORT: 8081
+      
+      # JWT configuration
+      JWT_SECRET: ZG9ja2VyU2VjcmV0S2V5Rm9yU3ByaW5nQm9vdFByb2Zlc3Npb25hbFRlbXBsYXRlSW5Eb2NrZXJFbnZpcm9ubWVudA==
+      JWT_EXPIRATION_MS: 3600000
+      JWT_REFRESH_EXPIRATION_MS: 86400000
+      
+      # Security configuration
+      CORS_ALLOWED_ORIGINS: http://localhost:3000,http://localhost:8080
+      
+      # Logging configuration
+      LOG_LEVEL: INFO
+      LOG_FILE: /app/logs/application.log
+      
+      # Feature flags
+      REGISTRATION_ENABLED: true
+      EMAIL_VERIFICATION_REQUIRED: false
+      
+      # Java options
+      JAVA_OPTS: "-XX:+UseG1GC -XX:MaxRAMPercentage=75 -Djava.security.egd=file:/dev/./urandom"
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    volumes:
+      - app_logs:/app/logs
+      - app_uploads:/app/uploads
+    networks:
+      - spring-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+
+  # Prometheus for metrics collection
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: spring-app-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - spring-network
+    restart: unless-stopped
+    depends_on:
+      - app
+    security_opt:
+      - no-new-privileges:true
+
+  # Grafana for metrics visualization
+  grafana:
+    image: grafana/grafana:latest
+    container_name: spring-app-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: grafana
+      GF_USERS_ALLOW_SIGN_UP: false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning
+      - ./docker/grafana/dashboards:/var/lib/grafana/dashboards
+    networks:
+      - spring-network
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+    security_opt:
+      - no-new-privileges:true
+
+  # pgAdmin for database administration (development only)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: spring-app-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@company.com
+      PGADMIN_DEFAULT_PASSWORD: pgadmin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - spring-network
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    profiles:
+      - development
+    security_opt:
+      - no-new-privileges:true
+
+  # Redis Commander for Redis administration (development only)
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: spring-app-redis-commander
+    environment:
+      REDIS_HOSTS: local:redis:6379:0:redispassword
+      HTTP_USER: admin
+      HTTP_PASSWORD: redis
+    ports:
+      - "8082:8081"
+    networks:
+      - spring-network
+    restart: unless-stopped
+    depends_on:
+      - redis
+    profiles:
+      - development
+    security_opt:
+      - no-new-privileges:true
+
+  # Mailhog for email testing (development only)
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: spring-app-mailhog
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    networks:
+      - spring-network
+    restart: unless-stopped
+    profiles:
+      - development
+    security_opt:
+      - no-new-privileges:true
+
+  # Nginx reverse proxy (production-like setup)
+  nginx:
+    image: nginx:alpine
+    container_name: spring-app-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./docker/nginx/ssl:/etc/nginx/ssl
+    networks:
+      - spring-network
+    restart: unless-stopped
+    depends_on:
+      - app
+    profiles:
+      - production
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  spring-network:
+    driver: bridge
+    name: spring-app-network
+
+volumes:
+  postgres_data:
+    name: spring-app-postgres-data
+  redis_data:
+    name: spring-app-redis-data
+  app_logs:
+    name: spring-app-logs
+  app_uploads:
+    name: spring-app-uploads
+  prometheus_data:
+    name: spring-app-prometheus-data
+  grafana_data:
+    name: spring-app-grafana-data
+  pgadmin_data:
+    name: spring-app-pgadmin-data

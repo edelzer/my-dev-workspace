@@ -1,0 +1,168 @@
+{
+  "application": {
+    "environment": "production",
+    "debug": false
+  },
+  "server": {
+    "port": 8000,
+    "ssl": {
+      "enabled": true,
+      "keystore": "${SSL_KEYSTORE_PATH}",
+      "keystorePassword": "${SSL_KEYSTORE_PASSWORD}",
+      "keystoreType": "PKCS12"
+    },
+    "compression": {
+      "enabled": true,
+      "threshold": 256
+    }
+  },
+  "database": {
+    "url": "postgresql://${DATABASE_USERNAME}:${DATABASE_PASSWORD}@${DATABASE_HOST}:5432/${DATABASE_NAME}",
+    "pool": {
+      "size": 25,
+      "minIdle": 5,
+      "maxIdle": 15,
+      "timeout": 30,
+      "maxLifetime": 900
+    },
+    "migrations": {
+      "autoMigrate": false
+    }
+  },
+  "cache": {
+    "url": "redis://${REDIS_HOST}:6379/0",
+    "host": "${REDIS_HOST}",
+    "password": "${REDIS_PASSWORD}",
+    "database": 0,
+    "pool": {
+      "maxActive": 25,
+      "maxIdle": 15,
+      "minIdle": 5
+    },
+    "ttl": 7200
+  },
+  "security": {
+    "jwt": {
+      "secret": "${JWT_SECRET}",
+      "accessTokenExpiry": 900,
+      "refreshTokenExpiry": 21600
+    },
+    "password": {
+      "minLength": 12,
+      "requireUppercase": true,
+      "requireLowercase": true,
+      "requireNumbers": true,
+      "requireSpecialChars": true,
+      "hashRounds": 14
+    },
+    "session": {
+      "timeout": 900,
+      "maxConcurrent": 1
+    },
+    "headers": {
+      "strictTransportSecurity": "max-age=63072000; includeSubDomains; preload",
+      "contentSecurityPolicy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'"
+    }
+  },
+  "cors": {
+    "allowedOrigins": ["${FRONTEND_URL}", "https://myapp.com", "https://www.myapp.com"],
+    "allowCredentials": true,
+    "maxAge": 86400
+  },
+  "rateLimiting": {
+    "enabled": true,
+    "global": {
+      "requests": 500,
+      "window": 60
+    },
+    "auth": {
+      "requests": 20,
+      "window": 60
+    },
+    "api": {
+      "requests": 5000,
+      "window": 3600
+    }
+  },
+  "logging": {
+    "level": "WARN",
+    "format": "json",
+    "file": {
+      "enabled": true,
+      "path": "logs/production.log",
+      "maxSize": "100MB",
+      "maxFiles": 30,
+      "rotation": "daily"
+    },
+    "console": {
+      "enabled": false,
+      "colorize": false
+    }
+  },
+  "monitoring": {
+    "metrics": {
+      "enabled": true,
+      "prometheus": {
+        "enabled": true,
+        "port": 9090
+      }
+    },
+    "healthCheck": {
+      "enabled": true,
+      "timeout": 10
+    },
+    "tracing": {
+      "enabled": true,
+      "jaeger": {
+        "endpoint": "${JAEGER_ENDPOINT}",
+        "samplingRate": 0.01
+      }
+    }
+  },
+  "external": {
+    "email": {
+      "enabled": true,
+      "provider": "smtp",
+      "from": "${EMAIL_FROM}",
+      "smtp": {
+        "host": "${SMTP_HOST}",
+        "port": 587,
+        "username": "${SMTP_USERNAME}",
+        "password": "${SMTP_PASSWORD}",
+        "secure": false,
+        "startTLS": true
+      }
+    },
+    "storage": {
+      "type": "s3",
+      "s3": {
+        "bucket": "${S3_BUCKET}",
+        "region": "${AWS_REGION}",
+        "accessKeyId": "${AWS_ACCESS_KEY_ID}",
+        "secretAccessKey": "${AWS_SECRET_ACCESS_KEY}"
+      }
+    }
+  },
+  "features": {
+    "registration": true,
+    "emailVerification": true,
+    "passwordReset": true,
+    "rememberMe": true,
+    "apiDocumentation": false,
+    "fileUpload": true
+  },
+  "api": {
+    "title": "My Application API",
+    "description": "Production API for My Application"
+  },
+  "validation": {
+    "maxRequestSize": "2MB",
+    "maxJsonDepth": 6,
+    "sanitizeInput": true,
+    "fileUpload": {
+      "maxFileSize": "10MB",
+      "allowedExtensions": [".jpg", ".jpeg", ".png", ".pdf"],
+      "maxFiles": 3
+    }
+  }
+}

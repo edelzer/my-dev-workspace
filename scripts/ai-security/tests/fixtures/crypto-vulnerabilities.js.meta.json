@@ -1,0 +1,41 @@
+{
+  "filename": "crypto-vulnerabilities.js",
+  "created": "2025-08-16T17:06:05.708Z",
+  "vulnerability_count": 4,
+  "total_lines": 26,
+  "primary_language": "javascript",
+  "test_category": "cryptography_test",
+  "complexity_score": {
+    "line_count": 20,
+    "function_count": 4,
+    "conditional_count": 0,
+    "complexity_score": 10
+  },
+  "expected_vulnerabilities": [
+    {
+      "type": "INSECURE_RANDOM",
+      "line": 5,
+      "severity": "MEDIUM",
+      "confidence": 0.8
+    },
+    {
+      "type": "HARDCODED_SECRET",
+      "line": 9,
+      "severity": "HIGH",
+      "confidence": 0.95
+    },
+    {
+      "type": "WEAK_CRYPTO",
+      "line": 13,
+      "severity": "HIGH",
+      "confidence": 0.88
+    },
+    {
+      "type": "WEAK_CRYPTO",
+      "line": 18,
+      "severity": "MEDIUM",
+      "confidence": 0.82
+    }
+  ],
+  "false_positive_probability": 0.04
+}

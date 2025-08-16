@@ -1,0 +1,189 @@
+{
+  "application": {
+    "name": "my-app",
+    "version": "1.0.0",
+    "environment": "development",
+    "description": "A professional application built with my-dev-workspace",
+    "debug": false
+  },
+  "server": {
+    "host": "0.0.0.0",
+    "port": 8000,
+    "contextPath": "",
+    "timeouts": {
+      "connection": 30,
+      "request": 60,
+      "keepAlive": 5
+    },
+    "compression": {
+      "enabled": true,
+      "threshold": 1024
+    },
+    "ssl": {
+      "enabled": false,
+      "keystoreType": "PKCS12"
+    }
+  },
+  "database": {
+    "url": "postgresql://user:password@localhost:5432/myapp",
+    "driver": "postgresql",
+    "pool": {
+      "size": 20,
+      "minIdle": 5,
+      "maxIdle": 10,
+      "timeout": 30,
+      "maxLifetime": 1800
+    },
+    "migrations": {
+      "enabled": true,
+      "location": "db/migrations",
+      "autoMigrate": false
+    }
+  },
+  "cache": {
+    "type": "redis",
+    "url": "redis://localhost:6379/0",
+    "host": "localhost",
+    "port": 6379,
+    "database": 0,
+    "pool": {
+      "maxActive": 20,
+      "maxIdle": 10,
+      "minIdle": 5
+    },
+    "ttl": 3600
+  },
+  "security": {
+    "jwt": {
+      "algorithm": "HS256",
+      "accessTokenExpiry": 3600,
+      "refreshTokenExpiry": 604800
+    },
+    "password": {
+      "minLength": 8,
+      "requireUppercase": true,
+      "requireLowercase": true,
+      "requireNumbers": true,
+      "requireSpecialChars": true,
+      "hashRounds": 12
+    },
+    "session": {
+      "timeout": 1800,
+      "maxConcurrent": 1
+    },
+    "headers": {
+      "contentTypeOptions": "nosniff",
+      "frameOptions": "DENY",
+      "xssProtection": "1; mode=block",
+      "strictTransportSecurity": "max-age=31536000; includeSubDomains",
+      "contentSecurityPolicy": "default-src 'self'",
+      "referrerPolicy": "strict-origin-when-cross-origin"
+    }
+  },
+  "cors": {
+    "allowedOrigins": ["http://localhost:3000", "http://localhost:8080"],
+    "allowedMethods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    "allowedHeaders": ["Origin", "Content-Type", "Accept", "Authorization", "X-Requested-With"],
+    "allowCredentials": true,
+    "maxAge": 3600
+  },
+  "rateLimiting": {
+    "enabled": true,
+    "global": {
+      "requests": 100,
+      "window": 60
+    },
+    "auth": {
+      "requests": 10,
+      "window": 60
+    },
+    "api": {
+      "requests": 1000,
+      "window": 3600
+    }
+  },
+  "logging": {
+    "level": "INFO",
+    "format": "json",
+    "file": {
+      "enabled": true,
+      "path": "logs/application.log",
+      "maxSize": "10MB",
+      "maxFiles": 30,
+      "rotation": "daily"
+    },
+    "console": {
+      "enabled": true,
+      "colorize": true
+    }
+  },
+  "monitoring": {
+    "metrics": {
+      "enabled": true,
+      "endpoint": "/metrics",
+      "prometheus": {
+        "enabled": true,
+        "port": 9090
+      }
+    },
+    "healthCheck": {
+      "enabled": true,
+      "endpoint": "/health",
+      "timeout": 30
+    },
+    "tracing": {
+      "enabled": false,
+      "jaeger": {
+        "endpoint": "http://localhost:14268/api/traces",
+        "samplingRate": 0.1
+      }
+    }
+  },
+  "external": {
+    "email": {
+      "enabled": false,
+      "provider": "smtp",
+      "smtp": {
+        "port": 587,
+        "secure": false,
+        "startTLS": true
+      }
+    },
+    "storage": {
+      "type": "local",
+      "local": {
+        "path": "uploads"
+      }
+    }
+  },
+  "features": {
+    "registration": true,
+    "emailVerification": true,
+    "passwordReset": true,
+    "rememberMe": true,
+    "apiDocumentation": true,
+    "fileUpload": true
+  },
+  "api": {
+    "version": "v1",
+    "title": "My Application API",
+    "description": "Professional API with security-first architecture",
+    "license": {
+      "name": "MIT"
+    },
+    "pagination": {
+      "defaultSize": 20,
+      "maxSize": 100
+    }
+  },
+  "validation": {
+    "maxRequestSize": "1MB",
+    "maxJsonDepth": 10,
+    "sanitizeInput": true,
+    "fileUpload": {
+      "maxFileSize": "10MB",
+      "allowedExtensions": [".jpg", ".jpeg", ".png", ".pdf", ".txt"],
+      "maxFiles": 5
+    }
+  }
+}

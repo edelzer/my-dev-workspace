@@ -1,0 +1,111 @@
+{
+  "name": "semgrep-mcp",
+  "description": "AI-powered security code review using Semgrep MCP server integration",
+  "version": "1.0.0",
+  "mcp_server": {
+    "command": "uvx",
+    "args": ["semgrep-mcp"],
+    "env": {
+      "SEMGREP_APP_TOKEN": "${SEMGREP_APP_TOKEN}",
+      "SEMGREP_RULES": "auto",
+      "SEMGREP_TIMEOUT": "30"
+    }
+  },
+  "security_config": {
+    "rulesets": {
+      "javascript": {
+        "enabled": true,
+        "rules": [
+          "p/javascript",
+          "p/typescript",
+          "p/react",
+          "p/nodejs",
+          "p/security-audit"
+        ],
+        "severity_filter": ["ERROR", "WARNING"]
+      },
+      "python": {
+        "enabled": true,
+        "rules": [
+          "p/python",
+          "p/django",
+          "p/flask",
+          "p/security-audit"
+        ],
+        "severity_filter": ["ERROR", "WARNING"]
+      },
+      "java": {
+        "enabled": true,
+        "rules": [
+          "p/java",
+          "p/spring",
+          "p/security-audit"
+        ],
+        "severity_filter": ["ERROR", "WARNING"]
+      },
+      "go": {
+        "enabled": true,
+        "rules": [
+          "p/golang",
+          "p/security-audit"
+        ],
+        "severity_filter": ["ERROR", "WARNING"]
+      }
+    },
+    "analysis_config": {
+      "max_scan_time": 30,
+      "max_memory_mb": 512,
+      "fail_open": true,
+      "auto_fix": false
+    },
+    "validation_engine": {
+      "false_positive_reduction": {
+        "enabled": true,
+        "confidence_threshold": 0.8,
+        "context_analysis": true
+      },
+      "risk_assessment": {
+        "enabled": true,
+        "severity_mapping": {
+          "CRITICAL": 9.0,
+          "HIGH": 7.0,
+          "MEDIUM": 5.0,
+          "LOW": 3.0,
+          "INFO": 1.0
+        }
+      }
+    }
+  },
+  "integration": {
+    "claude_code": {
+      "enabled": true,
+      "commands": [
+        "ai-security-scan",
+        "ai-security-validate",
+        "ai-security-report"
+      ]
+    },
+    "workflow_integration": {
+      "pre_commit": true,
+      "pull_request": true,
+      "ci_cd": true
+    },
+    "agent_coordination": {
+      "security_specialist": true,
+      "spec_reviewer": true,
+      "spec_validator": true
+    }
+  },
+  "monitoring": {
+    "metrics": {
+      "scan_performance": true,
+      "accuracy_tracking": true,
+      "false_positive_rate": true
+    },
+    "alerts": {
+      "critical_findings": true,
+      "performance_degradation": true,
+      "tool_failures": true
+    }
+  }
+}

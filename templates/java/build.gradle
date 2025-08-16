@@ -1,0 +1,368 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.2.1'
+    id 'io.spring.dependency-management' version '1.1.4'
+    id 'org.flywaydb.flyway' version '9.22.3'
+    id 'jacoco'
+    id 'checkstyle'
+    id 'pmd'
+    id 'com.github.spotbugs' version '6.0.7'
+    id 'org.owasp.dependencycheck' version '9.0.7'
+    id 'org.sonarqube' version '4.4.1.3373'
+    id 'com.google.cloud.tools.jib' version '3.4.0'
+    id 'org.springdoc.openapi-gradle-plugin' version '1.8.0'
+}
+
+group = 'com.company'
+version = '1.0.0'
+
+java {
+    sourceCompatibility = '17'
+    targetCompatibility = '17'
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+    gradlePluginPortal()
+}
+
+ext {
+    springBootVersion = '3.2.1'
+    springSecurityVersion = '6.2.1'
+    springDataVersion = '3.2.1'
+    jjwtVersion = '0.12.3'
+    testcontainersVersion = '1.19.3'
+    mapstructVersion = '1.5.5.Final'
+    lombokVersion = '1.18.30'
+    logbackVersion = '1.4.14'
+    micrometerVersion = '1.12.1'
+    openApiVersion = '2.3.0'
+}
+
+dependencies {
+    // Spring Boot Starters
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-logging'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+    
+    // Database
+    implementation 'org.postgresql:postgresql:42.7.1'
+    implementation 'com.zaxxer:HikariCP:5.1.0'
+    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-database-postgresql'
+    
+    // Security & JWT
+    implementation "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
+    implementation "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
+    implementation "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
+    implementation 'org.springframework.security:spring-security-crypto'
+    
+    // Monitoring & Metrics
+    implementation "io.micrometer:micrometer-registry-prometheus:${micrometerVersion}"
+    implementation "io.micrometer:micrometer-tracing-bridge-brave:${micrometerVersion}"
+    implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
+    
+    // Documentation
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${openApiVersion}"
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-api:${openApiVersion}"
+    
+    // Utilities
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+    
+    // Lombok
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    
+    // JSON Processing
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    
+    // HTTP Client
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    
+    // Development Tools
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    
+    // Test Dependencies
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation "org.testcontainers:junit-jupiter:${testcontainersVersion}"
+    testImplementation "org.testcontainers:postgresql:${testcontainersVersion}"
+    testImplementation "org.testcontainers:redis:${testcontainersVersion}"
+    testImplementation 'com.h2database:h2'
+    testImplementation 'org.mockito:mockito-core'
+    testImplementation 'org.mockito:mockito-junit-jupiter'
+    testImplementation 'org.assertj:assertj-core'
+    testImplementation 'org.hamcrest:hamcrest'
+    testImplementation 'com.github.tomakehurst:wiremock-jre8:2.35.1'
+    
+    // Test Containers for Integration Tests
+    testImplementation "org.testcontainers:testcontainers:${testcontainersVersion}"
+    
+    // Annotation Processors
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    
+    // Test Annotation Processors
+    testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+    testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+}
+
+// Test Configuration
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+        showStandardStreams = false
+        showExceptions = true
+        showCauses = true
+        showStackTraces = true
+    }
+    
+    // JVM options for tests
+    jvmArgs = [
+        '-XX:+UseG1GC',
+        '-XX:MaxRAMPercentage=75',
+        '-Dspring.profiles.active=test',
+        '-Djava.security.egd=file:/dev/./urandom'
+    ]
+    
+    // Test system properties
+    systemProperty 'spring.profiles.active', 'test'
+    systemProperty 'junit.jupiter.execution.parallel.enabled', 'true'
+    systemProperty 'junit.jupiter.execution.parallel.mode.default', 'concurrent'
+}
+
+// Integration Tests
+task integrationTest(type: Test) {
+    useJUnitPlatform {
+        includeTags 'integration'
+    }
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    shouldRunAfter test
+}
+
+// Security Tests
+task securityTest(type: Test) {
+    useJUnitPlatform {
+        includeTags 'security'
+    }
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    shouldRunAfter test
+}
+
+// JaCoCo Test Coverage
+jacoco {
+    toolVersion = '0.8.8'
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        html.required = true
+        csv.required = true
+    }
+    
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                '**/config/**',
+                '**/dto/**',
+                '**/Application.class'
+            ])
+        }))
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.85 // 85% minimum coverage
+            }
+        }
+    }
+}
+
+// Checkstyle Configuration
+checkstyle {
+    toolVersion = '10.12.5'
+    configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
+    configDirectory = file("${rootDir}/config/checkstyle")
+}
+
+checkstyleMain {
+    source = 'src/main/java'
+}
+
+checkstyleTest {
+    source = 'src/test/java'
+}
+
+// PMD Configuration
+pmd {
+    toolVersion = '6.55.0'
+    ruleSetFiles = files("${rootDir}/config/pmd/pmd-rules.xml")
+    ignoreFailures = false
+}
+
+// SpotBugs Configuration
+spotbugs {
+    effort = 'max'
+    reportLevel = 'low'
+    toolVersion = '4.8.3'
+}
+
+spotbugsMain {
+    reports {
+        html.required = true
+        xml.required = true
+    }
+}
+
+// OWASP Dependency Check
+dependencyCheck {
+    format = 'ALL'
+    suppressionFile = "${rootDir}/config/dependency-check/suppressions.xml"
+    failBuildOnCVSS = 7.0
+    analyzers {
+        assemblyEnabled = false
+        nuspecEnabled = false
+        nodeEnabled = false
+    }
+}
+
+// SonarQube Configuration
+sonarqube {
+    properties {
+        property "sonar.projectKey", "spring-boot-professional-template"
+        property "sonar.projectName", "Spring Boot Professional Template"
+        property "sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
+        property "sonar.java.checkstyle.reportPaths", "${buildDir}/reports/checkstyle/main.xml,${buildDir}/reports/checkstyle/test.xml"
+        property "sonar.java.pmd.reportPaths", "${buildDir}/reports/pmd/main.xml,${buildDir}/reports/pmd/test.xml"
+        property "sonar.java.spotbugs.reportPaths", "${buildDir}/reports/spotbugs/main.xml"
+    }
+}
+
+// Jib Configuration for Container Images
+jib {
+    from {
+        image = 'eclipse-temurin:17-jre-alpine'
+        platforms {
+            platform {
+                architecture = 'amd64'
+                os = 'linux'
+            }
+            platform {
+                architecture = 'arm64'
+                os = 'linux'
+            }
+        }
+    }
+    to {
+        image = 'company/spring-boot-app'
+        tags = [version, 'latest']
+    }
+    container {
+        jvmFlags = [
+            '-XX:+UseG1GC',
+            '-XX:MaxRAMPercentage=75',
+            '-Dspring.profiles.active=production',
+            '-Djava.security.egd=file:/dev/./urandom'
+        ]
+        ports = ['8080']
+        user = 'spring:spring'
+        creationTime = 'USE_CURRENT_TIMESTAMP'
+        
+        labels = [
+            'maintainer': 'Spring Boot Professional Template',
+            'version': version,
+            'description': 'Professional Spring Boot application with security-first architecture'
+        ]
+    }
+}
+
+// Flyway Configuration
+flyway {
+    url = 'jdbc:postgresql://localhost:5432/springapp'
+    user = 'postgres'
+    password = 'postgres'
+    locations = ['classpath:db/migration']
+    cleanDisabled = true
+    baselineOnMigrate = true
+    validateOnMigrate = true
+}
+
+// Custom Tasks
+task qualityCheck {
+    dependsOn checkstyleMain, checkstyleTest, pmdMain, pmdTest, spotbugsMain, test, jacocoTestReport
+    description = 'Run all quality checks including tests, coverage, and static analysis'
+    group = 'verification'
+}
+
+task securityCheck {
+    dependsOn dependencyCheck, spotbugsMain, securityTest
+    description = 'Run security-focused checks and tests'
+    group = 'verification'
+}
+
+task fullVerification {
+    dependsOn qualityCheck, securityCheck, integrationTest
+    description = 'Run complete verification including all tests and security checks'
+    group = 'verification'
+}
+
+// Build Configuration
+bootJar {
+    archiveFileName = "${project.name}-${project.version}.jar"
+    
+    manifest {
+        attributes(
+            'Implementation-Title': project.name,
+            'Implementation-Version': project.version,
+            'Implementation-Vendor': 'Spring Boot Professional Template',
+            'Built-By': System.getProperty('user.name'),
+            'Built-Date': new Date().format('yyyy-MM-dd HH:mm:ss'),
+            'Built-JDK': System.getProperty('java.version'),
+            'Built-Gradle': gradle.gradleVersion
+        )
+    }
+}
+
+// Development Configuration
+bootRun {
+    jvmArgs = [
+        '-XX:+UseG1GC',
+        '-XX:MaxRAMPercentage=75',
+        '-Dspring.profiles.active=development',
+        '-Dspring.devtools.restart.enabled=true',
+        '-Djava.security.egd=file:/dev/./urandom'
+    ]
+    
+    systemProperty 'spring.profiles.active', 'development'
+}
+
+// Clean up
+clean {
+    delete 'logs'
+    delete 'data'
+}
+
+// Ensure quality checks run before build
+build.dependsOn qualityCheck

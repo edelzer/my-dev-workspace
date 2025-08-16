@@ -1,0 +1,216 @@
+# Test Profile Configuration
+# Optimized for testing with in-memory databases and fast startup
+
+spring:
+  # Test database configuration (H2 in-memory)
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: 
+    driver-class-name: org.h2.Driver
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 1
+      
+  # JPA configuration for testing
+  jpa:
+    hibernate:
+      ddl-auto: create-drop # Recreate schema for each test
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: false
+        show_sql: false
+        generate_statistics: false
+    show-sql: false
+    defer-datasource-initialization: true
+    
+  # SQL initialization for tests
+  sql:
+    init:
+      mode: embedded
+      data-locations: classpath:test-data.sql
+      schema-locations: classpath:test-schema.sql
+      
+  # H2 Console for test debugging
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: false
+        
+  # Redis configuration for testing (embedded)
+  data:
+    redis:
+      host: localhost
+      port: 6370 # Different port for test Redis
+      database: 15 # Use highest database number for tests
+      timeout: 1000ms
+      
+  # Cache configuration for testing
+  cache:
+    type: simple # Use simple cache for tests
+    
+  # DevTools disabled in tests
+  devtools:
+    restart:
+      enabled: false
+    livereload:
+      enabled: false
+      
+  # Flyway disabled for tests (using JPA schema generation)
+  flyway:
+    enabled: false
+
+# Server configuration for testing
+server:
+  port: 0 # Random port for tests
+  servlet:
+    session:
+      cookie:
+        secure: false
+        same-site: lax
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: always
+    include-exception: true
+
+# Management endpoints for testing
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+  health:
+    redis:
+      enabled: false # Skip Redis health check in tests
+    db:
+      enabled: true
+
+# Test logging configuration
+logging:
+  level:
+    com.company.project: DEBUG
+    org.springframework.security: WARN
+    org.springframework.web: WARN
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
+    org.springframework.test: INFO
+    org.testcontainers: INFO
+    com.github.dockerjava: WARN
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# Application-specific test configuration
+app:
+  # JWT configuration for testing
+  jwt:
+    secret: dGVzdFNlY3JldEtleUZvckpXVFRva2VuU2lnbmluZ0luVGVzdEVudmlyb25tZW50V2l0aFNwcmluZ0Jvb3Q=
+    expiration-ms: 60000 # 1 minute for fast test execution
+    refresh-expiration-ms: 300000 # 5 minutes for tests
+    
+  # CORS configuration for testing
+  cors:
+    allowed-origins: "*"
+    allowed-methods: "*"
+    allowed-headers: "*"
+    allow-credentials: true
+    max-age: 0
+    
+  # Relaxed security for testing
+  security:
+    password-strength:
+      min-length: 4
+      require-uppercase: false
+      require-lowercase: false
+      require-digit: false
+      require-special-char: false
+    account-lockout:
+      max-attempts: 100 # Prevent lockouts during tests
+      lockout-duration: 1s
+      
+  # No rate limiting in tests
+  rate-limit:
+    default:
+      requests: 10000
+      window: 1m
+    auth:
+      requests: 1000
+      window: 1m
+    api:
+      requests: 100000
+      window: 1h
+      
+  # File upload configuration for testing
+  upload:
+    max-file-size: 1MB
+    max-request-size: 5MB
+    allowed-extensions: jpg,jpeg,png,txt
+    storage-path: /tmp/test-uploads/
+    
+  # Email configuration for testing
+  email:
+    enabled: false # Disabled in tests
+    from: test@localhost
+    
+  # All features enabled for testing
+  features:
+    registration-enabled: true
+    email-verification-required: false
+    password-reset-enabled: true
+    remember-me-enabled: true
+
+# OpenAPI/Swagger disabled for tests
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+# Test-specific properties
+test:
+  # Test data configuration
+  data:
+    cleanup: true # Clean up test data after tests
+    seed: true # Seed initial test data
+    
+  # Mock configurations
+  mocks:
+    external-services: true # Mock external service calls
+    email-service: true # Mock email sending
+    file-storage: true # Mock file storage operations
+    
+  # Integration test configurations
+  integration:
+    database: h2 # Use H2 for integration tests
+    redis: embedded # Use embedded Redis for integration tests
+    
+  # Performance test configurations
+  performance:
+    enabled: false # Disabled by default
+    max-response-time: 1000ms
+    concurrent-users: 10
+
+# TestContainers configuration
+testcontainers:
+  reuse:
+    enable: true # Reuse containers across test runs
+
+# JUnit configuration
+junit:
+  jupiter:
+    execution:
+      parallel:
+        enabled: true
+        mode:
+          default: concurrent
+          classes: concurrent
+          methods: concurrent
+    config:
+      parallel:
+        strategy: dynamic

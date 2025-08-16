@@ -1,0 +1,147 @@
+{
+  "encryption": {
+    "algorithm": "AES-256-GCM",
+    "keyDerivation": {
+      "algorithm": "PBKDF2",
+      "iterations": 100000,
+      "saltLength": 32,
+      "keyLength": 32
+    },
+    "secrets": {
+      "autoRotation": {
+        "enabled": true,
+        "interval": "30d",
+        "gracePeriod": "7d"
+      },
+      "storage": {
+        "type": "env",
+        "prefix": "APP_SECRET_"
+      }
+    }
+  },
+  "hashing": {
+    "password": {
+      "algorithm": "bcrypt",
+      "rounds": {
+        "development": 8,
+        "testing": 4,
+        "staging": 12,
+        "production": 14
+      }
+    },
+    "data": {
+      "algorithm": "SHA-256",
+      "pepper": "${HASH_PEPPER}"
+    }
+  },
+  "jwt": {
+    "algorithms": {
+      "symmetric": ["HS256", "HS384", "HS512"],
+      "asymmetric": ["RS256", "RS384", "RS512", "ES256", "ES384", "ES512"]
+    },
+    "security": {
+      "issuer": "${JWT_ISSUER}",
+      "audience": "${JWT_AUDIENCE}",
+      "requireNbf": true,
+      "requireExp": true,
+      "clockTolerance": 60,
+      "maxAge": "1h"
+    },
+    "keyManagement": {
+      "rotation": {
+        "enabled": true,
+        "interval": "30d",
+        "gracePeriod": "7d"
+      },
+      "storage": {
+        "type": "env",
+        "publicKeyVar": "JWT_PUBLIC_KEY",
+        "privateKeyVar": "JWT_PRIVATE_KEY"
+      }
+    }
+  },
+  "certificates": {
+    "ssl": {
+      "keystore": {
+        "type": "PKCS12",
+        "path": "${SSL_KEYSTORE_PATH}",
+        "password": "${SSL_KEYSTORE_PASSWORD}"
+      },
+      "truststore": {
+        "type": "PKCS12",
+        "path": "${SSL_TRUSTSTORE_PATH}",
+        "password": "${SSL_TRUSTSTORE_PASSWORD}"
+      },
+      "verification": {
+        "enabled": true,
+        "verifyHostname": true,
+        "allowSelfSigned": false
+      }
+    }
+  },
+  "dataProtection": {
+    "pii": {
+      "encryption": {
+        "enabled": true,
+        "fields": ["email", "phone", "address", "ssn", "creditCard"],
+        "algorithm": "AES-256-GCM"
+      },
+      "masking": {
+        "enabled": true,
+        "rules": {
+          "email": "***@***.***",
+          "phone": "***-***-****",
+          "creditCard": "****-****-****-****"
+        }
+      }
+    },
+    "auditLogging": {
+      "enabled": true,
+      "encryptLogs": true,
+      "fields": ["userId", "action", "timestamp", "ipAddress", "userAgent"]
+    }
+  },
+  "compliance": {
+    "gdpr": {
+      "enabled": true,
+      "dataRetention": "2y",
+      "rightToBeForgotten": true,
+      "dataPortability": true
+    },
+    "hipaa": {
+      "enabled": false,
+      "baEncryption": true,
+      "auditLogging": true,
+      "accessControls": true
+    },
+    "sox": {
+      "enabled": false,
+      "financialDataEncryption": true,
+      "auditTrails": true,
+      "accessLogging": true
+    }
+  },
+  "validation": {
+    "certificates": {
+      "checkExpiry": true,
+      "warningDays": 30,
+      "autoRenewal": false
+    },
+    "secrets": {
+      "strengthValidation": true,
+      "minLength": 32,
+      "complexityRules": {
+        "requireUppercase": true,
+        "requireLowercase": true,
+        "requireNumbers": true,
+        "requireSpecialChars": true,
+        "forbidCommonPasswords": true
+      }
+    },
+    "encryption": {
+      "validateAlgorithms": true,
+      "allowedAlgorithms": ["AES-256-GCM", "AES-256-CBC", "ChaCha20-Poly1305"],
+      "forbiddenAlgorithms": ["DES", "3DES", "RC4", "MD5", "SHA1"]
+    }
+  }
+}

@@ -1,0 +1,263 @@
+# Production Profile Configuration
+# Security-hardened configuration for production deployment
+
+spring:
+  # Production database configuration
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:50}
+      minimum-idle: ${DB_POOL_MIN_IDLE:10}
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      connection-timeout: 20000
+      leak-detection-threshold: 30000
+      
+  # JPA configuration for production
+  jpa:
+    hibernate:
+      ddl-auto: validate # Never auto-update schema in production
+    properties:
+      hibernate:
+        format_sql: false
+        show_sql: false
+        generate_statistics: false
+        jdbc:
+          batch_size: 50
+    show-sql: false
+    open-in-view: false
+    
+  # Redis configuration for production
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD}
+      database: ${REDIS_DATABASE:0}
+      ssl: ${REDIS_SSL:true}
+      lettuce:
+        pool:
+          max-active: 50
+          max-idle: 20
+          min-idle: 10
+      timeout: 3000ms
+      
+  # Cache configuration for production
+  cache:
+    redis:
+      time-to-live: 1800000 # 30 minutes
+      cache-null-values: false
+      
+  # DevTools disabled in production
+  devtools:
+    restart:
+      enabled: false
+    livereload:
+      enabled: false
+
+# Server configuration for production
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    session:
+      cookie:
+        secure: true # Require HTTPS
+        same-site: strict
+        http-only: true
+        max-age: 1800 # 30 minutes
+  error:
+    include-message: never
+    include-binding-errors: never
+    include-stacktrace: never
+    include-exception: false
+  ssl:
+    enabled: ${SSL_ENABLED:true}
+    key-store: ${SSL_KEYSTORE}
+    key-store-password: ${SSL_KEYSTORE_PASSWORD}
+    key-store-type: PKCS12
+    protocol: TLS
+    enabled-protocols: TLSv1.2,TLSv1.3
+  http2:
+    enabled: true
+  compression:
+    enabled: true
+    min-response-size: 1024
+
+# Management endpoints for production
+management:
+  server:
+    port: ${MANAGEMENT_PORT:8081}
+    ssl:
+      enabled: ${MANAGEMENT_SSL_ENABLED:false}
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized
+      show-components: when-authorized
+      roles: ADMIN
+    info:
+      enabled: true
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+    shutdown:
+      enabled: false # Disabled in production for security
+  health:
+    redis:
+      enabled: true
+    db:
+      enabled: true
+    diskspace:
+      enabled: true
+      threshold: 1GB
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+        step: 60s
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      percentiles:
+        http.server.requests: 0.5, 0.9, 0.95, 0.99
+      slo:
+        http.server.requests: 10ms, 50ms, 100ms, 200ms, 500ms, 1s
+
+# Production logging configuration
+logging:
+  level:
+    com.company.project: ${LOG_LEVEL:INFO}
+    org.springframework.security: WARN
+    org.springframework.web: WARN
+    org.hibernate: WARN
+    org.flywaydb: INFO
+    redis.clients.jedis: WARN
+    io.jsonwebtoken: WARN
+    org.springframework.boot.actuate.audit: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%X{traceId:-},%X{spanId:-}] %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%X{traceId:-},%X{spanId:-}] %logger{36} - %msg%n"
+  file:
+    name: ${LOG_FILE:logs/application.log}
+    max-size: 100MB
+    max-history: 90
+    total-size-cap: 10GB
+  logback:
+    rollingpolicy:
+      max-file-size: 100MB
+      max-history: 90
+      total-size-cap: 10GB
+
+# Application-specific production configuration
+app:
+  # JWT configuration for production
+  jwt:
+    secret: ${JWT_SECRET} # Must be provided via environment
+    expiration-ms: ${JWT_EXPIRATION_MS:1800000} # 30 minutes
+    refresh-expiration-ms: ${JWT_REFRESH_EXPIRATION_MS:43200000} # 12 hours
+    
+  # CORS configuration for production
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS} # Must be explicitly configured
+    allowed-methods: GET,POST,PUT,PATCH,DELETE,OPTIONS
+    allowed-headers: Authorization,Content-Type,X-Requested-With,Accept,Origin
+    allow-credentials: true
+    max-age: 3600
+    
+  # Production security configuration
+  security:
+    password-strength:
+      min-length: 12
+      require-uppercase: true
+      require-lowercase: true
+      require-digit: true
+      require-special-char: true
+    account-lockout:
+      max-attempts: 3
+      lockout-duration: 60m
+    session:
+      timeout: 30m
+      max-concurrent-sessions: 1
+      
+  # Production rate limiting
+  rate-limit:
+    default:
+      requests: 60
+      window: 1m
+    auth:
+      requests: 5
+      window: 1m
+    api:
+      requests: 1000
+      window: 1h
+      
+  # File upload configuration for production
+  upload:
+    max-file-size: 5MB
+    max-request-size: 25MB
+    allowed-extensions: jpg,jpeg,png,pdf
+    storage-path: ${UPLOAD_STORAGE_PATH:/var/uploads/}
+    
+  # Email configuration for production
+  email:
+    enabled: ${EMAIL_ENABLED:true}
+    from: ${EMAIL_FROM}
+    smtp:
+      host: ${SMTP_HOST}
+      port: ${SMTP_PORT:587}
+      username: ${SMTP_USERNAME}
+      password: ${SMTP_PASSWORD}
+      auth: true
+      starttls: true
+      ssl:
+        trust: ${SMTP_SSL_TRUST:*}
+        
+  # Production feature flags
+  features:
+    registration-enabled: ${REGISTRATION_ENABLED:false}
+    email-verification-required: ${EMAIL_VERIFICATION_REQUIRED:true}
+    password-reset-enabled: ${PASSWORD_RESET_ENABLED:true}
+    remember-me-enabled: ${REMEMBER_ME_ENABLED:false}
+
+# OpenAPI/Swagger configuration for production
+springdoc:
+  api-docs:
+    enabled: ${API_DOCS_ENABLED:false} # Disabled by default in production
+  swagger-ui:
+    enabled: ${SWAGGER_UI_ENABLED:false} # Disabled by default in production
+  show-actuator: false
+
+# Disable debug in production
+debug: false
+
+# Graceful shutdown
+server:
+  shutdown: graceful
+spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+
+# Production-specific security headers
+security:
+  headers:
+    frame-options: DENY
+    content-type-options: nosniff
+    xss-protection: "1; mode=block"
+    referrer-policy: strict-origin-when-cross-origin
+    content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'; frame-ancestors 'none'"
+    strict-transport-security: "max-age=31536000; includeSubDomains; preload"
+
+# JVM options for production (via environment or startup)
+# -XX:+UseG1GC
+# -XX:MaxGCPauseMillis=200
+# -XX:+UseStringDeduplication
+# -XX:+OptimizeStringConcat
+# -XX:+UseCompressedOops
+# -XX:MaxRAMPercentage=75
+# -Djava.security.egd=file:/dev/./urandom

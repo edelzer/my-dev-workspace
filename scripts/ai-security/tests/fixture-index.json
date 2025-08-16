@@ -1,0 +1,78 @@
+{
+  "total_fixtures": 10,
+  "vulnerability_types": [
+    "SQL_INJECTION",
+    "XSS",
+    "COMMAND_INJECTION",
+    "PATH_TRAVERSAL",
+    "INSECURE_RANDOM",
+    "HARDCODED_SECRET",
+    "WEAK_CRYPTO",
+    "UNVALIDATED_REDIRECT",
+    "CSRF",
+    "AUTHENTICATION_BYPASS"
+  ],
+  "created": "2025-08-16T17:06:05.709Z",
+  "fixtures": {
+    "sql-injection-basic.js": {
+      "file_path": "C:\\Users\\edelz\\OneDrive\\Documents\\GitHub\\development\\my-dev-workspace\\scripts\\ai-security\\tests\\fixtures\\sql-injection-basic.js",
+      "metadata_path": "C:\\Users\\edelz\\OneDrive\\Documents\\GitHub\\development\\my-dev-workspace\\scripts\\ai-security\\tests\\fixtures\\sql-injection-basic.js.meta.json",
+      "expected_vulnerabilities": 2,
+      "false_positive_probability": 0.02
+    },
+    "sql-injection-advanced.js": {
+      "file_path": "C:\\Users\\edelz\\OneDrive\\Documents\\GitHub\\development\\my-dev-workspace\\scripts\\ai-security\\tests\\fixtures\\sql-injection-advanced.js",
+      "metadata_path": "C:\\Users\\edelz\\OneDrive\\Documents\\GitHub\\development\\my-dev-workspace\\scripts\\ai-security\\tests\\fixtures\\sql-injection-advanced.js.meta.json",
+      "expected_vulnerabilities": 1,
+      "false_positive_probability": 0.05
+    },
+    "xss-basic.js": {
+      "file_path": "C:\\Users\\edelz\\OneDrive\\Documents\\GitHub\\development\\my-dev-workspace\\scripts\\ai-security\\tests\\fixtures\\xss-basic.js",
+      "metadata_path": "C:\\Users\\edelz\\OneDrive\\Documents\\GitHub\\development\\my-dev-workspace\\scripts\\ai-security\\tests\\fixtures\\xss-basic.js.meta.json",
+      "expected_vulnerabilities": 3,
+      "false_positive_probability": 0.03
+    },
+    "xss-react-false-positive.jsx": {
+      "file_path": "C:\\Users\\edelz\\OneDrive\\Documents\\GitHub\\development\\my-dev-workspace\\scripts\\ai-security\\tests\\fixtures\\xss-react-false-positive.jsx",
+      "metadata_path": "C:\\Users\\edelz\\OneDrive\\Documents\\GitHub\\development\\my-dev-workspace\\scripts\\ai-security\\tests\\fixtures\\xss-react-false-positive.jsx.meta.json",
+      "expected_vulnerabilities": 0,
+      "false_positive_probability": 0.25
+    },
+    "command-injection.js": {
+      "file_path": "C:\\Users\\edelz\\OneDrive\\Documents\\GitHub\\development\\my-dev-workspace\\scripts\\ai-security\\tests\\fixtures\\command-injection.js",
+      "metadata_path": "C:\\Users\\edelz\\OneDrive\\Documents\\GitHub\\development\\my-dev-workspace\\scripts\\ai-security\\tests\\fixtures\\command-injection.js.meta.json",
+      "expected_vulnerabilities": 2,
+      "false_positive_probability": 0.03
+    },
+    "path-traversal.js": {
+      "file_path": "C:\\Users\\edelz\\OneDrive\\Documents\\GitHub\\development\\my-dev-workspace\\scripts\\ai-security\\tests\\fixtures\\path-traversal.js",
+      "metadata_path": "C:\\Users\\edelz\\OneDrive\\Documents\\GitHub\\development\\my-dev-workspace\\scripts\\ai-security\\tests\\fixtures\\path-traversal.js.meta.json",
+      "expected_vulnerabilities": 2,
+      "false_positive_probability": 0.08
+    },
+    "crypto-vulnerabilities.js": {
+      "file_path": "C:\\Users\\edelz\\OneDrive\\Documents\\GitHub\\development\\my-dev-workspace\\scripts\\ai-security\\tests\\fixtures\\crypto-vulnerabilities.js",
+      "metadata_path": "C:\\Users\\edelz\\OneDrive\\Documents\\GitHub\\development\\my-dev-workspace\\scripts\\ai-security\\tests\\fixtures\\crypto-vulnerabilities.js.meta.json",
+      "expected_vulnerabilities": 4,
+      "false_positive_probability": 0.04
+    },
+    "auth-vulnerabilities.js": {
+      "file_path": "C:\\Users\\edelz\\OneDrive\\Documents\\GitHub\\development\\my-dev-workspace\\scripts\\ai-security\\tests\\fixtures\\auth-vulnerabilities.js",
+      "metadata_path": "C:\\Users\\edelz\\OneDrive\\Documents\\GitHub\\development\\my-dev-workspace\\scripts\\ai-security\\tests\\fixtures\\auth-vulnerabilities.js.meta.json",
+      "expected_vulnerabilities": 4,
+      "false_positive_probability": 0.12
+    },
+    "false-positive-tests.js": {
+      "file_path": "C:\\Users\\edelz\\OneDrive\\Documents\\GitHub\\development\\my-dev-workspace\\scripts\\ai-security\\tests\\fixtures\\false-positive-tests.js",
+      "metadata_path": "C:\\Users\\edelz\\OneDrive\\Documents\\GitHub\\development\\my-dev-workspace\\scripts\\ai-security\\tests\\fixtures\\false-positive-tests.js.meta.json",
+      "expected_vulnerabilities": 0,
+      "false_positive_probability": 0.6
+    },
+    "framework-protections.jsx": {
+      "file_path": "C:\\Users\\edelz\\OneDrive\\Documents\\GitHub\\development\\my-dev-workspace\\scripts\\ai-security\\tests\\fixtures\\framework-protections.jsx",
+      "metadata_path": "C:\\Users\\edelz\\OneDrive\\Documents\\GitHub\\development\\my-dev-workspace\\scripts\\ai-security\\tests\\fixtures\\framework-protections.jsx.meta.json",
+      "expected_vulnerabilities": 0,
+      "false_positive_probability": 0.3
+    }
+  }
+}

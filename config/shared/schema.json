@@ -1,0 +1,828 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://schemas.my-dev-workspace.com/config/master-schema.json",
+  "title": "Multi-Language Application Configuration Schema",
+  "description": "Unified configuration schema for all template languages (Node.js, Python, Java, Go)",
+  "type": "object",
+  "properties": {
+    "application": {
+      "type": "object",
+      "description": "Core application settings",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Application name",
+          "examples": ["my-web-app", "my-api-service"]
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Application version (semantic versioning)",
+          "examples": ["1.0.0", "2.1.3"]
+        },
+        "environment": {
+          "type": "string",
+          "enum": ["development", "testing", "staging", "production"],
+          "description": "Current environment",
+          "default": "development"
+        },
+        "description": {
+          "type": "string",
+          "description": "Application description"
+        },
+        "debug": {
+          "type": "boolean",
+          "description": "Enable debug mode",
+          "default": false
+        }
+      },
+      "required": ["name", "version", "environment"]
+    },
+    "server": {
+      "type": "object",
+      "description": "Server configuration",
+      "properties": {
+        "host": {
+          "type": "string",
+          "description": "Server host",
+          "default": "0.0.0.0",
+          "examples": ["0.0.0.0", "localhost", "127.0.0.1"]
+        },
+        "port": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535,
+          "description": "Server port",
+          "default": 8000
+        },
+        "contextPath": {
+          "type": "string",
+          "description": "Server context path (API base path)",
+          "pattern": "^(/[a-zA-Z0-9-_]*)*$",
+          "examples": ["/api", "/api/v1", ""]
+        },
+        "timeouts": {
+          "type": "object",
+          "properties": {
+            "connection": {
+              "type": "integer",
+              "description": "Connection timeout in seconds",
+              "default": 30
+            },
+            "request": {
+              "type": "integer",
+              "description": "Request timeout in seconds",
+              "default": 60
+            },
+            "keepAlive": {
+              "type": "integer",
+              "description": "Keep-alive timeout in seconds",
+              "default": 5
+            }
+          }
+        },
+        "compression": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "threshold": {
+              "type": "integer",
+              "description": "Minimum response size for compression (bytes)",
+              "default": 1024
+            }
+          }
+        },
+        "ssl": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false
+            },
+            "keystore": {
+              "type": "string",
+              "description": "Path to SSL keystore"
+            },
+            "keystorePassword": {
+              "type": "string",
+              "description": "SSL keystore password"
+            },
+            "keystoreType": {
+              "type": "string",
+              "enum": ["PKCS12", "JKS"],
+              "default": "PKCS12"
+            }
+          }
+        }
+      },
+      "required": ["host", "port"]
+    },
+    "database": {
+      "type": "object",
+      "description": "Database configuration",
+      "properties": {
+        "url": {
+          "type": "string",
+          "description": "Database connection URL",
+          "examples": [
+            "postgresql://user:pass@localhost:5432/db",
+            "mysql://user:pass@localhost:3306/db",
+            "sqlite:///path/to/db.sqlite"
+          ]
+        },
+        "driver": {
+          "type": "string",
+          "description": "Database driver",
+          "examples": ["postgresql", "mysql", "sqlite"]
+        },
+        "pool": {
+          "type": "object",
+          "properties": {
+            "size": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Maximum pool size",
+              "default": 20
+            },
+            "minIdle": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Minimum idle connections",
+              "default": 5
+            },
+            "maxIdle": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Maximum idle connections",
+              "default": 10
+            },
+            "timeout": {
+              "type": "integer",
+              "description": "Connection timeout in seconds",
+              "default": 30
+            },
+            "maxLifetime": {
+              "type": "integer",
+              "description": "Maximum connection lifetime in seconds",
+              "default": 1800
+            }
+          }
+        },
+        "migrations": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "location": {
+              "type": "string",
+              "description": "Migration files location",
+              "default": "db/migrations"
+            },
+            "autoMigrate": {
+              "type": "boolean",
+              "description": "Auto-run migrations on startup",
+              "default": false
+            }
+          }
+        }
+      },
+      "required": ["url"]
+    },
+    "cache": {
+      "type": "object",
+      "description": "Cache configuration (Redis, Memcached, etc.)",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["redis", "memcached", "memory", "none"],
+          "default": "redis"
+        },
+        "url": {
+          "type": "string",
+          "description": "Cache server URL",
+          "examples": ["redis://localhost:6379/0", "memcached://localhost:11211"]
+        },
+        "host": {
+          "type": "string",
+          "default": "localhost"
+        },
+        "port": {
+          "type": "integer",
+          "default": 6379
+        },
+        "password": {
+          "type": "string",
+          "description": "Cache server password"
+        },
+        "database": {
+          "type": "integer",
+          "description": "Redis database number",
+          "default": 0
+        },
+        "pool": {
+          "type": "object",
+          "properties": {
+            "maxActive": {
+              "type": "integer",
+              "default": 20
+            },
+            "maxIdle": {
+              "type": "integer",
+              "default": 10
+            },
+            "minIdle": {
+              "type": "integer",
+              "default": 5
+            }
+          }
+        },
+        "ttl": {
+          "type": "integer",
+          "description": "Default TTL in seconds",
+          "default": 3600
+        }
+      }
+    },
+    "security": {
+      "type": "object",
+      "description": "Security configuration",
+      "properties": {
+        "jwt": {
+          "type": "object",
+          "properties": {
+            "secret": {
+              "type": "string",
+              "description": "JWT secret key",
+              "minLength": 32
+            },
+            "algorithm": {
+              "type": "string",
+              "enum": ["HS256", "HS384", "HS512", "RS256", "RS384", "RS512"],
+              "default": "HS256"
+            },
+            "accessTokenExpiry": {
+              "type": "integer",
+              "description": "Access token expiry in seconds",
+              "default": 3600
+            },
+            "refreshTokenExpiry": {
+              "type": "integer",
+              "description": "Refresh token expiry in seconds",
+              "default": 604800
+            }
+          },
+          "required": ["secret"]
+        },
+        "password": {
+          "type": "object",
+          "properties": {
+            "minLength": {
+              "type": "integer",
+              "minimum": 6,
+              "default": 8
+            },
+            "requireUppercase": {
+              "type": "boolean",
+              "default": true
+            },
+            "requireLowercase": {
+              "type": "boolean",
+              "default": true
+            },
+            "requireNumbers": {
+              "type": "boolean",
+              "default": true
+            },
+            "requireSpecialChars": {
+              "type": "boolean",
+              "default": true
+            },
+            "hashRounds": {
+              "type": "integer",
+              "minimum": 4,
+              "maximum": 31,
+              "default": 12
+            }
+          }
+        },
+        "session": {
+          "type": "object",
+          "properties": {
+            "timeout": {
+              "type": "integer",
+              "description": "Session timeout in seconds",
+              "default": 1800
+            },
+            "maxConcurrent": {
+              "type": "integer",
+              "description": "Maximum concurrent sessions per user",
+              "default": 1
+            }
+          }
+        },
+        "headers": {
+          "type": "object",
+          "properties": {
+            "contentTypeOptions": {
+              "type": "string",
+              "default": "nosniff"
+            },
+            "frameOptions": {
+              "type": "string",
+              "default": "DENY"
+            },
+            "xssProtection": {
+              "type": "string",
+              "default": "1; mode=block"
+            },
+            "strictTransportSecurity": {
+              "type": "string",
+              "default": "max-age=31536000; includeSubDomains"
+            },
+            "contentSecurityPolicy": {
+              "type": "string",
+              "default": "default-src 'self'"
+            },
+            "referrerPolicy": {
+              "type": "string",
+              "default": "strict-origin-when-cross-origin"
+            }
+          }
+        }
+      }
+    },
+    "cors": {
+      "type": "object",
+      "description": "CORS configuration",
+      "properties": {
+        "allowedOrigins": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Allowed origins",
+          "default": ["http://localhost:3000"]
+        },
+        "allowedMethods": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"]
+          },
+          "default": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+        },
+        "allowedHeaders": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": ["Origin", "Content-Type", "Accept", "Authorization", "X-Requested-With"]
+        },
+        "allowCredentials": {
+          "type": "boolean",
+          "default": true
+        },
+        "maxAge": {
+          "type": "integer",
+          "description": "Preflight cache duration in seconds",
+          "default": 3600
+        }
+      }
+    },
+    "rateLimiting": {
+      "type": "object",
+      "description": "Rate limiting configuration",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "global": {
+          "type": "object",
+          "properties": {
+            "requests": {
+              "type": "integer",
+              "description": "Number of requests",
+              "default": 100
+            },
+            "window": {
+              "type": "integer",
+              "description": "Time window in seconds",
+              "default": 60
+            }
+          }
+        },
+        "auth": {
+          "type": "object",
+          "properties": {
+            "requests": {
+              "type": "integer",
+              "default": 10
+            },
+            "window": {
+              "type": "integer",
+              "default": 60
+            }
+          }
+        },
+        "api": {
+          "type": "object",
+          "properties": {
+            "requests": {
+              "type": "integer",
+              "default": 1000
+            },
+            "window": {
+              "type": "integer",
+              "default": 3600
+            }
+          }
+        }
+      }
+    },
+    "logging": {
+      "type": "object",
+      "description": "Logging configuration",
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": ["DEBUG", "INFO", "WARN", "ERROR", "FATAL"],
+          "default": "INFO"
+        },
+        "format": {
+          "type": "string",
+          "enum": ["json", "text", "console"],
+          "default": "json"
+        },
+        "file": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "path": {
+              "type": "string",
+              "default": "logs/application.log"
+            },
+            "maxSize": {
+              "type": "string",
+              "description": "Maximum file size",
+              "default": "10MB"
+            },
+            "maxFiles": {
+              "type": "integer",
+              "description": "Maximum number of files",
+              "default": 30
+            },
+            "rotation": {
+              "type": "string",
+              "enum": ["daily", "weekly", "monthly"],
+              "default": "daily"
+            }
+          }
+        },
+        "console": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "colorize": {
+              "type": "boolean",
+              "default": true
+            }
+          }
+        }
+      }
+    },
+    "monitoring": {
+      "type": "object",
+      "description": "Monitoring and observability configuration",
+      "properties": {
+        "metrics": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "endpoint": {
+              "type": "string",
+              "default": "/metrics"
+            },
+            "prometheus": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "port": {
+                  "type": "integer",
+                  "default": 9090
+                }
+              }
+            }
+          }
+        },
+        "healthCheck": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "endpoint": {
+              "type": "string",
+              "default": "/health"
+            },
+            "timeout": {
+              "type": "integer",
+              "description": "Health check timeout in seconds",
+              "default": 30
+            }
+          }
+        },
+        "tracing": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false
+            },
+            "jaeger": {
+              "type": "object",
+              "properties": {
+                "endpoint": {
+                  "type": "string",
+                  "default": "http://localhost:14268/api/traces"
+                },
+                "samplingRate": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1,
+                  "default": 0.1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "external": {
+      "type": "object",
+      "description": "External services configuration",
+      "properties": {
+        "email": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false
+            },
+            "provider": {
+              "type": "string",
+              "enum": ["smtp", "sendgrid", "mailgun", "ses"],
+              "default": "smtp"
+            },
+            "from": {
+              "type": "string",
+              "format": "email",
+              "description": "Default sender email"
+            },
+            "smtp": {
+              "type": "object",
+              "properties": {
+                "host": {
+                  "type": "string"
+                },
+                "port": {
+                  "type": "integer",
+                  "default": 587
+                },
+                "username": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "secure": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "startTLS": {
+                  "type": "boolean",
+                  "default": true
+                }
+              }
+            }
+          }
+        },
+        "storage": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["local", "s3", "gcs", "azure"],
+              "default": "local"
+            },
+            "local": {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "default": "uploads"
+                }
+              }
+            },
+            "s3": {
+              "type": "object",
+              "properties": {
+                "bucket": {
+                  "type": "string"
+                },
+                "region": {
+                  "type": "string"
+                },
+                "accessKeyId": {
+                  "type": "string"
+                },
+                "secretAccessKey": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "features": {
+      "type": "object",
+      "description": "Feature flags",
+      "properties": {
+        "registration": {
+          "type": "boolean",
+          "default": true
+        },
+        "emailVerification": {
+          "type": "boolean",
+          "default": true
+        },
+        "passwordReset": {
+          "type": "boolean",
+          "default": true
+        },
+        "rememberMe": {
+          "type": "boolean",
+          "default": true
+        },
+        "apiDocumentation": {
+          "type": "boolean",
+          "default": true
+        },
+        "fileUpload": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "api": {
+      "type": "object",
+      "description": "API-specific configuration",
+      "properties": {
+        "version": {
+          "type": "string",
+          "default": "v1"
+        },
+        "title": {
+          "type": "string",
+          "description": "API title for documentation"
+        },
+        "description": {
+          "type": "string",
+          "description": "API description for documentation"
+        },
+        "contact": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string",
+              "format": "email"
+            },
+            "url": {
+              "type": "string",
+              "format": "uri"
+            }
+          }
+        },
+        "license": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "default": "MIT"
+            },
+            "url": {
+              "type": "string",
+              "format": "uri"
+            }
+          }
+        },
+        "pagination": {
+          "type": "object",
+          "properties": {
+            "defaultSize": {
+              "type": "integer",
+              "default": 20
+            },
+            "maxSize": {
+              "type": "integer",
+              "default": 100
+            }
+          }
+        }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "description": "Input validation configuration",
+      "properties": {
+        "maxRequestSize": {
+          "type": "string",
+          "description": "Maximum request size",
+          "default": "1MB"
+        },
+        "maxJsonDepth": {
+          "type": "integer",
+          "description": "Maximum JSON nesting depth",
+          "default": 10
+        },
+        "sanitizeInput": {
+          "type": "boolean",
+          "description": "Enable input sanitization",
+          "default": true
+        },
+        "fileUpload": {
+          "type": "object",
+          "properties": {
+            "maxFileSize": {
+              "type": "string",
+              "default": "10MB"
+            },
+            "allowedExtensions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": [".jpg", ".jpeg", ".png", ".pdf", ".txt"]
+            },
+            "maxFiles": {
+              "type": "integer",
+              "default": 5
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": ["application", "server"],
+  "additionalProperties": false,
+  "examples": [
+    {
+      "application": {
+        "name": "my-web-app",
+        "version": "1.0.0",
+        "environment": "development",
+        "debug": true
+      },
+      "server": {
+        "host": "0.0.0.0",
+        "port": 8000
+      },
+      "database": {
+        "url": "postgresql://user:pass@localhost:5432/myapp"
+      },
+      "cache": {
+        "type": "redis",
+        "url": "redis://localhost:6379/0"
+      },
+      "security": {
+        "jwt": {
+          "secret": "your-secret-key-at-least-32-chars-long",
+          "accessTokenExpiry": 3600,
+          "refreshTokenExpiry": 604800
+        }
+      }
+    }
+  ]
+}

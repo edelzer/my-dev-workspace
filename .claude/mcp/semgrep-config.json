@@ -1,0 +1,177 @@
+{
+  "name": "semgrep-mcp",
+  "description": "AI-powered security code review using Semgrep MCP server integration",
+  "version": "1.0.0",
+  "mcp_server": {
+    "command": "uvx",
+    "args": [
+      "semgrep-mcp"
+    ],
+    "env": {
+      "SEMGREP_APP_TOKEN": "${SEMGREP_APP_TOKEN}",
+      "SEMGREP_RULES": "auto",
+      "SEMGREP_TIMEOUT": "30"
+    }
+  },
+  "security_config": {
+    "rulesets": {
+      "javascript": {
+        "enabled": true,
+        "rules": [
+          "p/javascript",
+          "p/typescript",
+          "p/react",
+          "p/nodejs",
+          "p/security-audit",
+          "p/owasp-top-10"
+        ],
+        "severity_filter": [
+          "ERROR",
+          "WARNING",
+          "INFO"
+        ],
+        "confidence_threshold": 0.7
+      },
+      "python": {
+        "enabled": true,
+        "rules": [
+          "p/python",
+          "p/django",
+          "p/flask",
+          "p/security-audit",
+          "p/owasp-top-10"
+        ],
+        "severity_filter": [
+          "ERROR",
+          "WARNING",
+          "INFO"
+        ],
+        "confidence_threshold": 0.7
+      },
+      "java": {
+        "enabled": true,
+        "rules": [
+          "p/java",
+          "p/spring",
+          "p/security-audit",
+          "p/owasp-top-10"
+        ],
+        "severity_filter": [
+          "ERROR",
+          "WARNING",
+          "INFO"
+        ],
+        "confidence_threshold": 0.7
+      },
+      "go": {
+        "enabled": true,
+        "rules": [
+          "p/golang",
+          "p/security-audit",
+          "p/owasp-top-10"
+        ],
+        "severity_filter": [
+          "ERROR",
+          "WARNING",
+          "INFO"
+        ],
+        "confidence_threshold": 0.7
+      }
+    },
+    "analysis_config": {
+      "max_scan_time": 300,
+      "max_memory_mb": 1024,
+      "fail_open": false,
+      "auto_fix": false,
+      "batch_size": 25,
+      "enable_caching": false
+    },
+    "validation_engine": {
+      "false_positive_reduction": {
+        "enabled": true,
+        "confidence_threshold": 0.7,
+        "false_positive_threshold": 0.05,
+        "context_analysis": true,
+        "context_window_size": 10,
+        "framework_awareness": true
+      },
+      "risk_assessment": {
+        "enabled": true,
+        "severity_mapping": {
+          "CRITICAL": 8.1,
+          "HIGH": 5.6000000000000005,
+          "MEDIUM": 3,
+          "LOW": 1.2000000000000002,
+          "INFO": 1
+        },
+        "business_context": true,
+        "exploitability_analysis": true
+      },
+      "learning_engine": {
+        "enabled": true,
+        "learning_rate": 0.01,
+        "feedback_integration": true,
+        "model_updates": "weekly"
+      },
+      "performance_optimization": {
+        "max_validation_time": 300000,
+        "parallel_processing": false,
+        "memory_optimization": true,
+        "result_caching": false
+      }
+    }
+  },
+  "integration": {
+    "claude_code": {
+      "enabled": true,
+      "commands": [
+        "ai-security-scan",
+        "ai-security-validate",
+        "ai-security-report",
+        "ai-security-tune"
+      ],
+      "auto_validation": true,
+      "result_caching": false
+    },
+    "workflow_integration": {
+      "pre_commit": true,
+      "pull_request": true,
+      "ci_cd": true,
+      "deployment_gates": false
+    },
+    "agent_coordination": {
+      "security_specialist": true,
+      "spec_reviewer": true,
+      "spec_validator": true,
+      "multi_agent_consensus": false
+    }
+  },
+  "monitoring": {
+    "metrics": {
+      "scan_performance": true,
+      "accuracy_tracking": true,
+      "false_positive_rate": true,
+      "throughput_monitoring": true,
+      "resource_usage": true
+    },
+    "alerts": {
+      "critical_findings": true,
+      "performance_degradation": true,
+      "tool_failures": true,
+      "accuracy_degradation": true
+    },
+    "reporting": {
+      "daily_summaries": true,
+      "weekly_trends": true,
+      "monthly_analysis": true,
+      "compliance_reports": false
+    }
+  },
+  "metadata": {
+    "generated_at": "2025-08-16T17:05:53.579Z",
+    "environment": "baseline",
+    "optimization": "balanced",
+    "tuning_version": "1.0.0",
+    "parameter_source": "ai_tuning_analysis"
+  }
+}

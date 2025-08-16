@@ -1,0 +1,41 @@
+{
+  "filename": "auth-vulnerabilities.js",
+  "created": "2025-08-16T17:06:05.708Z",
+  "vulnerability_count": 4,
+  "total_lines": 25,
+  "primary_language": "javascript",
+  "test_category": "authentication_test",
+  "complexity_score": {
+    "line_count": 21,
+    "function_count": 4,
+    "conditional_count": 1,
+    "complexity_score": 11.1
+  },
+  "expected_vulnerabilities": [
+    {
+      "type": "AUTHENTICATION_BYPASS",
+      "line": 3,
+      "severity": "HIGH",
+      "confidence": 0.75
+    },
+    {
+      "type": "INSECURE_RANDOM",
+      "line": 8,
+      "severity": "MEDIUM",
+      "confidence": 0.7
+    },
+    {
+      "type": "AUTHENTICATION_BYPASS",
+      "line": 14,
+      "severity": "HIGH",
+      "confidence": 0.8
+    },
+    {
+      "type": "UNVALIDATED_REDIRECT",
+      "line": 21,
+      "severity": "MEDIUM",
+      "confidence": 0.85
+    }
+  ],
+  "false_positive_probability": 0.12
+}

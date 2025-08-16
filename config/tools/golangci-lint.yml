@@ -1,0 +1,388 @@
+# Go linting configuration for golangci-lint
+# Security-first configuration with comprehensive code quality checks
+
+run:
+  timeout: 5m
+  issues-exit-code: 1
+  tests: true
+  skip-dirs:
+    - vendor
+    - tmp
+    - bin
+    - dist
+    - .git
+  skip-files:
+    - ".*\\.pb\\.go$"
+    - ".*_gen\\.go$"
+  modules-download-mode: readonly
+  allow-parallel-runners: true
+
+output:
+  format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true
+  uniq-by-line: true
+  sort-results: true
+
+linters:
+  disable-all: true
+  enable:
+    # Enabled by default
+    - errcheck      # Check for unchecked errors
+    - gosimple      # Simplify code
+    - govet         # Vet examiner
+    - ineffassign   # Detect ineffectual assignments
+    - staticcheck   # Advanced Go linter
+    - typecheck     # Type checker
+    - unused        # Check for unused code
+
+    # Additional security and quality linters
+    - bodyclose     # Check HTTP response body is closed
+    - contextcheck  # Check context usage
+    - cyclop        # Check cyclomatic complexity
+    - dupl          # Check code duplication
+    - durationcheck # Check duration usage
+    - errname       # Check error naming
+    - errorlint     # Error wrapping checker
+    - exhaustive    # Check exhaustiveness of enum switch
+    - exportloopref # Check loop variable references
+    - forbidigo     # Forbid specific identifiers
+    - forcetypeassert # Find forced type assertions
+    - funlen        # Check function length
+    - gci           # Control import order
+    - gochecknoglobals # Check for global variables
+    - gochecknoinits # Check for init functions
+    - gocognit      # Check cognitive complexity
+    - goconst       # Find repeated strings that could be constants
+    - gocritic      # Comprehensive Go linter
+    - gocyclo       # Check cyclomatic complexity
+    - godot         # Check comments end with periods
+    - gofmt         # Check formatting
+    - gofumpt       # Stricter gofmt
+    - goheader      # Check file headers
+    - goimports     # Check imports
+    - gomnd         # Check magic numbers
+    - gomoddirectives # Check go.mod directives
+    - gomodguard    # Check blocked modules
+    - goprintffuncname # Check printf-like function names
+    - gosec         # Security checker
+    - grouper       # Check import grouping
+    - importas      # Check import aliases
+    - lll           # Line length checker
+    - makezero      # Check slice initialization
+    - misspell      # Check spelling
+    - nakedret      # Check naked returns
+    - nestif        # Check nested if statements
+    - nilerr        # Check nil error returns
+    - nilnil        # Check nil comparisons
+    - nlreturn      # Check newlines after returns
+    - noctx         # Check context usage in HTTP requests
+    - nolintlint    # Check nolint directives
+    - nosprintfhostport # Check sprintf host:port
+    - predeclared   # Check for predeclared identifiers
+    - promlinter    # Check Prometheus metrics
+    - reassign      # Check reassignments
+    - revive        # Replacement for golint
+    - rowserrcheck  # Check SQL rows.Err
+    - sqlclosecheck # Check SQL Close() calls
+    - stylecheck    # Style checker
+    - tenv          # Check t.Setenv usage
+    - testpackage   # Check test package names
+    - thelper       # Check test helpers
+    - tparallel     # Check t.Parallel usage
+    - unconvert     # Check unnecessary conversions
+    - unparam       # Check unused parameters
+    - usestdlibvars # Check stdlib variable usage
+    - wastedassign  # Check wasted assignments
+    - whitespace    # Check whitespace
+    - wrapcheck     # Check error wrapping
+    - wsl           # Check whitespace lines
+
+linters-settings:
+  # Security-focused settings
+  gosec:
+    severity: "low"
+    confidence: "low"
+    excludes:
+      - G104 # Audit errors not checked - we handle this with errcheck
+    rules:
+      G101: true  # Look for hardcoded credentials
+      G102: true  # Bind to all interfaces
+      G103: true  # Audit the use of unsafe block
+      G104: false # Handled by errcheck
+      G106: true  # Audit the use of ssh.InsecureIgnoreHostKey
+      G107: true  # Url provided to HTTP request as taint input
+      G108: true  # Profiling endpoint automatically exposed
+      G109: true  # Potential Integer overflow made by strconv.Atoi result conversion
+      G110: true  # Potential DoS vulnerability via decompression bomb
+      G201: true  # SQL query construction using format string
+      G202: true  # SQL query construction using string concatenation
+      G203: true  # Use of unescaped data in HTML templates
+      G204: true  # Audit use of command execution
+      G301: true  # Poor file permissions used when creating a directory
+      G302: true  # Poor file permissions used with chmod
+      G303: true  # Creating tempfile using a predictable path
+      G304: true  # File path provided as taint input
+      G305: true  # File traversal when extracting zip archive
+      G306: true  # Poor file permissions used when writing to a file
+      G307: true  # Deferring a method which returns an error
+      G401: true  # Detect the usage of DES, RC4, MD5 or SHA1
+      G402: true  # Look for bad TLS connection settings
+      G403: true  # Ensure minimum RSA key length of 2048 bits
+      G404: true  # Insecure random number source (rand)
+      G501: true  # Import blocklist: crypto/md5
+      G502: true  # Import blocklist: crypto/des
+      G503: true  # Import blocklist: crypto/rc4
+      G504: true  # Import blocklist: net/http/cgi
+      G505: true  # Import blocklist: crypto/sha1
+      G601: true  # Implicit memory aliasing of items from a range statement
+
+  # Code quality settings
+  gocyclo:
+    min-complexity: 15
+
+  cyclop:
+    max-complexity: 15
+    package-average: 10.0
+    skip-tests: true
+
+  funlen:
+    lines: 100
+    statements: 60
+
+  gocognit:
+    min-complexity: 20
+
+  nestif:
+    min-complexity: 4
+
+  dupl:
+    threshold: 100
+
+  goconst:
+    min-len: 2
+    min-occurrences: 3
+    ignore-tests: true
+    match-constant: true
+    numbers: true
+    min: 3
+    max: 3
+
+  gomnd:
+    checks:
+      - argument
+      - case
+      - condition
+      - operation
+      - return
+      - assign
+    ignored-numbers: 0,1,2,3
+    ignored-functions: 
+      - strconv.FormatInt
+      - strconv.ParseInt
+      - make
+
+  lll:
+    line-length: 120
+    tab-width: 4
+
+  misspell:
+    locale: US
+    ignore-words:
+      - someword
+
+  nakedret:
+    max-func-lines: 30
+
+  prealloc:
+    simple: true
+    range-loops: true
+    for-loops: true
+
+  nolintlint:
+    allow-leading-space: true
+    allow-unused: false
+    require-explanation: false
+    require-specific: false
+
+  revive:
+    min-confidence: 0.8
+    rules:
+      - name: atomic
+      - name: line-length-limit
+        arguments: [120]
+      - name: argument-limit
+        arguments: [8]
+      - name: bare-return
+      - name: blank-imports
+      - name: bool-literal-in-expr
+      - name: call-to-gc
+      - name: confusing-naming
+      - name: confusing-results
+      - name: constant-logical-expr
+      - name: context-as-argument
+      - name: context-keys-type
+      - name: deep-exit
+      - name: defer
+      - name: dot-imports
+      - name: duplicated-imports
+      - name: early-return
+      - name: empty-block
+      - name: empty-lines
+      - name: error-naming
+      - name: error-return
+      - name: error-strings
+      - name: errorf
+      - name: exported
+      - name: file-header
+      - name: flag-parameter
+      - name: function-result-limit
+        arguments: [3]
+      - name: get-return
+      - name: identical-branches
+      - name: if-return
+      - name: increment-decrement
+      - name: indent-error-flow
+      - name: imports-blacklist
+      - name: import-shadowing
+      - name: line-length-limit
+        arguments: [120]
+      - name: max-public-structs
+        arguments: [10]
+      - name: modifies-parameter
+      - name: modifies-value-receiver
+      - name: nested-structs
+      - name: optimize-operands-order
+      - name: package-comments
+      - name: range
+      - name: range-val-in-closure
+      - name: range-val-address
+      - name: receiver-naming
+      - name: redefines-builtin-id
+      - name: string-of-int
+      - name: struct-tag
+      - name: superfluous-else
+      - name: time-naming
+      - name: var-naming
+      - name: var-declaration
+      - name: unconditional-recursion
+      - name: unexported-naming
+      - name: unexported-return
+      - name: unhandled-error
+      - name: unnecessary-stmt
+      - name: unreachable-code
+      - name: unused-parameter
+      - name: unused-receiver
+      - name: use-any
+      - name: useless-break
+      - name: waitgroup-by-value
+
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - experimental
+      - opinionated
+      - performance
+      - style
+    disabled-checks:
+      - dupImport # https://github.com/go-critic/go-critic/issues/845
+      - ifElseChain
+      - octalLiteral
+      - whyNoLint
+      - wrapperFunc
+      - importShadow # not important for now
+      - unnamedResult # not important
+      - hugeParam # not important
+      - sloppyReassign # not important
+
+  gci:
+    sections:
+      - standard                           # Standard section: captures all standard packages.
+      - default                           # Default section: contains all imports that could not be matched to another section type.
+      - prefix(github.com/company/project) # Custom section: groups all imports with the specified Prefix.
+    skip-generated: true
+    custom-order: true
+
+  gofumpt:
+    extra-rules: true
+
+  errorlint:
+    errorf: true
+    asserts: true
+    comparison: true
+
+  exhaustive:
+    check-generated: false
+    default-signifies-exhaustive: false
+
+  forbidigo:
+    forbid:
+      - ^print.*$
+      - ^println.*$
+      - ^fmt\.Print.*$
+      - ^log\.Print.*$ # Prefer structured logging
+
+  gomodguard:
+    blocked:
+      modules:
+        - github.com/uudashr/go-module:
+            recommendations:
+              - golang.org/x/mod
+
+issues:
+  exclude-rules:
+    # Exclude some linters from running on tests files.
+    - path: _test\.go
+      linters:
+        - gocyclo
+        - errcheck
+        - dupl
+        - gosec
+        - funlen
+        - gocognit
+        - gomnd
+        - lll
+        - goconst
+
+    # Exclude known linters from partially hard-to-fix issues
+    - path: internal/.*
+      linters:
+        - dupl
+        - gomnd
+
+    # Exclude magic number linter for test constants
+    - path: _test\.go
+      text: "Magic number"
+      linters:
+        - gomnd
+
+    # Exclude line length in generated files
+    - path: \.pb\.go$
+      linters:
+        - lll
+
+    # Exclude security checks in test files
+    - path: _test\.go
+      linters:
+        - gosec
+
+    # Exclude cognitive complexity in test files
+    - path: _test\.go
+      text: "cognitive complexity"
+      linters:
+        - gocognit
+
+  exclude-use-default: false
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  new: false
+
+severity:
+  default-severity: error
+  rules:
+    - linters:
+        - dupl
+      severity: info
+    - linters:
+        - goconst
+      severity: info

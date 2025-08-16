@@ -1,0 +1,164 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Dependency directories (remove the comment below to include it)
+# vendor/
+
+# Go workspace file
+go.work
+
+# Build artifacts
+app
+main
+server
+dist/
+build/
+bin/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Log files
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+
+# Coverage files
+coverage.out
+coverage.html
+coverage.xml
+
+# Benchmark files
+benchmark.txt
+*.bench
+
+# Air (hot reloading) files
+.air.toml
+tmp/
+
+# Database files (local development)
+*.db
+*.sqlite
+*.sqlite3
+
+# Redis dump files
+dump.rdb
+
+# Docker files (development)
+.docker/
+
+# Kubernetes secrets
+secrets/
+*.secret
+
+# Terraform files
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraformrc
+terraform.rc
+
+# Certificates and keys (never commit these!)
+*.pem
+*.key
+*.crt
+*.csr
+*.p12
+*.pfx
+
+# Backup files
+*.backup
+*.bak
+
+# Local configuration files
+config.local.*
+settings.local.*
+
+# Test data files
+testdata/
+fixtures/
+*.fixture
+
+# Profiling files
+*.pprof
+profile.out
+mem.prof
+cpu.prof
+
+# Documentation build files
+docs/_build/
+site/
+
+# Node.js (if using for frontend)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Frontend build files
+public/
+static/build/
+
+# Go sum database
+go.sum.backup
+
+# Vendor (if using vendor)
+vendor/
+
+# Module cache
+**/go.sum.lock
+
+# Local data files
+data/
+uploads/
+storage/
+
+# Security scanning results
+*.sarif
+security-report.*
+
+# Load testing results
+results/
+*.jmx
+
+# Local development scripts
+scripts/local/
+dev-scripts/
+
+# Prometheus data
+prometheus_data/
+
+# Grafana data
+grafana_data/

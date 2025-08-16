@@ -1,0 +1,29 @@
+{
+  "filename": "path-traversal.js",
+  "created": "2025-08-16T17:06:05.708Z",
+  "vulnerability_count": 2,
+  "total_lines": 25,
+  "primary_language": "javascript",
+  "test_category": "path_traversal_test",
+  "complexity_score": {
+    "line_count": 21,
+    "function_count": 3,
+    "conditional_count": 1,
+    "complexity_score": 9.1
+  },
+  "expected_vulnerabilities": [
+    {
+      "type": "PATH_TRAVERSAL",
+      "line": 6,
+      "severity": "HIGH",
+      "confidence": 0.85
+    },
+    {
+      "type": "PATH_TRAVERSAL",
+      "line": 11,
+      "severity": "MEDIUM",
+      "confidence": 0.7
+    }
+  ],
+  "false_positive_probability": 0.08
+}

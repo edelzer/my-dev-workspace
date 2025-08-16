@@ -1,0 +1,35 @@
+{
+  "filename": "xss-basic.js",
+  "created": "2025-08-16T17:06:05.708Z",
+  "vulnerability_count": 3,
+  "total_lines": 15,
+  "primary_language": "javascript",
+  "test_category": "xss_test",
+  "complexity_score": {
+    "line_count": 12,
+    "function_count": 3,
+    "conditional_count": 0,
+    "complexity_score": 7.2
+  },
+  "expected_vulnerabilities": [
+    {
+      "type": "XSS",
+      "line": 3,
+      "severity": "HIGH",
+      "confidence": 0.9
+    },
+    {
+      "type": "XSS",
+      "line": 8,
+      "severity": "HIGH",
+      "confidence": 0.88
+    },
+    {
+      "type": "XSS",
+      "line": 13,
+      "severity": "MEDIUM",
+      "confidence": 0.75
+    }
+  ],
+  "false_positive_probability": 0.03
+}

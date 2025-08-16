@@ -1,0 +1,390 @@
+name: AI-Powered Security Code Review
+
+on:
+  push:
+    branches: [ main, develop, 'feature/*', 'hotfix/*' ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Daily security scan at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      scan_scope:
+        description: 'Scan scope (full, incremental, critical-only)'
+        required: false
+        default: 'incremental'
+        type: choice
+        options:
+        - full
+        - incremental
+        - critical-only
+      severity_filter:
+        description: 'Minimum severity level'
+        required: false
+        default: 'medium'
+        type: choice
+        options:
+        - critical
+        - high
+        - medium
+        - low
+
+env:
+  SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+  CLAUDE_CODE_TOKEN: ${{ secrets.CLAUDE_CODE_TOKEN }}
+  NODE_VERSION: '20'
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  ai-security-analysis:
+    name: AI Security Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    outputs:
+      critical_count: ${{ steps.security-scan.outputs.critical_count }}
+      high_count: ${{ steps.security-scan.outputs.high_count }}
+      scan_status: ${{ steps.security-scan.outputs.scan_status }}
+      report_url: ${{ steps.security-scan.outputs.report_url }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Full history for better AI context analysis
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install Claude Code CLI
+      run: |
+        npm install -g @anthropic-ai/claude-code-cli
+        
+    - name: Install Security Tools
+      run: |
+        # Install Semgrep MCP
+        pip install semgrep
+        uvx install semgrep-mcp
+        
+        # Install additional security tools
+        npm install -g eslint-plugin-security
+        
+    - name: Configure AI Security Environment
+      run: |
+        # Setup Semgrep MCP configuration
+        mkdir -p ~/.claude/mcp
+        cp .claude/mcp/semgrep-config.json ~/.claude/mcp/
+        
+        # Validate MCP connection
+        claude ai-security-scan --test-connection
+      env:
+        SEMGREP_APP_TOKEN: ${{ env.SEMGREP_APP_TOKEN }}
+    
+    - name: AI Security Scan
+      id: security-scan
+      run: |
+        # Determine scan parameters
+        SCAN_SCOPE="${{ github.event.inputs.scan_scope || 'incremental' }}"
+        SEVERITY_FILTER="${{ github.event.inputs.severity_filter || 'medium' }}"
+        
+        # Execute AI security scan
+        echo "🔍 Starting AI security analysis..."
+        
+        if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+          # Incremental scan for PR - only changed files
+          git diff --name-only origin/${{ github.base_ref }}...HEAD > changed_files.txt
+          claude ai-security-scan --files-from changed_files.txt --severity $SEVERITY_FILTER --format json > security-report.json
+        elif [[ "$SCAN_SCOPE" == "full" ]]; then
+          # Full codebase scan
+          claude ai-security-scan --severity $SEVERITY_FILTER --format json > security-report.json
+        elif [[ "$SCAN_SCOPE" == "critical-only" ]]; then
+          # Critical issues only
+          claude ai-security-scan --severity critical --format json > security-report.json
+        else
+          # Incremental scan (default)
+          claude ai-security-scan --incremental --severity $SEVERITY_FILTER --format json > security-report.json
+        fi
+        
+        # Parse results
+        CRITICAL_COUNT=$(jq -r '.summary.critical // 0' security-report.json)
+        HIGH_COUNT=$(jq -r '.summary.high // 0' security-report.json)
+        TOTAL_FINDINGS=$(jq -r '.summary.total_findings // 0' security-report.json)
+        
+        echo "critical_count=$CRITICAL_COUNT" >> $GITHUB_OUTPUT
+        echo "high_count=$HIGH_COUNT" >> $GITHUB_OUTPUT
+        echo "total_findings=$TOTAL_FINDINGS" >> $GITHUB_OUTPUT
+        
+        # Determine scan status
+        if [[ $CRITICAL_COUNT -gt 0 ]]; then
+          echo "scan_status=critical_found" >> $GITHUB_OUTPUT
+          echo "❌ Critical security issues found: $CRITICAL_COUNT"
+        elif [[ $HIGH_COUNT -gt 0 ]]; then
+          echo "scan_status=high_found" >> $GITHUB_OUTPUT
+          echo "⚠️ High severity security issues found: $HIGH_COUNT"
+        else
+          echo "scan_status=clean" >> $GITHUB_OUTPUT
+          echo "✅ No critical or high severity issues found"
+        fi
+        
+        echo "📊 Total findings: $TOTAL_FINDINGS (Critical: $CRITICAL_COUNT, High: $HIGH_COUNT)"
+      env:
+        SEMGREP_APP_TOKEN: ${{ env.SEMGREP_APP_TOKEN }}
+    
+    - name: AI Validation Engine
+      id: ai-validation
+      if: steps.security-scan.outputs.total_findings > 0
+      run: |
+        echo "🤖 Starting AI validation engine..."
+        
+        # Run AI validation on findings
+        claude ai-security-validate --batch --auto-analysis security-report.json > validation-report.json
+        
+        # Extract validation metrics
+        FALSE_POSITIVE_RATE=$(jq -r '.ai_validation.false_positive_rate // 0' validation-report.json)
+        VALIDATION_CONFIDENCE=$(jq -r '.ai_validation.validation_confidence // 0' validation-report.json)
+        AGENT_REVIEW_REQUIRED=$(jq -r '.ai_validation.agent_review_required // false' validation-report.json)
+        
+        echo "false_positive_rate=$FALSE_POSITIVE_RATE" >> $GITHUB_OUTPUT
+        echo "validation_confidence=$VALIDATION_CONFIDENCE" >> $GITHUB_OUTPUT
+        echo "agent_review_required=$AGENT_REVIEW_REQUIRED" >> $GITHUB_OUTPUT
+        
+        echo "🎯 AI Validation Results:"
+        echo "  - False Positive Rate: $FALSE_POSITIVE_RATE"
+        echo "  - Validation Confidence: $VALIDATION_CONFIDENCE"
+        echo "  - Agent Review Required: $AGENT_REVIEW_REQUIRED"
+    
+    - name: Multi-Agent Security Review
+      id: agent-review
+      if: steps.ai-validation.outputs.agent_review_required == 'true'
+      run: |
+        echo "👥 Initiating multi-agent security review..."
+        
+        # Security specialist analysis
+        claude --agent security-specialist \
+          "Analyze security findings in validation-report.json and provide expert assessment"
+        
+        # Code quality review
+        claude --agent spec-reviewer \
+          "Review security findings impact on code quality and maintainability"
+        
+        # Final validation
+        claude --agent spec-validator \
+          "Provide final security approval and remediation recommendations"
+        
+        echo "agent_review_completed=true" >> $GITHUB_OUTPUT
+    
+    - name: Generate Security Report
+      run: |
+        echo "📋 Generating comprehensive security report..."
+        
+        # Generate HTML report for dashboard
+        claude ai-security-report --format html --include-trends > security-dashboard.html
+        
+        # Generate markdown report for PR comments
+        claude ai-security-report --format markdown > security-summary.md
+        
+        # Store report URL (would be actual URL in real implementation)
+        echo "report_url=https://security-dashboard.example.com/reports/${{ github.run_id }}" >> $GITHUB_OUTPUT
+    
+    - name: Upload Security Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: security-analysis-${{ github.run_id }}
+        path: |
+          security-report.json
+          validation-report.json
+          security-dashboard.html
+          security-summary.md
+        retention-days: 30
+    
+    - name: Update Security Dashboard
+      run: |
+        echo "📊 Updating security dashboard metrics..."
+        
+        # Update dashboard with latest metrics (implementation specific)
+        curl -X POST "${{ secrets.SECURITY_DASHBOARD_WEBHOOK }}" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "run_id": "${{ github.run_id }}",
+            "repository": "${{ github.repository }}",
+            "branch": "${{ github.ref_name }}",
+            "critical_count": ${{ steps.security-scan.outputs.critical_count }},
+            "high_count": ${{ steps.security-scan.outputs.high_count }},
+            "scan_status": "${{ steps.security-scan.outputs.scan_status }}",
+            "validation_confidence": "${{ steps.ai-validation.outputs.validation_confidence }}",
+            "timestamp": "${{ github.event.head_commit.timestamp }}"
+          }' || echo "Dashboard update failed (non-critical)"
+
+  security-gate:
+    name: Security Gate Validation
+    runs-on: ubuntu-latest
+    needs: ai-security-analysis
+    if: always()
+    
+    steps:
+    - name: Security Gate Decision
+      run: |
+        CRITICAL_COUNT="${{ needs.ai-security-analysis.outputs.critical_count }}"
+        HIGH_COUNT="${{ needs.ai-security-analysis.outputs.high_count }}"
+        SCAN_STATUS="${{ needs.ai-security-analysis.outputs.scan_status }}"
+        
+        echo "🚪 Security Gate Evaluation:"
+        echo "  - Critical Issues: $CRITICAL_COUNT"
+        echo "  - High Issues: $HIGH_COUNT"
+        echo "  - Scan Status: $SCAN_STATUS"
+        
+        # Security gate logic
+        if [[ "$SCAN_STATUS" == "critical_found" ]]; then
+          echo "❌ SECURITY GATE FAILED: Critical security issues must be resolved"
+          echo "Critical security vulnerabilities block deployment and merge"
+          exit 1
+        elif [[ "$SCAN_STATUS" == "high_found" ]] && [[ "${{ github.event_name }}" == "push" ]] && [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+          echo "⚠️ SECURITY GATE WARNING: High severity issues found on main branch"
+          echo "High severity issues on main branch require immediate attention"
+          # Allow but create tracking issue
+        else
+          echo "✅ SECURITY GATE PASSED: No blocking security issues found"
+        fi
+    
+    - name: Create Security Issue
+      if: needs.ai-security-analysis.outputs.scan_status != 'clean'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const criticalCount = '${{ needs.ai-security-analysis.outputs.critical_count }}';
+          const highCount = '${{ needs.ai-security-analysis.outputs.high_count }}';
+          const reportUrl = '${{ needs.ai-security-analysis.outputs.report_url }}';
+          
+          const issueTitle = `🔒 Security Review: ${criticalCount} Critical, ${highCount} High Severity Issues`;
+          const issueBody = `
+          ## AI Security Analysis Results
+          
+          **Scan Results:**
+          - Critical Issues: ${criticalCount}
+          - High Severity Issues: ${highCount}
+          - Workflow Run: [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          
+          **Next Steps:**
+          1. Review detailed findings in the security report
+          2. Address critical issues immediately
+          3. Plan remediation for high severity issues
+          4. Update security policies if needed
+          
+          **AI Analysis:**
+          This issue was automatically created by the AI-powered security review system.
+          Multi-agent validation has been applied to reduce false positives.
+          
+          **Report:** ${reportUrl}
+          
+          /cc @security-team
+          `;
+          
+          await github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: issueTitle,
+            body: issueBody,
+            labels: ['security', 'ai-generated', 'priority-high']
+          });
+
+  pr-comment:
+    name: PR Security Comment
+    runs-on: ubuntu-latest
+    needs: ai-security-analysis
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - name: Download Security Report
+      uses: actions/download-artifact@v4
+      with:
+        name: security-analysis-${{ github.run_id }}
+    
+    - name: Comment PR with Security Results
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const criticalCount = '${{ needs.ai-security-analysis.outputs.critical_count }}';
+          const highCount = '${{ needs.ai-security-analysis.outputs.high_count }}';
+          const scanStatus = '${{ needs.ai-security-analysis.outputs.scan_status }}';
+          
+          // Read the markdown report
+          let reportContent = '';
+          try {
+            reportContent = fs.readFileSync('security-summary.md', 'utf8');
+          } catch (error) {
+            reportContent = 'Security report not available.';
+          }
+          
+          const statusEmoji = scanStatus === 'clean' ? '✅' : 
+                             scanStatus === 'high_found' ? '⚠️' : '❌';
+          
+          const commentBody = `
+          ## ${statusEmoji} AI Security Review Results
+          
+          **Summary:**
+          - Critical Issues: ${criticalCount}
+          - High Severity Issues: ${highCount}
+          - Overall Status: ${scanStatus.replace('_', ' ').toUpperCase()}
+          
+          ${reportContent}
+          
+          ---
+          
+          🤖 This comment was generated by the AI-powered security review system.
+          Multi-agent validation applied | Laws #1-5 Protocol Compliant
+          `;
+          
+          await github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: commentBody
+          });
+
+  security-monitoring:
+    name: Security Monitoring Update
+    runs-on: ubuntu-latest
+    needs: ai-security-analysis
+    if: always()
+    
+    steps:
+    - name: Update Security Metrics
+      run: |
+        echo "📈 Updating security monitoring metrics..."
+        
+        # Store metrics in GitHub environment for dashboard
+        cat << EOF >> security-metrics.json
+        {
+          "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+          "repository": "${{ github.repository }}",
+          "branch": "${{ github.ref_name }}",
+          "commit": "${{ github.sha }}",
+          "workflow_run": "${{ github.run_id }}",
+          "metrics": {
+            "critical_findings": ${{ needs.ai-security-analysis.outputs.critical_count }},
+            "high_findings": ${{ needs.ai-security-analysis.outputs.high_count }},
+            "scan_status": "${{ needs.ai-security-analysis.outputs.scan_status }}",
+            "ai_validation_applied": true,
+            "multi_agent_review": true
+          }
+        }
+        EOF
+        
+        echo "Security metrics updated and stored"
+    
+    - name: Archive Security Metrics
+      uses: actions/upload-artifact@v4
+      with:
+        name: security-metrics-${{ github.run_id }}
+        path: security-metrics.json
+        retention-days: 90

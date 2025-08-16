@@ -1,0 +1,29 @@
+{
+  "filename": "command-injection.js",
+  "created": "2025-08-16T17:06:05.708Z",
+  "vulnerability_count": 2,
+  "total_lines": 23,
+  "primary_language": "javascript",
+  "test_category": "command_injection_test",
+  "complexity_score": {
+    "line_count": 19,
+    "function_count": 3,
+    "conditional_count": 1,
+    "complexity_score": 8.9
+  },
+  "expected_vulnerabilities": [
+    {
+      "type": "COMMAND_INJECTION",
+      "line": 5,
+      "severity": "CRITICAL",
+      "confidence": 0.92
+    },
+    {
+      "type": "COMMAND_INJECTION",
+      "line": 12,
+      "severity": "HIGH",
+      "confidence": 0.87
+    }
+  ],
+  "false_positive_probability": 0.03
+}

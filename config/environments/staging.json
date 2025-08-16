@@ -1,0 +1,162 @@
+{
+  "application": {
+    "environment": "staging",
+    "debug": false
+  },
+  "server": {
+    "port": 8000,
+    "ssl": {
+      "enabled": true
+    },
+    "compression": {
+      "enabled": true,
+      "threshold": 512
+    }
+  },
+  "database": {
+    "url": "postgresql://staging_user:${DATABASE_PASSWORD}@staging-db:5432/myapp_staging",
+    "pool": {
+      "size": 15,
+      "minIdle": 3,
+      "maxIdle": 8,
+      "timeout": 30,
+      "maxLifetime": 1200
+    },
+    "migrations": {
+      "autoMigrate": false
+    }
+  },
+  "cache": {
+    "url": "redis://staging-redis:6379/0",
+    "host": "staging-redis",
+    "database": 0,
+    "pool": {
+      "maxActive": 15,
+      "maxIdle": 8,
+      "minIdle": 3
+    },
+    "ttl": 3600
+  },
+  "security": {
+    "jwt": {
+      "secret": "${JWT_SECRET}",
+      "accessTokenExpiry": 1800,
+      "refreshTokenExpiry": 43200
+    },
+    "password": {
+      "minLength": 10,
+      "requireUppercase": true,
+      "requireLowercase": true,
+      "requireNumbers": true,
+      "requireSpecialChars": true,
+      "hashRounds": 12
+    },
+    "session": {
+      "timeout": 1800,
+      "maxConcurrent": 1
+    },
+    "headers": {
+      "strictTransportSecurity": "max-age=31536000; includeSubDomains; preload"
+    }
+  },
+  "cors": {
+    "allowedOrigins": ["${STAGING_FRONTEND_URL}", "https://staging.myapp.com"],
+    "allowCredentials": true
+  },
+  "rateLimiting": {
+    "enabled": true,
+    "global": {
+      "requests": 200,
+      "window": 60
+    },
+    "auth": {
+      "requests": 15,
+      "window": 60
+    },
+    "api": {
+      "requests": 2000,
+      "window": 3600
+    }
+  },
+  "logging": {
+    "level": "INFO",
+    "format": "json",
+    "file": {
+      "enabled": true,
+      "path": "logs/staging.log",
+      "maxSize": "50MB",
+      "maxFiles": 14,
+      "rotation": "daily"
+    },
+    "console": {
+      "enabled": true,
+      "colorize": false
+    }
+  },
+  "monitoring": {
+    "metrics": {
+      "enabled": true,
+      "prometheus": {
+        "enabled": true,
+        "port": 9090
+      }
+    },
+    "healthCheck": {
+      "enabled": true,
+      "timeout": 30
+    },
+    "tracing": {
+      "enabled": true,
+      "jaeger": {
+        "endpoint": "http://jaeger-collector:14268/api/traces",
+        "samplingRate": 0.5
+      }
+    }
+  },
+  "external": {
+    "email": {
+      "enabled": true,
+      "provider": "smtp",
+      "from": "staging@myapp.com",
+      "smtp": {
+        "host": "${SMTP_HOST}",
+        "port": 587,
+        "username": "${SMTP_USERNAME}",
+        "password": "${SMTP_PASSWORD}",
+        "secure": false,
+        "startTLS": true
+      }
+    },
+    "storage": {
+      "type": "s3",
+      "s3": {
+        "bucket": "myapp-staging-uploads",
+        "region": "us-east-1",
+        "accessKeyId": "${AWS_ACCESS_KEY_ID}",
+        "secretAccessKey": "${AWS_SECRET_ACCESS_KEY}"
+      }
+    }
+  },
+  "features": {
+    "registration": true,
+    "emailVerification": true,
+    "passwordReset": true,
+    "rememberMe": true,
+    "apiDocumentation": true,
+    "fileUpload": true
+  },
+  "api": {
+    "title": "My Application API - Staging",
+    "description": "Staging environment for My Application API"
+  },
+  "validation": {
+    "maxRequestSize": "5MB",
+    "maxJsonDepth": 8,
+    "sanitizeInput": true,
+    "fileUpload": {
+      "maxFileSize": "20MB",
+      "allowedExtensions": [".jpg", ".jpeg", ".png", ".pdf", ".txt", ".doc", ".docx"],
+      "maxFiles": 5
+    }
+  }
+}

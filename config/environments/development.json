@@ -1,0 +1,99 @@
+{
+  "application": {
+    "environment": "development",
+    "debug": true
+  },
+  "server": {
+    "port": 8000,
+    "ssl": {
+      "enabled": false
+    }
+  },
+  "database": {
+    "url": "postgresql://dev_user:dev_pass@localhost:5432/myapp_dev",
+    "pool": {
+      "size": 10,
+      "minIdle": 2,
+      "maxIdle": 5
+    },
+    "migrations": {
+      "autoMigrate": true
+    }
+  },
+  "cache": {
+    "url": "redis://localhost:6379/1",
+    "database": 1,
+    "ttl": 1800
+  },
+  "security": {
+    "jwt": {
+      "accessTokenExpiry": 7200,
+      "refreshTokenExpiry": 86400
+    },
+    "password": {
+      "hashRounds": 8
+    },
+    "session": {
+      "timeout": 3600
+    },
+    "headers": {
+      "contentSecurityPolicy": "default-src 'self' 'unsafe-inline' 'unsafe-eval'"
+    }
+  },
+  "cors": {
+    "allowedOrigins": ["http://localhost:3000", "http://localhost:3001", "http://localhost:8080", "http://127.0.0.1:3000"],
+    "allowCredentials": true
+  },
+  "rateLimiting": {
+    "enabled": false
+  },
+  "logging": {
+    "level": "DEBUG",
+    "format": "console",
+    "file": {
+      "enabled": false
+    },
+    "console": {
+      "enabled": true,
+      "colorize": true
+    }
+  },
+  "monitoring": {
+    "metrics": {
+      "enabled": true
+    },
+    "healthCheck": {
+      "enabled": true
+    },
+    "tracing": {
+      "enabled": false
+    }
+  },
+  "external": {
+    "email": {
+      "enabled": false
+    },
+    "storage": {
+      "type": "local",
+      "local": {
+        "path": "dev-uploads"
+      }
+    }
+  },
+  "features": {
+    "registration": true,
+    "emailVerification": false,
+    "passwordReset": true,
+    "rememberMe": true,
+    "apiDocumentation": true,
+    "fileUpload": true
+  },
+  "validation": {
+    "maxRequestSize": "10MB",
+    "fileUpload": {
+      "maxFileSize": "50MB",
+      "allowedExtensions": [".jpg", ".jpeg", ".png", ".pdf", ".txt", ".doc", ".docx"],
+      "maxFiles": 10
+    }
+  }
+}

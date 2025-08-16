@@ -1,0 +1,37 @@
+# Base requirements for FastAPI Professional Template
+# These are the core dependencies required for the application
+
+# FastAPI and server
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+
+# Database
+sqlalchemy[asyncio]>=2.0.0
+alembic>=1.12.0
+asyncpg>=0.29.0
+aiosqlite>=0.19.0
+
+# Redis
+redis>=5.0.0
+
+# Authentication & Security
+pyjwt>=2.8.0
+bcrypt>=4.1.0
+cryptography>=41.0.0
+passlib[bcrypt]>=1.7.0
+
+# Validation & Serialization
+pydantic[email]>=2.5.0
+pydantic-settings>=2.1.0
+
+# HTTP & Networking
+httpx>=0.25.0
+aiofiles>=23.2.0
+
+# Utilities
+python-multipart>=0.0.6
+python-dotenv>=1.0.0
+tenacity>=8.2.0
+
+# Monitoring & Logging
+structlog>=23.2.0

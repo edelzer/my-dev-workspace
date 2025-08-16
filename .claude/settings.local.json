@@ -37,7 +37,9 @@
       "Bash(dir:*)",
       "Bash(test:*)",
       "Bash(npm run:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "WebFetch(domain:docs.spring.io)",
+      "WebFetch(domain:spotbugs.github.io)"
     ],
     "deny": []
   },

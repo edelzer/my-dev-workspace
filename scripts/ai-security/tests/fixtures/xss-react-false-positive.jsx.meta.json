@@ -1,0 +1,16 @@
+{
+  "filename": "xss-react-false-positive.jsx",
+  "created": "2025-08-16T17:06:05.708Z",
+  "vulnerability_count": 0,
+  "total_lines": 12,
+  "primary_language": "javascript",
+  "test_category": "false_positive_test",
+  "complexity_score": {
+    "line_count": 10,
+    "function_count": 2,
+    "conditional_count": 0,
+    "complexity_score": 5
+  },
+  "expected_vulnerabilities": [],
+  "false_positive_probability": 0.25
+}

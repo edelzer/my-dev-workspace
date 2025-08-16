@@ -1,0 +1,16 @@
+{
+  "filename": "framework-protections.jsx",
+  "created": "2025-08-16T17:06:05.708Z",
+  "vulnerability_count": 0,
+  "total_lines": 28,
+  "primary_language": "javascript",
+  "test_category": "general_security_test",
+  "complexity_score": {
+    "line_count": 23,
+    "function_count": 1,
+    "conditional_count": 0,
+    "complexity_score": 4.300000000000001
+  },
+  "expected_vulnerabilities": [],
+  "false_positive_probability": 0.3
+}

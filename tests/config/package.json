@@ -1,0 +1,44 @@
+{
+  "name": "config-management-tests",
+  "version": "1.0.0",
+  "description": "Integration tests for multi-language configuration management system",
+  "main": "integration.test.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:verbose": "jest --verbose",
+    "test:integration": "jest integration.test.js",
+    "test:security": "jest --testNamePattern=\"Security\"",
+    "test:performance": "jest --testNamePattern=\"Performance\"",
+    "test:ci": "jest --ci --coverage --watchAll=false"
+  },
+  "devDependencies": {
+    "jest": "^29.5.0",
+    "ajv": "^8.12.0",
+    "ajv-formats": "^2.1.1",
+    "js-yaml": "^4.1.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/*.test.js"
+    ],
+    "collectCoverageFrom": [
+      "../../scripts/*.js",
+      "../../config/adapters/*.js",
+      "!**/node_modules/**"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "functions": 80,
+        "lines": 80,
+        "statements": 80
+      }
+    },
+    "testTimeout": 30000,
+    "setupFilesAfterEnv": ["<rootDir>/setup.js"],
+    "verbose": true
+  }
+}

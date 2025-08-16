@@ -1,0 +1,138 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# FastAPI / Uvicorn
+*.log
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Testing
+.coverage
+.pytest_cache/
+.tox/
+htmlcov/
+coverage.xml
+*.cover
+.hypothesis/
+.cache
+nosetests.xml
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Redis
+dump.rdb
+
+# Logs
+logs/
+*.log
+*.out
+
+# Security
+.bandit
+bandit-report.json
+safety-report.json
+
+# Alembic
+alembic.ini.bak
+
+# Docker
+.dockerignore
+
+# MacOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Uploads
+uploads/
+tmp/
+temp/
+
+# Environment files
+.env.local
+.env.production
+.env.staging
+.env.test
+
+# Backup files
+*.bak
+*.backup
+*.tmp
+
+# Documentation builds
+docs/_build/
+docs/build/
+
+# Performance files
+*.prof
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# Poetry
+poetry.lock
+
+# Certificates
+*.pem
+*.key
+*.crt
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+
+# Monitoring
+prometheus_data/
+grafana_data/
+
+# Local development
+local_settings.py
+settings_local.py

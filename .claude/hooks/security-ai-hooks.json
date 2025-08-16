@@ -1,0 +1,308 @@
+{
+  "name": "AI Security Automation Hooks",
+  "version": "1.0.0",
+  "description": "Intelligent security automation hooks for AI-powered code review integration",
+  "protocol_compliance": "Laws #1-5 Enforced",
+  "hooks": [
+    {
+      "id": "ai-security-pre-commit",
+      "name": "AI Security Pre-Commit Analysis",
+      "trigger": "file_change",
+      "conditions": {
+        "files": ["**/*.js", "**/*.ts", "**/*.py", "**/*.java", "**/*.go"],
+        "exclude": ["**/test/**", "**/spec/**", "**/*.test.*", "**/*.spec.*"],
+        "size_limit_mb": 10
+      },
+      "actions": [
+        {
+          "type": "ai_security_scan",
+          "command": "claude ai-security-scan ${changed_files} --severity critical,high --quick-scan",
+          "timeout": 30,
+          "failure_action": "block_commit"
+        },
+        {
+          "type": "ai_validation",
+          "command": "claude ai-security-validate --auto-analysis --confidence-threshold 0.8",
+          "timeout": 15,
+          "failure_action": "warn"
+        }
+      ],
+      "escalation": {
+        "critical_findings": {
+          "action": "block_commit",
+          "notify": ["security-specialist"],
+          "message": "Critical security issues found. Manual review required."
+        },
+        "high_findings": {
+          "action": "warn",
+          "notify": ["spec-reviewer"],
+          "message": "High severity security issues detected. Review recommended."
+        }
+      },
+      "enabled": true,
+      "priority": "high"
+    },
+    {
+      "id": "ai-security-file-analysis",
+      "name": "Real-time AI Security File Analysis",
+      "trigger": "file_save",
+      "conditions": {
+        "files": ["**/*.js", "**/*.ts", "**/*.py", "**/*.java", "**/*.go"],
+        "exclude": ["**/node_modules/**", "**/vendor/**", "**/dist/**"],
+        "file_patterns": ["auth", "login", "password", "token", "session", "crypto", "security"]
+      },
+      "actions": [
+        {
+          "type": "immediate_ai_scan",
+          "command": "claude ai-security-scan ${file_path} --severity all --real-time",
+          "timeout": 10,
+          "background": true
+        },
+        {
+          "type": "context_analysis",
+          "command": "claude ai-security-validate --context-aware --file ${file_path}",
+          "timeout": 20,
+          "background": true
+        }
+      ],
+      "notifications": {
+        "critical": {
+          "type": "immediate",
+          "channels": ["ide_notification", "security_dashboard"],
+          "agents": ["security-specialist"]
+        },
+        "high": {
+          "type": "batched",
+          "interval": "5m",
+          "channels": ["ide_notification"]
+        }
+      },
+      "enabled": true,
+      "priority": "medium"
+    },
+    {
+      "id": "ai-dependency-security-check",
+      "name": "AI-Enhanced Dependency Security Analysis",
+      "trigger": "dependency_change",
+      "conditions": {
+        "files": ["package.json", "requirements.txt", "pom.xml", "go.mod", "Cargo.toml"],
+        "change_types": ["add", "update", "version_change"]
+      },
+      "actions": [
+        {
+          "type": "dependency_ai_scan",
+          "command": "claude ai-security-scan --dependency-mode --vulnerability-db-check",
+          "timeout": 60,
+          "failure_action": "warn"
+        },
+        {
+          "type": "ai_risk_assessment",
+          "command": "claude ai-security-validate --dependency-risk --supply-chain-analysis",
+          "timeout": 30,
+          "background": false
+        }
+      ],
+      "intelligence": {
+        "vulnerability_feeds": ["nvd", "github_advisories", "snyk"],
+        "ai_enhanced_scoring": true,
+        "supply_chain_analysis": true
+      },
+      "enabled": true,
+      "priority": "high"
+    },
+    {
+      "id": "ai-security-pattern-learning",
+      "name": "AI Security Pattern Learning Engine",
+      "trigger": "validation_feedback",
+      "conditions": {
+        "validation_source": ["human_review", "false_positive_report", "security_specialist"],
+        "confidence_threshold": 0.7
+      },
+      "actions": [
+        {
+          "type": "pattern_learning",
+          "command": "claude ai-security-learn --pattern-update --validation-feedback ${feedback_data}",
+          "timeout": 45,
+          "background": true
+        },
+        {
+          "type": "rule_optimization",
+          "command": "claude ai-security-optimize --rules --accuracy-improvement",
+          "timeout": 30,
+          "background": true
+        }
+      ],
+      "learning": {
+        "false_positive_reduction": true,
+        "context_pattern_recognition": true,
+        "codebase_specific_tuning": true,
+        "accuracy_improvement_tracking": true
+      },
+      "enabled": true,
+      "priority": "low"
+    },
+    {
+      "id": "ai-security-code-review-automation",
+      "name": "AI-Powered Security Code Review Automation",
+      "trigger": "pull_request",
+      "conditions": {
+        "pr_status": ["opened", "updated"],
+        "file_changes": ["**/*.js", "**/*.ts", "**/*.py", "**/*.java", "**/*.go"],
+        "size_threshold": 500
+      },
+      "actions": [
+        {
+          "type": "comprehensive_ai_scan",
+          "command": "claude ai-security-scan --pr-mode --diff-analysis --severity all",
+          "timeout": 120,
+          "failure_action": "comment"
+        },
+        {
+          "type": "multi_agent_review",
+          "sequence": [
+            "security-specialist: Deep security analysis",
+            "spec-reviewer: Code quality and security integration",
+            "spec-validator: Final security approval"
+          ],
+          "timeout": 300,
+          "parallel": false
+        },
+        {
+          "type": "ai_report_generation",
+          "command": "claude ai-security-report --pr-summary --actionable-recommendations",
+          "timeout": 60,
+          "output": "pr_comment"
+        }
+      ],
+      "review_criteria": {
+        "security_focused": true,
+        "false_positive_filtered": true,
+        "business_impact_assessed": true,
+        "remediation_suggested": true
+      },
+      "enabled": true,
+      "priority": "high"
+    },
+    {
+      "id": "ai-security-deployment-gate",
+      "name": "AI Security Deployment Gate",
+      "trigger": "deployment_request",
+      "conditions": {
+        "environments": ["staging", "production"],
+        "deployment_type": ["release", "hotfix", "feature"]
+      },
+      "actions": [
+        {
+          "type": "pre_deployment_ai_scan",
+          "command": "claude ai-security-scan --deployment-gate --comprehensive --critical-only",
+          "timeout": 180,
+          "failure_action": "block_deployment"
+        },
+        {
+          "type": "security_posture_assessment",
+          "command": "claude ai-security-validate --deployment-readiness --risk-assessment",
+          "timeout": 120,
+          "failure_action": "require_approval"
+        }
+      ],
+      "deployment_criteria": {
+        "zero_critical_issues": true,
+        "high_issue_threshold": 5,
+        "ai_confidence_minimum": 0.9,
+        "security_specialist_approval": true
+      },
+      "enabled": true,
+      "priority": "critical"
+    },
+    {
+      "id": "ai-security-monitoring-alert",
+      "name": "AI Security Monitoring and Alerting",
+      "trigger": "security_event",
+      "conditions": {
+        "event_types": ["vulnerability_detected", "suspicious_pattern", "security_degradation"],
+        "severity": ["critical", "high"]
+      },
+      "actions": [
+        {
+          "type": "immediate_ai_analysis",
+          "command": "claude ai-security-analyze --event-response --threat-assessment",
+          "timeout": 30,
+          "background": false
+        },
+        {
+          "type": "automated_response",
+          "command": "claude ai-security-respond --containment --mitigation-suggestions",
+          "timeout": 60,
+          "background": true
+        }
+      ],
+      "alerting": {
+        "channels": ["slack", "email", "dashboard", "pager"],
+        "escalation_matrix": {
+          "level_1": ["security-specialist"],
+          "level_2": ["spec-reviewer", "security-specialist"],
+          "level_3": ["spec-validator", "security-team"]
+        },
+        "response_time_sla": {
+          "critical": "5m",
+          "high": "15m",
+          "medium": "1h"
+        }
+      },
+      "enabled": true,
+      "priority": "critical"
+    }
+  ],
+  "global_config": {
+    "ai_engine": {
+      "primary": "semgrep_mcp",
+      "fallback": "eslint_security",
+      "confidence_threshold": 0.7,
+      "max_processing_time": 300
+    },
+    "performance": {
+      "max_concurrent_scans": 3,
+      "cache_results": true,
+      "cache_ttl": "1h",
+      "background_processing": true
+    },
+    "integration": {
+      "claude_code": true,
+      "multi_agent_coordination": true,
+      "dashboard_updates": true,
+      "metrics_collection": true
+    },
+    "security": {
+      "encrypt_reports": true,
+      "secure_credentials": true,
+      "audit_trail": true,
+      "privacy_preserving": true
+    }
+  },
+  "monitoring": {
+    "hook_performance": {
+      "execution_time_tracking": true,
+      "success_rate_monitoring": true,
+      "error_rate_alerting": true,
+      "performance_optimization": true
+    },
+    "ai_accuracy": {
+      "false_positive_tracking": true,
+      "validation_accuracy": true,
+      "learning_progress": true,
+      "improvement_metrics": true
+    }
+  },
+  "emergency_procedures": {
+    "ai_service_failure": {
+      "fallback_to_basic_rules": true,
+      "notify_administrators": true,
+      "graceful_degradation": true
+    },
+    "performance_degradation": {
+      "reduce_scan_scope": true,
+      "increase_timeout_limits": true,
+      "disable_non_critical_hooks": true
+    }
+  }
+}

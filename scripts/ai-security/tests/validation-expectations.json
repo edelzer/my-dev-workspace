@@ -1,0 +1,90 @@
+{
+  "accuracy_targets": {
+    "overall_accuracy": 0.95,
+    "false_positive_rate": 0.05,
+    "false_negative_rate": 0.03,
+    "confidence_threshold": 0.7
+  },
+  "per_vulnerability_type": {
+    "SQL_INJECTION": {
+      "test_cases": 2,
+      "expected_detections": 3,
+      "average_confidence_threshold": 0.75,
+      "max_false_positive_rate": 0.08
+    },
+    "XSS": {
+      "test_cases": 1,
+      "expected_detections": 3,
+      "average_confidence_threshold": 0.75,
+      "max_false_positive_rate": 0.08
+    },
+    "COMMAND_INJECTION": {
+      "test_cases": 1,
+      "expected_detections": 2,
+      "average_confidence_threshold": 0.75,
+      "max_false_positive_rate": 0.08
+    },
+    "PATH_TRAVERSAL": {
+      "test_cases": 1,
+      "expected_detections": 2,
+      "average_confidence_threshold": 0.75,
+      "max_false_positive_rate": 0.08
+    },
+    "INSECURE_RANDOM": {
+      "test_cases": 2,
+      "expected_detections": 2,
+      "average_confidence_threshold": 0.75,
+      "max_false_positive_rate": 0.08
+    },
+    "HARDCODED_SECRET": {
+      "test_cases": 1,
+      "expected_detections": 1,
+      "average_confidence_threshold": 0.75,
+      "max_false_positive_rate": 0.08
+    },
+    "WEAK_CRYPTO": {
+      "test_cases": 1,
+      "expected_detections": 2,
+      "average_confidence_threshold": 0.75,
+      "max_false_positive_rate": 0.08
+    },
+    "UNVALIDATED_REDIRECT": {
+      "test_cases": 1,
+      "expected_detections": 1,
+      "average_confidence_threshold": 0.75,
+      "max_false_positive_rate": 0.08
+    },
+    "AUTHENTICATION_BYPASS": {
+      "test_cases": 1,
+      "expected_detections": 2,
+      "average_confidence_threshold": 0.75,
+      "max_false_positive_rate": 0.08
+    }
+  },
+  "test_scenarios": [
+    {
+      "name": "high_confidence_detection",
+      "description": "Critical vulnerabilities should be detected with >90% confidence",
+      "criteria": "expected_vulnerabilities.severity === \"CRITICAL\"",
+      "target_confidence": 0.9
+    },
+    {
+      "name": "false_positive_filtering",
+      "description": "Test files and mock data should not trigger alerts",
+      "criteria": "filename.includes(\"false-positive\")",
+      "target_false_positive_rate": 0.1
+    },
+    {
+      "name": "framework_awareness",
+      "description": "Framework protections should reduce false positives",
+      "criteria": "filename.includes(\"framework\")",
+      "target_false_positive_rate": 0.15
+    },
+    {
+      "name": "context_understanding",
+      "description": "Complex code contexts should be properly analyzed",
+      "criteria": "metadata.complexity_score > 10",
+      "target_accuracy": 0.88
+    }
+  ]
+}
