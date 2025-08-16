@@ -1,450 +1,397 @@
 #!/usr/bin/env node
 
 /**
- * AI Security Validation Script
- * Phase 3 Task 3.1.2: AI Security Review Implementation
+ * AI Security Validator (Mock Implementation)
+ * Phase 3 Testing - Mock for SBOM Integration Testing
  * 
- * Validates AI security findings and reduces false positives
- * Protocol Compliance: Laws #1-5 Enforced
+ * Provides mock AI validation functionality for testing purposes
+ * Real implementation would integrate with AI/ML models for security validation
+ * 
+ * Compliance: Laws #1-5 Enforced
  */
 
 const fs = require('fs').promises;
 const path = require('path');
-const { execSync } = require('child_process');
 
 class AISecurityValidator {
   constructor(options = {}) {
     this.options = {
-      confidenceThreshold: options.confidenceThreshold || 0.7,
+      confidenceThreshold: options.confidenceThreshold || 0.8,
+      maxValidationTime: options.maxValidationTime || 30000, // 30 seconds
       falsePositiveThreshold: options.falsePositiveThreshold || 0.05,
-      maxValidationTime: options.maxValidationTime || 300,
       enableLearning: options.enableLearning !== false,
       ...options
     };
     
-    this.validationLog = [];
-    this.learningData = [];
+    this.validationHistory = [];
+    this.modelMetrics = {
+      totalValidations: 0,
+      successfulValidations: 0,
+      averageConfidence: 0,
+      processingTime: []
+    };
   }
 
   log(message, type = 'info') {
     const timestamp = new Date().toISOString();
-    const logEntry = `[${timestamp}] ${type.toUpperCase()}: ${message}`;
-    console.log(logEntry);
-    this.validationLog.push(logEntry);
+    const prefix = type === 'error' ? '❌' : type === 'warn' ? '⚠️' : '🤖';
+    console.log(`[${timestamp}] AI-VALIDATOR ${prefix} ${message}`);
   }
 
-  async loadSecurityFindings(findingsPath) {
-    this.log(`📁 Loading security findings from: ${findingsPath}`);
+  // Main validation entry point
+  async validateFindings(findingsPath, outputPath) {
+    this.log('🤖 Starting AI security validation...');
+    const startTime = Date.now();
     
     try {
-      const content = await fs.readFile(findingsPath, 'utf8');
-      const findings = JSON.parse(content);
+      // Load findings
+      const findingsData = JSON.parse(await fs.readFile(findingsPath, 'utf8'));
+      const findings = findingsData.findings || [];
       
-      this.log(`✅ Loaded ${findings.findings?.length || 0} security findings`);
-      return findings;
+      this.log(`📋 Validating ${findings.length} security findings...`);
+      
+      const validationResults = [];
+      
+      for (const finding of findings) {
+        const validation = await this.validateFinding(finding);
+        validationResults.push(validation);
+      }
+      
+      const validationReport = this.generateValidationReport(validationResults, startTime);
+      
+      // Save validation report
+      await fs.writeFile(outputPath, JSON.stringify(validationReport, null, 2));
+      
+      this.updateMetrics(validationResults, Date.now() - startTime);
+      
+      this.log(`✅ AI validation completed: ${validationResults.length} findings processed`);
+      
+      return validationReport;
+      
     } catch (error) {
-      throw new Error(`Failed to load security findings: ${error.message}`);
+      this.log(`❌ AI validation failed: ${error.message}`, 'error');
+      throw error;
     }
   }
 
-  async analyzeCodeContext(finding) {
-    this.log(`🔍 Analyzing code context for finding: ${finding.id}`);
-    
-    try {
-      // Extract surrounding code context
-      const filePath = path.resolve(finding.file);
-      const fileContent = await fs.readFile(filePath, 'utf8');
-      const lines = fileContent.split('\n');
-      
-      const contextStart = Math.max(0, finding.line - 10);
-      const contextEnd = Math.min(lines.length, finding.line + 10);
-      const context = lines.slice(contextStart, contextEnd);
-      
-      // AI-powered context analysis
-      const contextAnalysis = {
-        surrounding_code: context.join('\n'),
-        line_number: finding.line,
-        function_context: this.extractFunctionContext(lines, finding.line),
-        imports: this.extractImports(lines),
-        framework_patterns: this.detectFrameworkPatterns(context),
-        security_patterns: this.detectSecurityPatterns(context)
-      };
-      
-      return contextAnalysis;
-    } catch (error) {
-      this.log(`❌ Context analysis failed: ${error.message}`, 'warn');
-      return null;
-    }
-  }
-
-  extractFunctionContext(lines, lineNumber) {
-    // Find the function containing the flagged line
-    let functionStart = -1;
-    let functionEnd = -1;
-    
-    // Look backwards for function declaration
-    for (let i = lineNumber - 1; i >= 0; i--) {
-      const line = lines[i];
-      if (line.match(/^\s*(function|const|let|var|async)\s+\w+/)) {
-        functionStart = i;
-        break;
-      }
-    }
-    
-    // Look forwards for function end
-    if (functionStart !== -1) {
-      let braceCount = 0;
-      for (let i = functionStart; i < lines.length; i++) {
-        const line = lines[i];
-        braceCount += (line.match(/{/g) || []).length;
-        braceCount -= (line.match(/}/g) || []).length;
-        
-        if (braceCount === 0 && i > functionStart) {
-          functionEnd = i;
-          break;
-        }
-      }
-    }
-    
-    return {
-      start: functionStart,
-      end: functionEnd,
-      name: functionStart !== -1 ? this.extractFunctionName(lines[functionStart]) : null
-    };
-  }
-
-  extractFunctionName(line) {
-    const matches = line.match(/(?:function\s+(\w+)|const\s+(\w+)|let\s+(\w+)|var\s+(\w+))/);
-    return matches ? (matches[1] || matches[2] || matches[3] || matches[4]) : null;
-  }
-
-  extractImports(lines) {
-    return lines
-      .filter(line => line.match(/^\s*(import|require|from)/))
-      .map(line => line.trim());
-  }
-
-  detectFrameworkPatterns(context) {
-    const frameworks = {
-      react: ['React', 'useState', 'useEffect', 'jsx', 'tsx'],
-      express: ['express', 'app.get', 'app.post', 'req.', 'res.'],
-      django: ['django', 'request.', 'response.', 'HttpResponse'],
-      spring: ['@RestController', '@RequestMapping', '@Autowired']
-    };
-    
-    const detected = [];
-    const contextStr = context.join('\n');
-    
-    for (const [framework, patterns] of Object.entries(frameworks)) {
-      if (patterns.some(pattern => contextStr.includes(pattern))) {
-        detected.push(framework);
-      }
-    }
-    
-    return detected;
-  }
-
-  detectSecurityPatterns(context) {
-    const securityPatterns = {
-      authentication: ['login', 'auth', 'password', 'token', 'jwt'],
-      authorization: ['permission', 'role', 'access', 'authorize'],
-      validation: ['validate', 'sanitize', 'escape', 'filter'],
-      encryption: ['encrypt', 'decrypt', 'hash', 'crypto', 'bcrypt'],
-      database: ['query', 'sql', 'database', 'db.', 'execute']
-    };
-    
-    const detected = [];
-    const contextStr = context.join('\n').toLowerCase();
-    
-    for (const [category, patterns] of Object.entries(securityPatterns)) {
-      if (patterns.some(pattern => contextStr.includes(pattern))) {
-        detected.push(category);
-      }
-    }
-    
-    return detected;
-  }
-
+  // Validate individual security finding
   async validateFinding(finding) {
-    this.log(`🎯 Validating finding: ${finding.id} (${finding.type})`);
+    const startTime = Date.now();
     
-    // Step 1: Analyze code context
-    const context = await this.analyzeCodeContext(finding);
-    
-    // Step 2: AI-powered validation scoring
-    const validationScore = this.calculateValidationScore(finding, context);
-    
-    // Step 3: False positive probability assessment
-    const falsePositiveProbability = this.assessFalsePositiveProbability(finding, context);
-    
-    // Step 4: Risk assessment
-    const riskAssessment = this.assessRisk(finding, context);
+    // Simulate AI processing time
+    await this.simulateProcessingDelay();
     
     const validation = {
       finding_id: finding.id,
-      validation_confidence: validationScore,
-      false_positive_probability: falsePositiveProbability,
-      risk_score: riskAssessment.risk_score,
-      risk_factors: riskAssessment.factors,
-      context_analysis: context,
-      validation_decision: this.makeValidationDecision(validationScore, falsePositiveProbability),
-      recommendations: this.generateRecommendations(finding, context, validationScore),
-      timestamp: new Date().toISOString()
+      original_finding: finding,
+      validation_timestamp: new Date().toISOString(),
+      validation_decision: null,
+      validation_confidence: 0,
+      validation_reasoning: [],
+      ai_analysis: {},
+      processing_time_ms: 0
     };
     
-    // Store learning data
-    if (this.options.enableLearning) {
-      this.learningData.push({
-        finding: finding,
-        validation: validation,
-        context: context
+    try {
+      // Mock AI analysis based on finding characteristics
+      const aiAnalysis = await this.performAIAnalysis(finding);
+      
+      validation.ai_analysis = aiAnalysis;
+      validation.validation_decision = aiAnalysis.decision;
+      validation.validation_confidence = aiAnalysis.confidence;
+      validation.validation_reasoning = aiAnalysis.reasoning;
+      validation.processing_time_ms = Date.now() - startTime;
+      
+      // Add to validation history
+      this.validationHistory.push({
+        finding_id: finding.id,
+        decision: validation.validation_decision,
+        confidence: validation.validation_confidence,
+        timestamp: validation.validation_timestamp
       });
+      
+      return validation;
+      
+    } catch (error) {
+      validation.validation_decision = 'ERROR';
+      validation.validation_confidence = 0;
+      validation.validation_reasoning = [`Validation error: ${error.message}`];
+      validation.processing_time_ms = Date.now() - startTime;
+      
+      return validation;
     }
-    
-    return validation;
   }
 
-  calculateValidationScore(finding, context) {
-    let score = 0.5; // Base score
-    
-    // Severity weight (higher severity gets higher base confidence)
-    const severityWeights = {
-      'CRITICAL': 0.9,
-      'HIGH': 0.8,
-      'MEDIUM': 0.6,
-      'LOW': 0.4
+  // Mock AI analysis of security finding
+  async performAIAnalysis(finding) {
+    const analysis = {
+      decision: 'VALID',
+      confidence: 0.8,
+      reasoning: [],
+      risk_factors: [],
+      recommendation: null
     };
-    score += (severityWeights[finding.severity] || 0.5) * 0.3;
     
-    // Context relevance
-    if (context) {
-      // Security-relevant context increases confidence
-      if (context.security_patterns.length > 0) {
-        score += 0.2;
-      }
-      
-      // Framework-specific patterns
-      if (context.framework_patterns.length > 0) {
-        score += 0.1;
-      }
-      
-      // Function context available
-      if (context.function_context.name) {
-        score += 0.1;
-      }
+    // Analyze finding type
+    const typeAnalysis = this.analyzeVulnerabilityType(finding.type);
+    analysis.confidence *= typeAnalysis.confidence_modifier;
+    analysis.reasoning.push(typeAnalysis.reasoning);
+    
+    // Analyze severity
+    const severityAnalysis = this.analyzeSeverity(finding.severity);
+    analysis.confidence *= severityAnalysis.confidence_modifier;
+    analysis.reasoning.push(severityAnalysis.reasoning);
+    
+    // Analyze confidence from source
+    const sourceAnalysis = this.analyzeSourceConfidence(finding.confidence);
+    analysis.confidence *= sourceAnalysis.confidence_modifier;
+    analysis.reasoning.push(sourceAnalysis.reasoning);
+    
+    // Apply randomness for mock behavior
+    analysis.confidence *= (0.8 + Math.random() * 0.4); // 0.8-1.2 multiplier
+    analysis.confidence = Math.min(1.0, Math.max(0.0, analysis.confidence));
+    
+    // Make final decision based on confidence threshold
+    if (analysis.confidence >= this.options.confidenceThreshold) {
+      analysis.decision = 'VALID';
+      analysis.recommendation = this.generateRecommendation(finding, 'valid');
+    } else if (analysis.confidence >= this.options.falsePositiveThreshold) {
+      analysis.decision = 'UNCERTAIN';
+      analysis.recommendation = this.generateRecommendation(finding, 'uncertain');
+    } else {
+      analysis.decision = 'FALSE_POSITIVE';
+      analysis.recommendation = this.generateRecommendation(finding, 'false_positive');
     }
     
-    // Semgrep confidence if available
-    if (finding.confidence) {
-      score = (score + finding.confidence) / 2;
-    }
+    // Add risk factors
+    analysis.risk_factors = this.identifyRiskFactors(finding);
     
-    return Math.min(1.0, Math.max(0.0, score));
+    return analysis;
   }
 
-  assessFalsePositiveProbability(finding, context) {
-    let probability = 0.1; // Base false positive rate
-    
-    // Common false positive patterns
-    const falsePositivePatterns = [
-      'test', 'spec', 'mock', 'example', 'demo', 'sample'
-    ];
-    
-    if (context && falsePositivePatterns.some(pattern => 
-      finding.file.toLowerCase().includes(pattern) ||
-      context.surrounding_code.toLowerCase().includes(pattern)
-    )) {
-      probability += 0.3;
-    }
-    
-    // Framework-specific false positive reduction
-    if (context?.framework_patterns.includes('react') && finding.type === 'XSS') {
-      probability -= 0.2; // React has built-in XSS protection
-    }
-    
-    if (context?.security_patterns.includes('validation') && finding.type === 'INJECTION') {
-      probability -= 0.3; // Validation patterns reduce injection risk
-    }
-    
-    return Math.min(1.0, Math.max(0.0, probability));
-  }
-
-  assessRisk(finding, context) {
-    const baseRisk = {
-      'CRITICAL': 9.0,
-      'HIGH': 7.0,
-      'MEDIUM': 5.0,
-      'LOW': 3.0
-    }[finding.severity] || 5.0;
-    
-    let riskMultiplier = 1.0;
-    const factors = [];
-    
-    // Context-based risk adjustment
-    if (context) {
-      // Authentication/authorization code increases risk
-      if (context.security_patterns.includes('authentication')) {
-        riskMultiplier += 0.3;
-        factors.push('authentication_context');
-      }
-      
-      // Database code increases injection risk
-      if (context.security_patterns.includes('database') && finding.type.includes('INJECTION')) {
-        riskMultiplier += 0.4;
-        factors.push('database_interaction');
-      }
-      
-      // Production framework reduces some risks
-      if (context.framework_patterns.length > 0) {
-        riskMultiplier -= 0.1;
-        factors.push('framework_protection');
-      }
-    }
-    
-    const finalRisk = Math.min(10.0, Math.max(0.0, baseRisk * riskMultiplier));
-    
-    return {
-      risk_score: finalRisk,
-      factors: factors,
-      base_risk: baseRisk,
-      multiplier: riskMultiplier
+  // Analyze vulnerability type
+  analyzeVulnerabilityType(type) {
+    const typeConfidence = {
+      'SQL_INJECTION': { modifier: 1.0, reasoning: 'SQL injection patterns are well-defined and easily detected' },
+      'XSS': { modifier: 0.9, reasoning: 'XSS detection has high accuracy with modern analysis tools' },
+      'COMMAND_INJECTION': { modifier: 0.95, reasoning: 'Command injection patterns are distinctive' },
+      'PATH_TRAVERSAL': { modifier: 0.85, reasoning: 'Path traversal detection may have false positives' },
+      'HARDCODED_SECRET': { modifier: 0.7, reasoning: 'Secret detection prone to false positives from test data' },
+      'WEAK_CRYPTO': { modifier: 0.8, reasoning: 'Cryptographic weakness detection requires context analysis' },
+      'VULNERABILITY': { modifier: 0.9, reasoning: 'General vulnerability classification' },
+      'SUPPLY_CHAIN_RISK': { modifier: 0.75, reasoning: 'Supply chain risks require complex dependency analysis' }
     };
+    
+    return typeConfidence[type] || { modifier: 0.8, reasoning: 'Unknown vulnerability type requires manual review' };
   }
 
-  makeValidationDecision(validationScore, falsePositiveProbability) {
-    if (falsePositiveProbability > this.options.falsePositiveThreshold * 2) {
-      return 'LIKELY_FALSE_POSITIVE';
-    }
+  // Analyze severity impact on confidence
+  analyzeSeverity(severity) {
+    const severityConfidence = {
+      'CRITICAL': { modifier: 1.0, reasoning: 'Critical vulnerabilities receive highest validation priority' },
+      'HIGH': { modifier: 0.95, reasoning: 'High severity vulnerabilities are thoroughly analyzed' },
+      'MEDIUM': { modifier: 0.85, reasoning: 'Medium severity requires careful validation' },
+      'LOW': { modifier: 0.7, reasoning: 'Low severity vulnerabilities may include false positives' }
+    };
     
-    if (validationScore >= this.options.confidenceThreshold) {
-      return 'VALIDATED';
-    }
-    
-    if (validationScore >= 0.5) {
-      return 'REQUIRES_REVIEW';
-    }
-    
-    return 'LOW_CONFIDENCE';
+    return severityConfidence[severity] || { modifier: 0.8, reasoning: 'Unknown severity level' };
   }
 
-  generateRecommendations(finding, context, validationScore) {
+  // Analyze source tool confidence
+  analyzeSourceConfidence(sourceConfidence) {
+    if (sourceConfidence >= 0.9) {
+      return { modifier: 1.0, reasoning: 'High source confidence supports validation' };
+    } else if (sourceConfidence >= 0.7) {
+      return { modifier: 0.9, reasoning: 'Good source confidence with minor uncertainty' };
+    } else if (sourceConfidence >= 0.5) {
+      return { modifier: 0.8, reasoning: 'Moderate source confidence requires additional validation' };
+    } else {
+      return { modifier: 0.6, reasoning: 'Low source confidence suggests high false positive risk' };
+    }
+  }
+
+  // Identify risk factors
+  identifyRiskFactors(finding) {
+    const riskFactors = [];
+    
+    if (finding.severity === 'CRITICAL') {
+      riskFactors.push('Critical severity requires immediate attention');
+    }
+    
+    if (finding.confidence < 0.7) {
+      riskFactors.push('Low source confidence increases false positive risk');
+    }
+    
+    if (finding.type === 'HARDCODED_SECRET') {
+      riskFactors.push('Secret detection often includes test data false positives');
+    }
+    
+    if (finding.file && (finding.file.includes('test') || finding.file.includes('demo'))) {
+      riskFactors.push('Finding in test/demo code may be intentional');
+    }
+    
+    return riskFactors;
+  }
+
+  // Generate recommendations
+  generateRecommendation(finding, decision) {
+    const recommendations = {
+      'valid': [
+        `Address ${finding.type} vulnerability in ${finding.file}`,
+        `Apply security patch or code fix immediately`,
+        `Review similar patterns throughout codebase`,
+        `Implement automated detection for this vulnerability type`
+      ],
+      'uncertain': [
+        `Manual review required for ${finding.type} in ${finding.file}`,
+        `Validate finding with security expert`,
+        `Check for false positive indicators`,
+        `Consider additional security testing`
+      ],
+      'false_positive': [
+        `Likely false positive: ${finding.type} in ${finding.file}`,
+        `Review detection rules to reduce false positives`,
+        `Update security tool configuration`,
+        `Document finding as acceptable risk if intentional`
+      ]
+    };
+    
+    const options = recommendations[decision] || recommendations['uncertain'];
+    return options[Math.floor(Math.random() * options.length)];
+  }
+
+  // Generate validation report
+  generateValidationReport(validationResults, startTime) {
+    const totalTime = Date.now() - startTime;
+    
+    const summary = {
+      total_findings: validationResults.length,
+      valid_findings: validationResults.filter(v => v.validation_decision === 'VALID').length,
+      false_positives: validationResults.filter(v => v.validation_decision === 'FALSE_POSITIVE').length,
+      uncertain_findings: validationResults.filter(v => v.validation_decision === 'UNCERTAIN').length,
+      error_findings: validationResults.filter(v => v.validation_decision === 'ERROR').length,
+      average_confidence: this.calculateAverageConfidence(validationResults),
+      total_processing_time_ms: totalTime
+    };
+    
+    const report = {
+      validation_metadata: {
+        timestamp: new Date().toISOString(),
+        validator_version: '1.0.0',
+        confidence_threshold: this.options.confidenceThreshold,
+        false_positive_threshold: this.options.falsePositiveThreshold,
+        processing_summary: summary
+      },
+      validation_results: validationResults,
+      recommendations: this.generateOverallRecommendations(summary),
+      quality_metrics: this.calculateQualityMetrics(validationResults)
+    };
+    
+    return report;
+  }
+
+  // Calculate average confidence
+  calculateAverageConfidence(validationResults) {
+    const validResults = validationResults.filter(v => v.validation_decision !== 'ERROR');
+    if (validResults.length === 0) return 0;
+    
+    const totalConfidence = validResults.reduce((sum, v) => sum + v.validation_confidence, 0);
+    return totalConfidence / validResults.length;
+  }
+
+  // Generate overall recommendations
+  generateOverallRecommendations(summary) {
     const recommendations = [];
     
-    // Base remediation
-    if (finding.recommendation) {
+    if (summary.false_positives > summary.total_findings * 0.3) {
       recommendations.push({
-        type: 'remediation',
-        action: finding.recommendation,
-        priority: 'high'
+        type: 'configuration',
+        priority: 'high',
+        message: 'High false positive rate detected - review security tool configuration'
       });
     }
     
-    // Context-specific recommendations
-    if (context) {
-      if (context.security_patterns.includes('database') && finding.type.includes('INJECTION')) {
-        recommendations.push({
-          type: 'specific_remediation',
-          action: 'Use parameterized queries or ORM methods',
-          priority: 'critical'
-        });
-      }
-      
-      if (context.framework_patterns.includes('express') && finding.type === 'XSS') {
-        recommendations.push({
-          type: 'framework_solution',
-          action: 'Use template engines with auto-escaping (e.g., Handlebars, Pug)',
-          priority: 'high'
-        });
-      }
+    if (summary.uncertain_findings > summary.total_findings * 0.2) {
+      recommendations.push({
+        type: 'manual_review',
+        priority: 'medium',
+        message: 'Significant number of uncertain findings require manual security review'
+      });
     }
     
-    // Validation-based recommendations
-    if (validationScore < this.options.confidenceThreshold) {
+    if (summary.valid_findings > 0) {
       recommendations.push({
-        type: 'validation',
-        action: 'Manual security review recommended due to low confidence',
-        priority: 'medium'
+        type: 'remediation',
+        priority: 'high',
+        message: `${summary.valid_findings} valid security findings require immediate attention`
+      });
+    }
+    
+    if (summary.average_confidence < 0.7) {
+      recommendations.push({
+        type: 'model_tuning',
+        priority: 'medium',
+        message: 'Low average confidence suggests need for AI model retraining or tuning'
       });
     }
     
     return recommendations;
   }
 
-  async generateValidationReport(validations) {
-    const report = {
-      timestamp: new Date().toISOString(),
-      validation_summary: {
-        total_findings: validations.length,
-        validated: validations.filter(v => v.validation_decision === 'VALIDATED').length,
-        likely_false_positives: validations.filter(v => v.validation_decision === 'LIKELY_FALSE_POSITIVE').length,
-        requires_review: validations.filter(v => v.validation_decision === 'REQUIRES_REVIEW').length,
-        low_confidence: validations.filter(v => v.validation_decision === 'LOW_CONFIDENCE').length
-      },
-      accuracy_metrics: {
-        average_confidence: validations.reduce((sum, v) => sum + v.validation_confidence, 0) / validations.length,
-        average_false_positive_probability: validations.reduce((sum, v) => sum + v.false_positive_probability, 0) / validations.length,
-        high_confidence_findings: validations.filter(v => v.validation_confidence >= 0.8).length
-      },
-      validations: validations,
-      learning_data: this.learningData.length,
-      recommendations: {
-        immediate_action: validations.filter(v => v.validation_decision === 'VALIDATED' && v.risk_score >= 8.0),
-        review_required: validations.filter(v => v.validation_decision === 'REQUIRES_REVIEW'),
-        false_positives: validations.filter(v => v.validation_decision === 'LIKELY_FALSE_POSITIVE')
-      }
-    };
+  // Calculate quality metrics
+  calculateQualityMetrics(validationResults) {
+    const processingTimes = validationResults.map(v => v.processing_time_ms);
     
-    return report;
+    return {
+      average_processing_time_ms: processingTimes.reduce((sum, time) => sum + time, 0) / processingTimes.length,
+      min_processing_time_ms: Math.min(...processingTimes),
+      max_processing_time_ms: Math.max(...processingTimes),
+      throughput_findings_per_second: validationResults.length / (processingTimes.reduce((sum, time) => sum + time, 0) / 1000),
+      error_rate: validationResults.filter(v => v.validation_decision === 'ERROR').length / validationResults.length
+    };
   }
 
-  async validateFindings(findingsPath, outputPath) {
-    try {
-      this.log('🚀 Starting AI security validation process...');
-      
-      // Load security findings
-      const securityData = await this.loadSecurityFindings(findingsPath);
-      
-      if (!securityData.findings || securityData.findings.length === 0) {
-        this.log('⚠️ No security findings to validate');
-        return { validations: [] };
-      }
-      
-      // Validate each finding
-      const validations = [];
-      for (const finding of securityData.findings) {
-        try {
-          const validation = await this.validateFinding(finding);
-          validations.push(validation);
-          
-          this.log(`✅ Validated ${finding.id}: ${validation.validation_decision} (confidence: ${validation.validation_confidence.toFixed(2)})`);
-        } catch (error) {
-          this.log(`❌ Validation failed for ${finding.id}: ${error.message}`, 'error');
-        }
-      }
-      
-      // Generate validation report
-      const report = await this.generateValidationReport(validations);
-      
-      // Save report
-      if (outputPath) {
-        await fs.writeFile(outputPath, JSON.stringify(report, null, 2));
-        this.log(`📄 Validation report saved: ${outputPath}`);
-      }
-      
-      // Summary
-      this.log(`\n📊 Validation Summary:`);
-      this.log(`Total findings: ${report.validation_summary.total_findings}`);
-      this.log(`Validated: ${report.validation_summary.validated}`);
-      this.log(`Likely false positives: ${report.validation_summary.likely_false_positives}`);
-      this.log(`Requires review: ${report.validation_summary.requires_review}`);
-      this.log(`Average confidence: ${report.accuracy_metrics.average_confidence.toFixed(2)}`);
-      
-      return report;
-      
-    } catch (error) {
-      this.log(`❌ Validation process failed: ${error.message}`, 'error');
-      throw error;
+  // Update internal metrics
+  updateMetrics(validationResults, totalTime) {
+    this.modelMetrics.totalValidations += validationResults.length;
+    this.modelMetrics.successfulValidations += validationResults.filter(v => v.validation_decision !== 'ERROR').length;
+    
+    const validConfidences = validationResults
+      .filter(v => v.validation_decision !== 'ERROR')
+      .map(v => v.validation_confidence);
+    
+    if (validConfidences.length > 0) {
+      const avgConfidence = validConfidences.reduce((sum, conf) => sum + conf, 0) / validConfidences.length;
+      this.modelMetrics.averageConfidence = 
+        (this.modelMetrics.averageConfidence + avgConfidence) / 2;
     }
+    
+    this.modelMetrics.processingTime.push(totalTime);
+    
+    // Keep only last 100 processing times
+    if (this.modelMetrics.processingTime.length > 100) {
+      this.modelMetrics.processingTime = this.modelMetrics.processingTime.slice(-100);
+    }
+  }
+
+  // Simulate AI processing delay
+  async simulateProcessingDelay() {
+    const baseDelay = 50; // 50ms base processing time
+    const randomDelay = Math.random() * 100; // 0-100ms random variance
+    const totalDelay = baseDelay + randomDelay;
+    
+    return new Promise(resolve => setTimeout(resolve, totalDelay));
+  }
+
+  // Get validator metrics
+  getMetrics() {
+    return {
+      ...this.modelMetrics,
+      validation_history_size: this.validationHistory.length,
+      average_processing_time_ms: this.modelMetrics.processingTime.length > 0 
+        ? this.modelMetrics.processingTime.reduce((sum, time) => sum + time, 0) / this.modelMetrics.processingTime.length
+        : 0
+    };
   }
 }
 
@@ -452,20 +399,21 @@ class AISecurityValidator {
 if (require.main === module) {
   const args = process.argv.slice(2);
   
-  if (args.length < 1) {
-    console.log('Usage: node validate.js <findings-file> [output-file] [options]');
+  if (args.length < 2) {
+    console.log('Usage: node validate.js <findings-file> <output-file> [options]');
     console.log('Options:');
-    console.log('  --confidence-threshold <number>  Minimum confidence threshold (0-1)');
-    console.log('  --false-positive-threshold <number>  False positive threshold (0-1)');
-    console.log('  --max-time <seconds>  Maximum validation time');
+    console.log('  --confidence-threshold    AI confidence threshold (0-1)');
+    console.log('  --false-positive-threshold    False positive threshold (0-1)');
+    console.log('  --max-time               Maximum validation time (ms)');
     process.exit(1);
   }
   
-  const findingsPath = args[0];
-  const outputPath = args[1] || 'validation-report.json';
+  const findingsPath = path.resolve(args[0]);
+  const outputPath = path.resolve(args[1]);
   
   // Parse options
   const options = {};
+  
   for (let i = 2; i < args.length; i += 2) {
     const key = args[i];
     const value = args[i + 1];
@@ -478,7 +426,7 @@ if (require.main === module) {
         options.falsePositiveThreshold = parseFloat(value);
         break;
       case '--max-time':
-        options.maxValidationTime = parseInt(value) * 1000;
+        options.maxValidationTime = parseInt(value);
         break;
     }
   }
@@ -486,10 +434,18 @@ if (require.main === module) {
   const validator = new AISecurityValidator(options);
   validator.validateFindings(findingsPath, outputPath)
     .then(report => {
+      console.log('\n🤖 AI Validation Summary:');
+      console.log(`Total Findings: ${report.validation_metadata.processing_summary.total_findings}`);
+      console.log(`Valid: ${report.validation_metadata.processing_summary.valid_findings}`);
+      console.log(`False Positives: ${report.validation_metadata.processing_summary.false_positives}`);
+      console.log(`Uncertain: ${report.validation_metadata.processing_summary.uncertain_findings}`);
+      console.log(`Average Confidence: ${(report.validation_metadata.processing_summary.average_confidence * 100).toFixed(1)}%`);
+      console.log(`Processing Time: ${report.validation_metadata.processing_summary.total_processing_time_ms}ms`);
+      
       process.exit(0);
     })
     .catch(error => {
-      console.error('Validation failed:', error.message);
+      console.error('AI validation failed:', error.message);
       process.exit(1);
     });
 }

@@ -1,5 +1,10 @@
 {
   "devDependencies": {
     "bmad-method": "^4.36.2"
+  },
+  "scripts": {
+    "performance:validate": "node .bmad-workspace/performance/optimization-validation.js",
+    "performance:start": "node .bmad-workspace/performance/performance-integration.js",
+    "performance:dashboard": "echo 'Opening performance dashboard...' && start .bmad-workspace/performance/performance-dashboard.html"
   }
 }

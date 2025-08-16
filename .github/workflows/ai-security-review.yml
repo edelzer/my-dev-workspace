@@ -29,6 +29,20 @@ on:
         - high
         - medium
         - low
+      enable_sbom:
+        description: 'Generate SBOM and perform supply chain analysis'
+        required: false
+        default: true
+        type: boolean
+      sbom_formats:
+        description: 'SBOM output formats'
+        required: false
+        default: 'both'
+        type: choice
+        options:
+        - spdx
+        - cyclone
+        - both
 
 env:
   SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
@@ -47,6 +61,9 @@ jobs:
       high_count: ${{ steps.security-scan.outputs.high_count }}
       scan_status: ${{ steps.security-scan.outputs.scan_status }}
       report_url: ${{ steps.security-scan.outputs.report_url }}
+      sbom_generated: ${{ steps.sbom-generation.outputs.sbom_generated }}
+      supply_chain_risk: ${{ steps.sbom-analysis.outputs.supply_chain_risk }}
+      vulnerable_dependencies: ${{ steps.sbom-analysis.outputs.vulnerable_dependencies }}
     
     steps:
     - name: Checkout code
@@ -64,6 +81,17 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+    
+    - name: Setup Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.21'
     
     - name: Install Claude Code CLI
       run: |
@@ -95,23 +123,31 @@ jobs:
         # Determine scan parameters
         SCAN_SCOPE="${{ github.event.inputs.scan_scope || 'incremental' }}"
         SEVERITY_FILTER="${{ github.event.inputs.severity_filter || 'medium' }}"
+        ENABLE_SBOM="${{ github.event.inputs.enable_sbom || 'true' }}"
+        SBOM_FORMATS="${{ github.event.inputs.sbom_formats || 'both' }}"
+        
+        # Build SBOM flags
+        SBOM_FLAGS=""
+        if [[ "$ENABLE_SBOM" == "true" ]]; then
+          SBOM_FLAGS="--include-sbom --sbom-formats $SBOM_FORMATS"
+        fi
         
         # Execute AI security scan
-        echo "🔍 Starting AI security analysis..."
+        echo "🔍 Starting AI security analysis with SBOM integration..."
         
         if [[ "${{ github.event_name }}" == "pull_request" ]]; then
           # Incremental scan for PR - only changed files
           git diff --name-only origin/${{ github.base_ref }}...HEAD > changed_files.txt
-          claude ai-security-scan --files-from changed_files.txt --severity $SEVERITY_FILTER --format json > security-report.json
+          claude ai-security-scan --files-from changed_files.txt --severity $SEVERITY_FILTER $SBOM_FLAGS --format json > security-report.json
         elif [[ "$SCAN_SCOPE" == "full" ]]; then
           # Full codebase scan
-          claude ai-security-scan --severity $SEVERITY_FILTER --format json > security-report.json
+          claude ai-security-scan --severity $SEVERITY_FILTER $SBOM_FLAGS --format json > security-report.json
         elif [[ "$SCAN_SCOPE" == "critical-only" ]]; then
           # Critical issues only
-          claude ai-security-scan --severity critical --format json > security-report.json
+          claude ai-security-scan --severity critical $SBOM_FLAGS --format json > security-report.json
         else
           # Incremental scan (default)
-          claude ai-security-scan --incremental --severity $SEVERITY_FILTER --format json > security-report.json
+          claude ai-security-scan --incremental --severity $SEVERITY_FILTER $SBOM_FLAGS --format json > security-report.json
         fi
         
         # Parse results
@@ -138,6 +174,59 @@ jobs:
         echo "📊 Total findings: $TOTAL_FINDINGS (Critical: $CRITICAL_COUNT, High: $HIGH_COUNT)"
       env:
         SEMGREP_APP_TOKEN: ${{ env.SEMGREP_APP_TOKEN }}
+    
+    - name: SBOM Generation
+      id: sbom-generation
+      if: github.event.inputs.enable_sbom != 'false'
+      run: |
+        echo "📋 Generating Software Bill of Materials (SBOM)..."
+        
+        # Create SBOM output directory
+        mkdir -p ./sbom-artifacts
+        
+        # Generate SBOM using our SBOM generator
+        SBOM_FORMATS="${{ github.event.inputs.sbom_formats || 'both' }}"
+        
+        if [[ "$SBOM_FORMATS" == "both" ]]; then
+          claude ai-security-sbom --output-dir ./sbom-artifacts --formats spdx,cyclone --supply-chain-analysis --vulnerability-scan
+        else
+          claude ai-security-sbom --output-dir ./sbom-artifacts --formats $SBOM_FORMATS --supply-chain-analysis --vulnerability-scan
+        fi
+        
+        # Verify SBOM files were generated
+        SBOM_FILES=$(find ./sbom-artifacts -name "*.json" | wc -l)
+        
+        echo "sbom_generated=true" >> $GITHUB_OUTPUT
+        echo "sbom_files_count=$SBOM_FILES" >> $GITHUB_OUTPUT
+        echo "sbom_formats=$SBOM_FORMATS" >> $GITHUB_OUTPUT
+        
+        echo "✅ SBOM generation completed: $SBOM_FILES files generated"
+    
+    - name: SBOM Supply Chain Analysis
+      id: sbom-analysis
+      if: steps.sbom-generation.outputs.sbom_generated == 'true'
+      run: |
+        echo "🔗 Performing supply chain security analysis..."
+        
+        # Run comprehensive supply chain analysis
+        claude ai-security-supply-chain --sbom-file ./sbom-artifacts/sbom-spdx.json --remediation-plan --include-licenses > supply-chain-report.json
+        
+        # Extract supply chain metrics
+        SUPPLY_CHAIN_RISK=$(jq -r '.executive_summary.overallRiskLevel // "UNKNOWN"' supply-chain-report.json)
+        VULNERABLE_DEPS=$(jq -r '.vulnerability_assessment.total // 0' supply-chain-report.json)
+        RISKY_PACKAGES=$(jq -r '.supply_chain_security.riskyPackages | length // 0' supply-chain-report.json)
+        LICENSE_ISSUES=$(jq -r '.supply_chain_security.licenseIssues | length // 0' supply-chain-report.json)
+        
+        echo "supply_chain_risk=$SUPPLY_CHAIN_RISK" >> $GITHUB_OUTPUT
+        echo "vulnerable_dependencies=$VULNERABLE_DEPS" >> $GITHUB_OUTPUT
+        echo "risky_packages=$RISKY_PACKAGES" >> $GITHUB_OUTPUT
+        echo "license_issues=$LICENSE_ISSUES" >> $GITHUB_OUTPUT
+        
+        echo "🔍 Supply Chain Analysis Results:"
+        echo "  - Overall Risk Level: $SUPPLY_CHAIN_RISK"
+        echo "  - Vulnerable Dependencies: $VULNERABLE_DEPS"
+        echo "  - Risky Packages: $RISKY_PACKAGES"
+        echo "  - License Issues: $LICENSE_ISSUES"
     
     - name: AI Validation Engine
       id: ai-validation
@@ -186,11 +275,17 @@ jobs:
       run: |
         echo "📋 Generating comprehensive security report..."
         
+        # Build report flags
+        REPORT_FLAGS="--format html --include-trends"
+        if [[ "${{ steps.sbom-generation.outputs.sbom_generated }}" == "true" ]]; then
+          REPORT_FLAGS="$REPORT_FLAGS --include-sbom --supply-chain-details"
+        fi
+        
         # Generate HTML report for dashboard
-        claude ai-security-report --format html --include-trends > security-dashboard.html
+        claude ai-security-report $REPORT_FLAGS > security-dashboard.html
         
         # Generate markdown report for PR comments
-        claude ai-security-report --format markdown > security-summary.md
+        claude ai-security-report --format markdown --include-sbom > security-summary.md
         
         # Store report URL (would be actual URL in real implementation)
         echo "report_url=https://security-dashboard.example.com/reports/${{ github.run_id }}" >> $GITHUB_OUTPUT
@@ -204,25 +299,53 @@ jobs:
           validation-report.json
           security-dashboard.html
           security-summary.md
+          supply-chain-report.json
         retention-days: 30
+    
+    - name: Upload SBOM Artifacts
+      if: steps.sbom-generation.outputs.sbom_generated == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: sbom-artifacts-${{ github.run_id }}
+        path: |
+          sbom-artifacts/
+        retention-days: 90  # Longer retention for compliance
     
     - name: Update Security Dashboard
       run: |
         echo "📊 Updating security dashboard metrics..."
         
+        # Build dashboard payload with SBOM metrics
+        DASHBOARD_PAYLOAD='{
+          "run_id": "${{ github.run_id }}",
+          "repository": "${{ github.repository }}",
+          "branch": "${{ github.ref_name }}",
+          "critical_count": ${{ steps.security-scan.outputs.critical_count }},
+          "high_count": ${{ steps.security-scan.outputs.high_count }},
+          "scan_status": "${{ steps.security-scan.outputs.scan_status }}",
+          "validation_confidence": "${{ steps.ai-validation.outputs.validation_confidence }}",
+          "timestamp": "${{ github.event.head_commit.timestamp }}"'
+        
+        # Add SBOM metrics if available
+        if [[ "${{ steps.sbom-generation.outputs.sbom_generated }}" == "true" ]]; then
+          DASHBOARD_PAYLOAD=$(echo "$DASHBOARD_PAYLOAD" | jq '. + {
+            "sbom_generated": true,
+            "supply_chain_risk": "${{ steps.sbom-analysis.outputs.supply_chain_risk }}",
+            "vulnerable_dependencies": ${{ steps.sbom-analysis.outputs.vulnerable_dependencies }},
+            "risky_packages": ${{ steps.sbom-analysis.outputs.risky_packages }},
+            "license_issues": ${{ steps.sbom-analysis.outputs.license_issues }},
+            "sbom_formats": "${{ steps.sbom-generation.outputs.sbom_formats }}"
+          }')
+        else
+          DASHBOARD_PAYLOAD=$(echo "$DASHBOARD_PAYLOAD" | jq '. + {"sbom_generated": false}')
+        fi
+        
+        DASHBOARD_PAYLOAD=$(echo "$DASHBOARD_PAYLOAD" | jq '. + {}}')  # Close the JSON
+        
         # Update dashboard with latest metrics (implementation specific)
         curl -X POST "${{ secrets.SECURITY_DASHBOARD_WEBHOOK }}" \
           -H "Content-Type: application/json" \
-          -d '{
-            "run_id": "${{ github.run_id }}",
-            "repository": "${{ github.repository }}",
-            "branch": "${{ github.ref_name }}",
-            "critical_count": ${{ steps.security-scan.outputs.critical_count }},
-            "high_count": ${{ steps.security-scan.outputs.high_count }},
-            "scan_status": "${{ steps.security-scan.outputs.scan_status }}",
-            "validation_confidence": "${{ steps.ai-validation.outputs.validation_confidence }}",
-            "timestamp": "${{ github.event.head_commit.timestamp }}"
-          }' || echo "Dashboard update failed (non-critical)"
+          -d "$DASHBOARD_PAYLOAD" || echo "Dashboard update failed (non-critical)"
 
   security-gate:
     name: Security Gate Validation
@@ -236,20 +359,32 @@ jobs:
         CRITICAL_COUNT="${{ needs.ai-security-analysis.outputs.critical_count }}"
         HIGH_COUNT="${{ needs.ai-security-analysis.outputs.high_count }}"
         SCAN_STATUS="${{ needs.ai-security-analysis.outputs.scan_status }}"
+        SUPPLY_CHAIN_RISK="${{ needs.ai-security-analysis.outputs.supply_chain_risk }}"
+        VULNERABLE_DEPS="${{ needs.ai-security-analysis.outputs.vulnerable_dependencies }}"
         
         echo "🚪 Security Gate Evaluation:"
         echo "  - Critical Issues: $CRITICAL_COUNT"
         echo "  - High Issues: $HIGH_COUNT"
         echo "  - Scan Status: $SCAN_STATUS"
+        echo "  - Supply Chain Risk: $SUPPLY_CHAIN_RISK"
+        echo "  - Vulnerable Dependencies: $VULNERABLE_DEPS"
         
-        # Security gate logic
+        # Security gate logic with SBOM considerations
         if [[ "$SCAN_STATUS" == "critical_found" ]]; then
           echo "❌ SECURITY GATE FAILED: Critical security issues must be resolved"
           echo "Critical security vulnerabilities block deployment and merge"
           exit 1
+        elif [[ "$SUPPLY_CHAIN_RISK" == "CRITICAL" ]]; then
+          echo "❌ SECURITY GATE FAILED: Critical supply chain risks detected"
+          echo "Critical supply chain vulnerabilities block deployment and merge"
+          exit 1
         elif [[ "$SCAN_STATUS" == "high_found" ]] && [[ "${{ github.event_name }}" == "push" ]] && [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
           echo "⚠️ SECURITY GATE WARNING: High severity issues found on main branch"
           echo "High severity issues on main branch require immediate attention"
+          # Allow but create tracking issue
+        elif [[ "$SUPPLY_CHAIN_RISK" == "HIGH" ]] && [[ "${{ github.event_name }}" == "push" ]] && [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+          echo "⚠️ SECURITY GATE WARNING: High supply chain risk on main branch"
+          echo "High supply chain risks on main branch require immediate attention"
           # Allow but create tracking issue
         else
           echo "✅ SECURITY GATE PASSED: No blocking security issues found"
@@ -263,8 +398,21 @@ jobs:
           const criticalCount = '${{ needs.ai-security-analysis.outputs.critical_count }}';
           const highCount = '${{ needs.ai-security-analysis.outputs.high_count }}';
           const reportUrl = '${{ needs.ai-security-analysis.outputs.report_url }}';
+          const supplyChainRisk = '${{ needs.ai-security-analysis.outputs.supply_chain_risk }}';
+          const vulnerableDeps = '${{ needs.ai-security-analysis.outputs.vulnerable_dependencies }}';
+          const sbomGenerated = '${{ needs.ai-security-analysis.outputs.sbom_generated }}';
           
           const issueTitle = `🔒 Security Review: ${criticalCount} Critical, ${highCount} High Severity Issues`;
+          
+          let sbomSection = '';
+          if (sbomGenerated === 'true') {
+            sbomSection = `
+          **Supply Chain Analysis:**
+          - Supply Chain Risk Level: ${supplyChainRisk}
+          - Vulnerable Dependencies: ${vulnerableDeps}
+          - SBOM Generated: ✅ Available in workflow artifacts`;
+          }
+          
           const issueBody = `
           ## AI Security Analysis Results
           
@@ -272,18 +420,22 @@ jobs:
           - Critical Issues: ${criticalCount}
           - High Severity Issues: ${highCount}
           - Workflow Run: [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          ${sbomSection}
           
           **Next Steps:**
           1. Review detailed findings in the security report
           2. Address critical issues immediately
           3. Plan remediation for high severity issues
-          4. Update security policies if needed
+          4. Review supply chain vulnerabilities
+          5. Update security policies if needed
           
           **AI Analysis:**
           This issue was automatically created by the AI-powered security review system.
           Multi-agent validation has been applied to reduce false positives.
           
-          **Report:** ${reportUrl}
+          **Artifacts:**
+          - Security Report: ${reportUrl}
+          - SBOM Files: Available in workflow artifacts (90-day retention)
           
           /cc @security-team
           `;
@@ -316,6 +468,9 @@ jobs:
           const criticalCount = '${{ needs.ai-security-analysis.outputs.critical_count }}';
           const highCount = '${{ needs.ai-security-analysis.outputs.high_count }}';
           const scanStatus = '${{ needs.ai-security-analysis.outputs.scan_status }}';
+          const supplyChainRisk = '${{ needs.ai-security-analysis.outputs.supply_chain_risk }}';
+          const vulnerableDeps = '${{ needs.ai-security-analysis.outputs.vulnerable_dependencies }}';
+          const sbomGenerated = '${{ needs.ai-security-analysis.outputs.sbom_generated }}';
           
           // Read the markdown report
           let reportContent = '';
@@ -328,6 +483,18 @@ jobs:
           const statusEmoji = scanStatus === 'clean' ? '✅' : 
                              scanStatus === 'high_found' ? '⚠️' : '❌';
           
+          let sbomInfo = '';
+          if (sbomGenerated === 'true') {
+            const riskEmoji = supplyChainRisk === 'CRITICAL' ? '❌' :
+                            supplyChainRisk === 'HIGH' ? '⚠️' :
+                            supplyChainRisk === 'MEDIUM' ? '🟡' : '✅';
+            sbomInfo = `
+          **📋 Supply Chain Analysis:**
+          - Risk Level: ${riskEmoji} ${supplyChainRisk}
+          - Vulnerable Dependencies: ${vulnerableDeps}
+          - SBOM Generated: ✅ SPDX 2.3 + CycloneDX formats`;
+          }
+          
           const commentBody = `
           ## ${statusEmoji} AI Security Review Results
           
@@ -335,13 +502,14 @@ jobs:
           - Critical Issues: ${criticalCount}
           - High Severity Issues: ${highCount}
           - Overall Status: ${scanStatus.replace('_', ' ').toUpperCase()}
+          ${sbomInfo}
           
           ${reportContent}
           
           ---
           
           🤖 This comment was generated by the AI-powered security review system.
-          Multi-agent validation applied | Laws #1-5 Protocol Compliant
+          Multi-agent validation applied | Laws #1-5 Protocol Compliant | SBOM Integration Active
           `;
           
           await github.rest.issues.createComment({

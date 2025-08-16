@@ -39,7 +39,9 @@
       "Bash(npm run:*)",
       "Bash(find:*)",
       "WebFetch(domain:docs.spring.io)",
-      "WebFetch(domain:spotbugs.github.io)"
+      "WebFetch(domain:spotbugs.github.io)",
+      "Bash(move:*)",
+      "Bash(robocopy:*)"
     ],
     "deny": []
   },

@@ -1,0 +1,42 @@
+{
+  "agents": {
+    "test-agent": {
+      "tasksCompleted": 1,
+      "avgDuration": 1000,
+      "successRate": 100,
+      "errorCount": 0,
+      "lastActive": "2025-08-16T22:04:51.150Z",
+      "specializations": [],
+      "performance": {
+        "speed": 3600,
+        "quality": 100,
+        "reliability": 100
+      }
+    }
+  },
+  "workflows": {},
+  "performance": {
+    "avgResponseTime": 0,
+    "avgTaskDuration": 0,
+    "successRate": 100,
+    "errorRate": 0,
+    "throughput": 0
+  },
+  "quality": {
+    "codeQuality": 0,
+    "testCoverage": 0,
+    "securityCompliance": 0,
+    "documentationCoverage": 0
+  },
+  "collaboration": {
+    "handoffSuccess": 100,
+    "communicationEfficiency": 100,
+    "conflictResolution": 100,
+    "resourceUtilization": 0
+  },
+  "trends": {
+    "daily": [],
+    "weekly": [],
+    "monthly": []
+  }
+}

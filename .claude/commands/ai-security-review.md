@@ -35,6 +35,8 @@ claude ai-security-report [--format json|html|markdown]
 - `--severity`: Filter by severity level (critical|high|medium|low)
 - `--language`: Target specific language (js|ts|py|java|go)
 - `--ruleset`: Use specific ruleset (security|performance|quality)
+- `--include-sbom`: Generate SBOM and perform supply chain analysis
+- `--sbom-formats`: SBOM output formats (spdx|cyclone|both) (default: both)
 
 **Output**:
 ```json
@@ -69,6 +71,19 @@ claude ai-security-report [--format json|html|markdown]
     "false_positive_rate": 0.03,
     "validation_confidence": 0.97,
     "agent_review_required": true
+  },
+  "sbom_analysis": {
+    "enabled": true,
+    "total_dependencies": 245,
+    "vulnerable_dependencies": 3,
+    "supply_chain_risk": "MEDIUM",
+    "sbom_formats_generated": ["spdx", "cyclone"],
+    "vulnerability_summary": {
+      "critical": 1,
+      "high": 2,
+      "medium": 5,
+      "low": 8
+    }
   }
 }
 ```
@@ -99,6 +114,40 @@ ai-security-validate → security-specialist → AI Analysis → spec-reviewer �
 - `--format`: Output format (json|html|markdown)
 - `--period`: Time period for analysis (day|week|month)
 - `--include-trends`: Include AI learning and improvement trends
+- `--include-sbom`: Include SBOM analysis in report
+- `--supply-chain-details`: Include detailed supply chain risk analysis
+
+### 4. ai-security-sbom
+
+**Purpose**: Generate and analyze Software Bill of Materials (SBOM)  
+**Integration**: SBOM-Generator + Supply Chain Analysis + AI Validation  
+**Duration**: 1-2 minutes  
+
+**Parameters**:
+- `path` (optional): Project directory to analyze (default: current directory)
+- `--formats`: SBOM output formats (spdx|cyclone|both) (default: both)
+- `--output-dir`: Directory for SBOM output files
+- `--include-dev`: Include development dependencies (default: true)
+- `--vulnerability-scan`: Perform vulnerability analysis (default: true)
+- `--supply-chain-analysis`: Perform supply chain risk analysis (default: true)
+- `--ai-validation`: Enable AI-powered validation (default: true)
+
+**Agent Workflow**:
+```
+ai-security-sbom → SBOM-Generator → Supply Chain Analysis → security-specialist → AI Risk Analysis → spec-validator → Final Report
+```
+
+### 5. ai-security-supply-chain
+
+**Purpose**: Comprehensive supply chain security analysis  
+**Integration**: SBOM Analysis + Vulnerability Database + AI Risk Assessment  
+**Duration**: 2-5 minutes  
+
+**Parameters**:
+- `--sbom-file`: Use existing SBOM file for analysis
+- `--risk-threshold`: Supply chain risk threshold (1-10) (default: 7.0)
+- `--include-licenses`: Include license compliance analysis (default: true)
+- `--remediation-plan`: Generate automated remediation recommendations (default: true)
 
 ## Integration Points
 
@@ -146,19 +195,23 @@ fi
 **Pull Request Integration**:
 ```yaml
 # GitHub Actions integration
-- name: AI Security Review
+- name: AI Security Review with SBOM
   run: |
-    claude ai-security-scan --format json > security-report.json
+    claude ai-security-scan --include-sbom --format json > security-report.json
+    claude ai-security-sbom --output-dir ./security-artifacts
     claude ai-security-validate --auto-fix
+    claude ai-security-supply-chain --remediation-plan
 ```
 
 ### CI/CD Integration
 
 **Pipeline Integration Points**:
-1. **Pre-deployment Security Gate**: AI security validation before deployment
-2. **Continuous Monitoring**: Real-time security posture assessment
+1. **Pre-deployment Security Gate**: AI security validation + SBOM generation before deployment
+2. **Continuous Monitoring**: Real-time security posture assessment + supply chain monitoring
 3. **Automated Remediation**: AI-suggested fixes and auto-PR creation
-4. **Security Dashboard**: Real-time metrics and trend analysis
+4. **Security Dashboard**: Real-time metrics and trend analysis + SBOM compliance tracking
+5. **SBOM Artifact Management**: Store and version SBOMs for compliance and audit trails
+6. **Supply Chain Alerting**: Real-time notifications for dependency vulnerabilities
 
 ## AI Validation Engine
 
@@ -281,6 +334,21 @@ claude ai-security-scan
 
 # Scan specific file with high severity filter
 claude ai-security-scan src/auth/login.js --severity critical,high
+
+# Scan with SBOM generation and supply chain analysis
+claude ai-security-scan --include-sbom --sbom-formats both
+```
+
+### SBOM Generation and Analysis
+```bash
+# Generate SBOM for current project
+claude ai-security-sbom
+
+# Generate SBOM with comprehensive analysis
+claude ai-security-sbom --output-dir ./security-reports --supply-chain-analysis
+
+# Analyze existing SBOM file
+claude ai-security-supply-chain --sbom-file ./sbom-spdx.json --remediation-plan
 ```
 
 ### Advanced Validation
@@ -288,17 +356,23 @@ claude ai-security-scan src/auth/login.js --severity critical,high
 # Validate specific finding with AI analysis
 claude ai-security-validate FIND-001 --context --auto-fix
 
-# Generate comprehensive security report
-claude ai-security-report --format html --include-trends
+# Generate comprehensive security report with SBOM
+claude ai-security-report --format html --include-sbom --supply-chain-details
 ```
 
 ### Integration Examples
 ```bash
-# Pre-commit security check
-git config hooks.pre-commit "claude ai-security-scan --severity critical"
+# Pre-commit security check with SBOM
+git config hooks.pre-commit "claude ai-security-scan --include-sbom --severity critical"
 
-# CI/CD integration
-claude ai-security-scan --format json | jq '.summary.critical' > critical-count.txt
+# CI/CD integration with supply chain monitoring
+claude ai-security-scan --include-sbom --format json | jq '.summary.critical' > critical-count.txt
+claude ai-security-sbom --output-dir ./artifacts --formats both
+
+# Full security pipeline
+claude ai-security-scan --include-sbom && \
+claude ai-security-supply-chain --remediation-plan && \
+claude ai-security-report --include-sbom --format json
 ```
 
 ## Troubleshooting
@@ -313,13 +387,30 @@ claude ai-security-scan --test-connection
 ```
 
 ### Support and Documentation
-- See `.claude/mcp/semgrep-config.json` for configuration details
-- Check `docs/ai-security-implementation.md` for implementation guide
+- See `.claude/mcp/semgrep-config.json` for security scanning configuration
+- Check `config/sbom-config.json` for SBOM generation settings
+- Review `docs/ai-security-implementation.md` for implementation guide
+- Reference `scripts/sbom/` for SBOM generation tools
 - Contact security-specialist agent for complex security questions
+- Use spec-validator agent for SBOM compliance validation
+
+### SBOM-Specific Troubleshooting
+```bash
+# Test SBOM generation
+claude ai-security-sbom --output-dir ./test-sbom --formats spdx
+
+# Validate SBOM format
+claude ai-security-supply-chain --sbom-file ./test-sbom/sbom-spdx.json
+
+# Debug dependency detection
+node scripts/sbom/generator.js . ./debug-output --verbose
+```
 
 ---
 
 **Command Status**: Production Ready  
-**Integration Level**: Full Multi-Agent Orchestration  
-**Security Compliance**: Laws #1-5 Fully Implemented  
-**Performance**: Optimized for 15-30 second response times
+**Integration Level**: Full Multi-Agent Orchestration + SBOM Generation  
+**Security Compliance**: Laws #1-5 Fully Implemented + Supply Chain Security  
+**Performance**: Optimized for 15-30 second response times (SBOM: 1-2 minutes)  
+**SBOM Standards**: SPDX 2.3 + CycloneDX 1.4 Support  
+**Package Managers**: npm, Python (pip), Java (gradle), Go (modules)

@@ -1,0 +1,367 @@
+{
+  "sbom_configuration": {
+    "version": "1.0.0",
+    "description": "SBOM Generation Configuration for BMAD Workspace",
+    "last_updated": "2025-08-16T00:00:00Z",
+    "generator": {
+      "name": "BMAD-SBOM-Generator",
+      "version": "1.0.0",
+      "vendor": "BMAD-Workspace"
+    }
+  },
+  
+  "output_formats": {
+    "default_formats": ["spdx", "cyclone"],
+    "spdx": {
+      "version": "2.3",
+      "enabled": true,
+      "filename_pattern": "sbom-spdx.json",
+      "data_license": "CC0-1.0",
+      "namespace_template": "https://sbom.bmad.workspace.com/{project_name}-{version}",
+      "include_files_analyzed": false,
+      "include_relationships": true
+    },
+    "cyclone_dx": {
+      "version": "1.4",
+      "enabled": true,
+      "filename_pattern": "sbom-cyclone.json",
+      "include_vulnerabilities": true,
+      "include_licenses": true,
+      "include_tools": true
+    }
+  },
+  
+  "package_managers": {
+    "npm": {
+      "enabled": true,
+      "manifest_files": ["package.json", "package-lock.json", "yarn.lock"],
+      "include_dev_dependencies": true,
+      "include_peer_dependencies": false,
+      "registry_url": "https://registry.npmjs.org/",
+      "purl_namespace": "npm",
+      "license_detection": {
+        "enabled": true,
+        "sources": ["manifest", "registry"]
+      }
+    },
+    "python": {
+      "enabled": true,
+      "manifest_files": ["pyproject.toml", "requirements.txt", "setup.py", "poetry.lock", "Pipfile"],
+      "include_dev_dependencies": true,
+      "registry_url": "https://pypi.org/",
+      "purl_namespace": "pypi",
+      "license_detection": {
+        "enabled": true,
+        "sources": ["manifest", "registry"]
+      }
+    },
+    "java": {
+      "enabled": true,
+      "manifest_files": ["build.gradle", "pom.xml", "gradle.lockfile"],
+      "include_test_dependencies": true,
+      "registry_urls": ["https://repo1.maven.org/maven2/"],
+      "purl_namespace": "maven",
+      "license_detection": {
+        "enabled": true,
+        "sources": ["manifest", "registry"]
+      }
+    },
+    "go": {
+      "enabled": true,
+      "manifest_files": ["go.mod", "go.sum"],
+      "include_indirect_dependencies": true,
+      "registry_url": "https://proxy.golang.org/",
+      "purl_namespace": "golang",
+      "license_detection": {
+        "enabled": true,
+        "sources": ["manifest", "registry"]
+      }
+    }
+  },
+  
+  "validation_rules": {
+    "enabled": true,
+    "strict_mode": false,
+    "required_fields": {
+      "spdx": ["spdxVersion", "dataLicense", "SPDXID", "name", "packages", "relationships"],
+      "cyclone": ["bomFormat", "specVersion", "version", "metadata", "components"]
+    },
+    "package_validation": {
+      "require_version": true,
+      "require_purl": true,
+      "validate_purl_format": true,
+      "require_license": false,
+      "max_components": 10000
+    },
+    "license_validation": {
+      "validate_spdx_ids": true,
+      "allow_unknown_licenses": true,
+      "require_license_text": false
+    }
+  },
+  
+  "supply_chain_analysis": {
+    "enabled": true,
+    "vulnerability_scanning": {
+      "enabled": true,
+      "databases": ["osv", "nvd", "ghsa"],
+      "severity_threshold": "LOW",
+      "include_unpatched": true,
+      "include_disputed": false
+    },
+    "risk_assessment": {
+      "enabled": true,
+      "risk_threshold": 7.0,
+      "factors": {
+        "package_age": {
+          "weight": 0.2,
+          "consider_pre_release": true
+        },
+        "maintainership": {
+          "weight": 0.3,
+          "consider_activity": true
+        },
+        "popularity": {
+          "weight": 0.2,
+          "consider_downloads": true
+        },
+        "security_history": {
+          "weight": 0.3,
+          "consider_cve_count": true
+        }
+      }
+    },
+    "license_compliance": {
+      "enabled": true,
+      "allowed_licenses": [
+        "MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", 
+        "ISC", "GPL-2.0", "GPL-3.0", "LGPL-2.1", "LGPL-3.0",
+        "MPL-2.0", "CC0-1.0", "Unlicense"
+      ],
+      "blocked_licenses": [
+        "AGPL-3.0", "GPL-3.0-only", "SSPL-1.0"
+      ],
+      "warn_on_unknown": true,
+      "require_license_compatibility": false
+    }
+  },
+  
+  "ai_integration": {
+    "enabled": true,
+    "confidence_threshold": 0.8,
+    "false_positive_threshold": 0.05,
+    "validation_engine": {
+      "enabled": true,
+      "context_analysis": true,
+      "framework_awareness": true,
+      "learning_enabled": true
+    },
+    "risk_analysis": {
+      "enabled": true,
+      "supply_chain_risk_threshold": 7.0,
+      "vulnerability_risk_threshold": 8.0,
+      "license_risk_threshold": 6.0
+    },
+    "remediation": {
+      "auto_suggestions": true,
+      "generate_fix_prs": false,
+      "prioritize_critical": true
+    }
+  },
+  
+  "output_configuration": {
+    "directory": "./sbom-output",
+    "file_naming": {
+      "include_timestamp": false,
+      "include_git_hash": false,
+      "include_project_version": true
+    },
+    "compression": {
+      "enabled": false,
+      "format": "gzip"
+    },
+    "retention": {
+      "local_files": "30d",
+      "artifact_storage": "90d",
+      "compliance_archive": "7y"
+    }
+  },
+  
+  "compliance_frameworks": {
+    "enabled": true,
+    "frameworks": {
+      "nist_ssdf": {
+        "enabled": true,
+        "requirements": [
+          "Software Bill of Materials (SBOM) generation",
+          "Dependency vulnerability tracking",
+          "License compliance validation"
+        ]
+      },
+      "executive_order_14028": {
+        "enabled": true,
+        "requirements": [
+          "SPDX or CycloneDX format compliance",
+          "Machine-readable SBOM format",
+          "Component provenance tracking"
+        ]
+      },
+      "iso_27001": {
+        "enabled": false,
+        "requirements": [
+          "Asset inventory management",
+          "Risk assessment documentation",
+          "Change management tracking"
+        ]
+      }
+    }
+  },
+  
+  "integration_settings": {
+    "ci_cd": {
+      "github_actions": {
+        "enabled": true,
+        "artifact_upload": true,
+        "pr_comments": true,
+        "security_gate": true
+      },
+      "triggers": {
+        "on_push": true,
+        "on_pull_request": true,
+        "on_release": true,
+        "scheduled": {
+          "enabled": true,
+          "cron": "0 2 * * *"
+        }
+      }
+    },
+    "external_tools": {
+      "semgrep_mcp": {
+        "enabled": true,
+        "integration_mode": "ai_enhanced"
+      },
+      "dependency_track": {
+        "enabled": false,
+        "api_endpoint": "",
+        "api_key_secret": "DEPENDENCY_TRACK_API_KEY"
+      },
+      "spdx_tools": {
+        "enabled": true,
+        "validation": true
+      }
+    }
+  },
+  
+  "security_settings": {
+    "secrets_scanning": {
+      "enabled": true,
+      "exclude_test_files": true,
+      "exclude_documentation": true
+    },
+    "data_privacy": {
+      "anonymize_paths": false,
+      "exclude_personal_info": true,
+      "secure_transmission": true
+    },
+    "audit_logging": {
+      "enabled": true,
+      "log_level": "INFO",
+      "include_metrics": true,
+      "retention_days": 90
+    }
+  },
+  
+  "performance_settings": {
+    "parallel_processing": {
+      "enabled": true,
+      "max_workers": 4
+    },
+    "caching": {
+      "enabled": true,
+      "cache_duration": "24h",
+      "cache_size_mb": 256
+    },
+    "timeouts": {
+      "generation_timeout": 600,
+      "validation_timeout": 300,
+      "api_request_timeout": 30
+    },
+    "resource_limits": {
+      "max_memory_mb": 1024,
+      "max_components": 10000,
+      "max_file_size_mb": 100
+    }
+  },
+  
+  "notification_settings": {
+    "enabled": true,
+    "channels": {
+      "github_issues": {
+        "enabled": true,
+        "labels": ["security", "sbom", "supply-chain"],
+        "severity_threshold": "HIGH"
+      },
+      "slack": {
+        "enabled": false,
+        "webhook_url_secret": "SLACK_WEBHOOK_URL",
+        "channel": "#security-alerts"
+      },
+      "email": {
+        "enabled": false,
+        "smtp_config": {
+          "host": "",
+          "port": 587,
+          "username_secret": "SMTP_USERNAME",
+          "password_secret": "SMTP_PASSWORD"
+        },
+        "recipients": ["security@company.com"]
+      }
+    }
+  },
+  
+  "templates": {
+    "project_types": {
+      "web_application": {
+        "include_frontend_deps": true,
+        "include_build_tools": false,
+        "focus_areas": ["xss", "csrf", "dependency_confusion"]
+      },
+      "api_service": {
+        "include_runtime_deps": true,
+        "include_dev_tools": false,
+        "focus_areas": ["injection", "authentication", "rate_limiting"]
+      },
+      "mobile_application": {
+        "include_native_deps": true,
+        "include_bridge_deps": true,
+        "focus_areas": ["data_storage", "network_security", "permissions"]
+      },
+      "desktop_application": {
+        "include_system_deps": false,
+        "include_bundled_deps": true,
+        "focus_areas": ["code_signing", "update_security", "privilege_escalation"]
+      }
+    }
+  },
+  
+  "experimental_features": {
+    "enabled": false,
+    "features": {
+      "ml_vulnerability_prediction": {
+        "enabled": false,
+        "model_version": "1.0.0",
+        "confidence_threshold": 0.9
+      },
+      "automated_remediation": {
+        "enabled": false,
+        "auto_pr_creation": false,
+        "dry_run_mode": true
+      },
+      "supply_chain_visualization": {
+        "enabled": false,
+        "graph_generation": false,
+        "interactive_reports": false
+      }
+    }
+  }
+}

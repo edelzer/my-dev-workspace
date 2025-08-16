@@ -1,0 +1,24 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "serialNumber": "urn:uuid:7ff7df21-631c-4dad-9a68-3f5291d0c35e",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2025-08-16T22:05:24.626Z",
+    "tools": [
+      {
+        "vendor": "SBOM-Generator",
+        "name": "SBOM-Generator",
+        "version": "1.0.0"
+      }
+    ],
+    "component": {
+      "type": "application",
+      "bom-ref": "ai-security",
+      "name": "ai-security",
+      "version": "1.0.0",
+      "purl": "pkg:generic/ai-security@1.0.0"
+    }
+  },
+  "components": []
+}
