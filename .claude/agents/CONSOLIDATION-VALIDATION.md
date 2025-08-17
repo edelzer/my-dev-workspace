@@ -1,3 +1,8 @@
+---
+name: "consolidation-validation"
+description: "Agent consolidation validation and performance analysis specialist"
+---
+
 # Agent Consolidation Validation Report
 
 ## Executive Summary

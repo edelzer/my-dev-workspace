@@ -134,3 +134,62 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Claude Code Security
+# Never commit these files containing API keys and personal config
+.claude.json
+claude_desktop_config.json
+config.json
+
+# MCP Servers with API keys
+firecrawl/
+*firecrawl*
+.firecrawl*
+
+# Environment files with API keys
+.env.local
+.env.*.local
+
+# Team-specific exclusions
+# Completed projects - personal workspace artifacts irrelevant to team
+projects/completed/
+projects/project-tasks/
+
+# Personal workspace artifacts
+logs/
+test-results/
+backups/
+*PHASE*-REPORT.md
+*VALIDATION*-SUMMARY.md
+PHASE-1-VALIDATION-REPORT.md
+PHASE3-TESTING-REPORT.md
+VALIDATION-SUMMARY.md
+
+# Development artifacts and builds
+scripts/ai-security/config-backups/
+mcp-servers/*/dist/
+mcp-servers/*/node_modules/
+
+# Development test files
+hook-test.js
+
+# Tool-specific directories
+.serena/
+
+# Corrupted/malformed directories (cleanup artifacts)
+CUsersedelzOneDriveDocumentsGitHubdevelopmentmy-dev-workspacemcp-serversjson-mode-optimizer/
+CUsersedelzOneDriveDocumentsGitHubdevelopmentmy-dev-workspacemcp-serversjson-mode-optimizersrc/
+CUsersedelzOneDriveDocumentsGitHubdevelopmentmy-dev-workspacemcp-serversxml-tag-structuring/
+CUsersedelzOneDriveDocumentsGitHubdevelopmentmy-dev-workspacemcp-serversxml-tag-structuringsrc/
+
+# Additional development artifacts that should not be shared
+tasks/
+
+# Personal development documentation (phase-specific and internal planning)
+docs/phase-*-completion-summary.md
+docs/phase*-section*.md
+docs/task-*.md
+docs/*-ultrathink.md
+docs/improvement-suggestions.json
+docs/learning-analytics.json
+docs/knowledge-index.json
