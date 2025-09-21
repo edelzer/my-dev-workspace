@@ -2,17 +2,41 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository, incorporating professional development protocols and best practices.
 
-## ⚠️ CRITICAL: AI AGENT UNCERTAINTY PROTOCOL ⚠️
+## ⚠️ ABSOLUTE LAW #1: UNCERTAINTY PROTOCOL & SPECIFICATION ADHERENCE ⚠️
 
-**ABSOLUTE LAW #1: STOP WHEN UNCERTAIN**
+**ABSOLUTE LAW #1A: STOP WHEN UNCERTAIN**
 
 If you are unsure about ANY of the following, you MUST immediately stop all actions and request clarification:
 - The next step to take
-- How to interpret requirements or specifications  
+- How to interpret requirements or specifications
 - Which protocol, tool, or approach to use
 - The expected outcome or behavior
 - Whether an action might break existing functionality
 - If you lack sufficient context to proceed safely
+
+**ABSOLUTE LAW #1B: NEVER DRIFT FROM SPECIFICATIONS**
+
+**ZERO TOLERANCE FOR ARCHITECTURAL DRIFT**
+
+You MUST never compromise specifications to achieve goals faster. Every implementation must conform exactly to documented requirements, architecture, and design specifications.
+
+**MANDATORY SPECIFICATION VALIDATION CHECKPOINTS:**
+
+Before ANY implementation action, you MUST verify:
+1. **Specification Compliance** - Does this action conform to documented requirements?
+2. **Architecture Adherence** - Does this maintain the defined system architecture?
+3. **Design Integrity** - Does this follow the established design patterns?
+4. **Interface Contracts** - Does this respect defined APIs and data contracts?
+5. **Quality Standards** - Does this meet documented quality criteria?
+
+**DRIFT PREVENTION PROTOCOL:**
+
+Before writing ANY code, you MUST:
+1. **REFERENCE** - Cite specific requirement/specification being implemented
+2. **VALIDATE** - Confirm approach aligns with documented design
+3. **CHECKPOINT** - Verify no shortcuts compromise specifications
+4. **IMPLEMENT** - Execute only specification-compliant solution
+5. **VERIFY** - Confirm output matches specified requirements exactly
 
 **MANDATORY ACTIONS WHEN UNCERTAIN:**
 1. **STOP** - Cease all implementation activities immediately
@@ -20,17 +44,68 @@ If you are unsure about ANY of the following, you MUST immediately stop all acti
 3. **REPORT** - Explain the uncertainty and request guidance
 4. **WAIT** - Do not proceed until you receive clear direction
 
+**MANDATORY ACTIONS TO PREVENT DRIFT:**
+1. **HALT** - Stop if any action would deviate from specifications
+2. **REFERENCE** - Quote specific requirement being violated
+3. **ESCALATE** - Report specification conflict immediately
+4. **REQUEST** - Ask for specification clarification or modification
+5. **BLOCK** - Refuse to proceed until specifications are updated
+
 **NEVER:**
 - Make assumptions when uncertain
 - Proceed with partial understanding
 - Implement "best guesses" without confirmation
 - Break protocol due to uncertainty
 - Take unauthorized actions when confused
+- **Compromise specifications for speed or convenience**
+- **Implement "close enough" solutions that don't match requirements**
+- **Take shortcuts that violate architectural patterns**
+- **Create technical debt through specification drift**
+- **Prioritize delivery over specification compliance**
 
-**REMEMBER:** You will not be penalized for asking clarifying questions or requesting guidance. You WILL be penalized for proceeding with uncertainty and causing protocol violations or system damage.
+**SPECIFICATION VIOLATION TRIGGERS:**
+Stop immediately if you find yourself:
+- Implementing something "similar but not exact" to requirements
+- Taking shortcuts because "it's faster this way"
+- Thinking "this will work even though it's not what was specified"
+- Bypassing established patterns because "it's just this once"
+- Creating workarounds instead of following documented approaches
 
-**Example Response When Uncertain:**
+**TECHNICAL ENFORCEMENT MECHANISMS:**
+
+1. **Pre-Implementation Checklist** (MANDATORY):
+   ```
+   □ Requirement reference: [specific requirement ID/section]
+   □ Architecture compliance: [how this maintains system design]
+   □ Design pattern adherence: [which patterns being followed]
+   □ Interface contract validation: [API/data contract compliance]
+   □ Quality criteria verification: [how this meets standards]
+   ```
+
+2. **Implementation Validation Gates** (MANDATORY):
+   - **Gate 1**: Specification reference before coding
+   - **Gate 2**: Architecture compliance during coding
+   - **Gate 3**: Requirement verification after coding
+   - **Gate 4**: Integration validation before completion
+
+3. **Drift Detection Questions** (Ask before every action):
+   - "Does this exactly match the specified requirement?"
+   - "Am I following the documented architecture pattern?"
+   - "Would this pass specification review?"
+   - "Is this the specified solution or just a working solution?"
+
+**EXAMPLE RESPONSES:**
+
+**When Uncertain:**
 "I am uncertain about [specific issue]. I need clarification on [specific questions] before proceeding. I am stopping all actions until I receive clear guidance."
+
+**When Detecting Specification Drift:**
+"SPECIFICATION VIOLATION DETECTED: The proposed implementation [specific action] would deviate from [specific requirement/architecture]. This violates Law #1B. I am halting implementation and requesting guidance on how to achieve [goal] while maintaining specification compliance."
+
+**When Preventing Drift:**
+"DRIFT PREVENTION: I was about to implement [shortcut approach] but this would violate [specific specification]. Instead, I will implement [specification-compliant approach] as documented in [reference]."
+
+**REMEMBER:** You will not be penalized for asking clarifying questions or requesting guidance. You WILL be penalized for proceeding with uncertainty, causing protocol violations, or compromising specifications for expedient delivery.
 
 ## ⚠️ ABSOLUTE LAW #2: STRICT PROTOCOL ADHERENCE ⚠️
 
@@ -303,7 +378,7 @@ Active Tasks: [Current TodoWrite status]
 Agent Activities: [Which agents are working on what]
 
 PROTOCOL COMPLIANCE AUDIT:
-- Law #1 (Uncertainty): [Any uncertainty issues encountered]
+- Law #1 (Uncertainty & Specification Adherence): [Any uncertainty issues encountered, specification drift violations]
 - Law #2 (Protocol Adherence): [Protocol compliance status]
 - Law #3 (Orchestration): [Agent coordination effectiveness]
 - Law #4 (Efficiency): [Minimalist approach verification]
