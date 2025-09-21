@@ -65,9 +65,9 @@ Our optimized agent team structure reduces coordination overhead by **27%** thro
 ### **Quality & Security Team (2 Agents)**:
 
 #### **quality-assurance-specialist**
-- **Combined Role**: Code review + final validation
-- **Use For**: Code reviews, deployment readiness, quality gates, final validation
-- **Key Strengths**: Comprehensive quality assurance, security analysis, deployment validation
+- **Enhanced Role**: Code review + requirements auditing + final validation (with Req-ing Ball methodology)
+- **Use For**: Code reviews, requirements traceability audits, deployment readiness, quality gates, final validation
+- **Key Strengths**: Comprehensive quality assurance, requirements compliance validation, security analysis, deployment validation
 - **Tools**: Read, Write, Edit, MultiEdit, Glob, Grep, Bash, Task, ESLint, IDE diagnostics, TodoWrite, Sequential-thinking
 
 #### **security-specialist**
@@ -150,6 +150,7 @@ quality-assurance-specialist → security-specialist
 ### **Quality Assurance & Validation**:
 **Primary**: `quality-assurance-specialist`
 - Code review and quality analysis
+- Requirements traceability audits (Req-ing Ball methodology)
 - Final deployment validation
 - Performance and security assessment
 - Stakeholder sign-off coordination
@@ -182,8 +183,8 @@ quality-assurance-specialist → security-specialist
 - Enhanced requirements and planning workflow
 - Tools: Read, Write, Glob, Grep, WebFetch, TodoWrite, Sequential-thinking
 
-**quality-assurance-specialist**: 
-- Comprehensive quality assurance and validation
+**quality-assurance-specialist**:
+- Comprehensive quality assurance, requirements auditing, and validation (enhanced with Req-ing Ball methodology)
 - Tools: Read, Write, Edit, MultiEdit, Glob, Grep, Bash, Task, ESLint, IDE diagnostics, TodoWrite, Sequential-thinking
 
 **project-manager** (Enhanced):

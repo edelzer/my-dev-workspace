@@ -119,8 +119,7 @@ You must thoughtfully select agents based on task requirements:
 
 **Quality & Security Team (Validation):**
 - **spec-tester** - Testing strategies, quality validation
-- **spec-reviewer** - Code quality, best practices enforcement
-- **spec-validator** - Final deployment readiness
+- **quality-assurance-specialist** - Code review, requirements auditing, deployment readiness (enhanced with Req-ing Ball methodology)
 - **security-specialist** - Security analysis, threat modeling
 
 **BMAD Coordination Team (Strategic):**
@@ -583,7 +582,7 @@ Available project types:
 **Custom Claude Code Agents** (`.claude/agents/`) - Technical Implementation:
 - **Foundation Team**: project-manager, spec-analyst, spec-architect, spec-planner
 - **Implementation Team**: frontend-developer, backend-developer, spec-developer  
-- **Quality & Security Team**: spec-tester, spec-reviewer, spec-validator, security-specialist
+- **Quality & Security Team**: spec-tester, quality-assurance-specialist, security-specialist
 
 **BMAD Strategic Agents** - Planning & Coordination:
 - **Planning**: /analyst, /pm, /architect, /po
@@ -598,7 +597,7 @@ Available project types:
 1. **Strategic Planning**: /analyst → /pm → /po (BMAD agents)
 2. **Technical Foundation**: spec-analyst → spec-architect → spec-planner (Custom agents)
 3. **Implementation**: backend-developer + frontend-developer + /ux-expert (Hybrid)
-4. **Quality Assurance**: spec-tester → spec-reviewer → security-specialist (Custom agents)
+4. **Quality Assurance**: spec-tester → quality-assurance-specialist → security-specialist (Custom agents)
 5. **Deployment**: /qa → /bmad-orchestrator (BMAD agents)
 
 ### Planning Methodology Selection Guide
