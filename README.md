@@ -395,7 +395,13 @@ npm run team:validate                 # Validate team setup
 
 ## 🎮 Claude Code Command Center
 
-The workspace includes 40+ specialized commands available in Claude Code for advanced workflows:
+The workspace includes 40 specialized commands available in Claude Code for advanced workflows:
+
+**Command Breakdown:**
+- **12 Project Management Commands**: Setup, onboarding, configuration, and workspace tools
+- **10 BMAD Agent Commands**: Strategic planning and development coordination agents
+- **17 BMAD Task Commands**: Specific development tasks and workflow automation
+- **1 External Tool Command**: Rule2Hook for natural language automation
 
 ### 🚀 **Quick Access Commands**
 ```bash

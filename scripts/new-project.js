@@ -7,6 +7,9 @@ const { execSync } = require('child_process');
 const projectTypes = {
   web: 'Web Application (React + TypeScript + Vite)',
   api: 'API Server (Node.js + TypeScript + Express)',
+  python: 'Python API (FastAPI + Async + Security)',
+  java: 'Java Service (Spring Boot + Security + Monitoring)',
+  go: 'Go Service (Gin + High Performance + Security)',
   mobile: 'Mobile Application (React Native)',
   desktop: 'Desktop Application (Electron)'
 };
