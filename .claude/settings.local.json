@@ -41,7 +41,8 @@
       "WebFetch(domain:docs.spring.io)",
       "WebFetch(domain:spotbugs.github.io)",
       "Bash(move:*)",
-      "Bash(robocopy:*)"
+      "Bash(robocopy:*)",
+      "mcp__github__get_file_contents"
     ],
     "deny": []
   },

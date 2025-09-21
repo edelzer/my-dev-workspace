@@ -107,6 +107,11 @@ You must thoughtfully select agents based on task requirements:
 - **spec-planner** - Task decomposition, effort estimation
 - **project-manager** - Workflow coordination, team management
 
+**Spec-Kit Alternative (Formal Specifications):**
+- Use `scripts\use-spec-kit.cmd` for projects requiring formal documentation
+- Commands: /constitution → /specify → /plan → /tasks → /implement
+- Choose when: Fixed requirements, regulatory needs, client documentation
+
 **Implementation Team (Development):**
 - **frontend-developer** - UI/UX implementation, React/TypeScript
 - **backend-developer** - Server-side logic, API development
@@ -414,6 +419,9 @@ Leverage AI tools systematically while maintaining human oversight and decision-
 ### BMAD Multi-Agent Orchestration
 Professional enterprise-grade agile development using coordinated AI agents for planning, development, and quality assurance phases.
 
+### Spec-Kit Integration (Optional)
+GitHub Spec-Kit provides formal specification-driven development for projects requiring detailed documentation and multi-phase specification cycles.
+
 ## Protocol Reference Guide
 
 All protocols follow the 5-phase sequences defined in the Absolute Laws above. Refer to Laws #2-4 for complete protocol implementations including Security-First, SDD/TDD Integration, Surgical Debugging, Task Decomposition, and Technical Debt Management workflows.
@@ -588,16 +596,57 @@ Available project types:
 
 **Workflow Sequence:**
 1. **Strategic Planning**: /analyst → /pm → /po (BMAD agents)
-2. **Technical Foundation**: spec-analyst → spec-architect → spec-planner (Custom agents)  
+2. **Technical Foundation**: spec-analyst → spec-architect → spec-planner (Custom agents)
 3. **Implementation**: backend-developer + frontend-developer + /ux-expert (Hybrid)
 4. **Quality Assurance**: spec-tester → spec-reviewer → security-specialist (Custom agents)
 5. **Deployment**: /qa → /bmad-orchestrator (BMAD agents)
+
+### Planning Methodology Selection Guide
+
+**When to use BMAD Agents** (Default):
+- Rapid prototyping and iterative development
+- Projects with evolving requirements
+- Agile sprints and continuous delivery
+- Internal tools and MVPs
+- When speed and flexibility are priorities
+
+**When to use Spec-Kit** (Optional):
+- Client projects requiring formal documentation
+- Regulatory/compliance-driven development
+- Fixed-bid contracts with detailed specifications
+- Projects with multiple stakeholder approvals
+- When comprehensive upfront design is required
+
+**Decision Criteria:**
+```
+IF project requires:
+  - Formal specification documents → Use Spec-Kit
+  - Multiple approval cycles → Use Spec-Kit
+  - Regulatory compliance docs → Use Spec-Kit
+  - Fixed requirements upfront → Use Spec-Kit
+ELSE:
+  - Use BMAD agents (faster, more flexible)
+```
+
+**Spec-Kit Usage:**
+```bash
+# Create spec-driven project
+scripts\use-spec-kit.cmd <project-name>
+
+# Then use Spec-Kit commands:
+/constitution  # Define principles
+/specify       # Create specifications
+/plan          # Technical planning
+/tasks         # Task breakdown
+/implement     # Execute implementation
+```
 
 ### Essential Commands
 
 ```bash
 # Project Setup
 node scripts/new-project.js <name> <type>  # Create new project with protocols
+scripts\use-spec-kit.cmd <name>            # Create spec-driven project (formal docs)
 
 # Development Workflow  
 npm run dev          # Start development
