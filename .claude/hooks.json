@@ -235,6 +235,61 @@
           }
         ]
       }
+    ],
+    "Memory": [
+      {
+        "matcher": "Task",
+        "hooks": [
+          {
+            "type": "reminder",
+            "message": "[Memory Protocol] Remember to view /memories/ directory before starting agent work (Law #6)",
+            "description": "Memory protocol reminder for agent task delegation"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "condition": "echo $CLAUDE_TARGET_FILE | grep -E 'memories/'",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[Memory] Validating memory file path...' && node scripts/validate-memory-path.js \"$CLAUDE_TARGET_FILE\" && echo '[Memory] Path validation passed' || echo '[Memory] WARNING: Invalid memory path detected'",
+            "description": "Memory file path security validation using validate-memory-path.js"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "condition": "echo $CLAUDE_TARGET_FILE | grep -E 'memories/.*\\.xml$'",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[Memory] Checking memory file size...' && { if [ -f \"$CLAUDE_TARGET_FILE\" ]; then SIZE=$(wc -c < \"$CLAUDE_TARGET_FILE\" 2>/dev/null || echo 0); if [ $SIZE -gt 51200 ]; then echo '[Memory] WARNING: File exceeds 50KB limit ('$SIZE' bytes)'; else echo '[Memory] File size OK ('$SIZE' bytes)'; fi; else echo '[Memory] New memory file - size check passed'; fi; } && echo '[Memory] Size validation completed'",
+            "description": "Memory file size limit enforcement (50KB max per Law #6)"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "condition": "echo $CLAUDE_TARGET_FILE | grep -E 'memories/.*\\.xml$'",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[Memory] Scanning for sensitive data...' && { grep -E '(API[_-]?KEY|SECRET|PASSWORD|TOKEN|[0-9]{4}[- ]?[0-9]{4}[- ]?[0-9]{4}[- ]?[0-9]{4})' \"$CLAUDE_TARGET_FILE\" 2>/dev/null && echo '[Memory] WARNING: Potential sensitive data detected in memory file' || echo '[Memory] No sensitive data patterns found'; } && echo '[Memory] Security scan completed'",
+            "description": "Memory file sensitive data detection (Law #6 security requirement)"
+          }
+        ]
+      },
+      {
+        "matcher": "TodoWrite",
+        "hooks": [
+          {
+            "type": "reminder",
+            "message": "[Memory Protocol] Consider updating /memories/session-context/phase-status.xml with TodoWrite status (Law #6)",
+            "description": "Memory protocol reminder for TodoWrite synchronization"
+          }
+        ]
+      }
     ]
   }
 }

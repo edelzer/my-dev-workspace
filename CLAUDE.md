@@ -382,6 +382,7 @@ PROTOCOL COMPLIANCE AUDIT:
 - Law #2 (Protocol Adherence): [Protocol compliance status]
 - Law #3 (Orchestration): [Agent coordination effectiveness]
 - Law #4 (Efficiency): [Minimalist approach verification]
+- Law #6 (Memory & Learning): [Cross-session context preservation, knowledge accumulation status]
 
 RECOMMENDATIONS:
 Option A: [Recommended next step with reasoning]
@@ -465,6 +466,214 @@ Timeline: [When decision is needed]
 
 **YOUR ULTIMATE MISSION:**
 Ensure flawless execution of all laws and protocols while mentoring the client and delivering professional-grade development results through expert team leadership.**
+
+## ⚠️ ABSOLUTE LAW #6: CROSS-SESSION MEMORY & CONTINUOUS LEARNING ⚠️
+
+**MANDATORY MEMORY-FIRST PROTOCOL**
+
+Every session MUST begin by checking memory to recover context. Every significant action MUST be recorded for future sessions. Knowledge accumulates across all projects.
+
+**SESSION START PROTOCOL (ALWAYS FIRST ACTION):**
+
+Before ANY work, you MUST:
+1. **VIEW** `/memories/session-context/` to understand current state
+2. **READ** `/memories/protocol-compliance/` to check for pending Law violations
+3. **REVIEW** `/memories/client-context/preferences.xml` for client guidance
+4. **LOAD** relevant project knowledge from `/memories/project-knowledge/{project}/`
+5. **SYNC** TodoWrite status with memory records
+
+**NEVER** start work without first checking memory—your context window may have been reset.
+
+**MEMORY DIRECTORY ARCHITECTURE:**
+
+```
+/memories/
+├── session-context/           # Current session state (active projects, phase status, pending decisions)
+├── protocol-compliance/       # Law #1-5 enforcement tracking (uncertainties, drift prevention, efficiency)
+├── project-knowledge/         # Per-project learning (architecture, tech debt, security, lessons)
+├── agent-coordination/        # Multi-agent orchestration (handoffs, context packages, quality gates)
+├── development-patterns/      # Reusable knowledge (debugging solutions, security patterns, test strategies)
+└── client-context/            # Senior developer reporting (preferences, communications, approvals)
+```
+
+**MANDATORY MEMORY UPDATE TRIGGERS:**
+
+**Law #1 Integration (Uncertainty & Specification Adherence):**
+- **WHEN**: Encountering uncertainty or detecting specification drift
+- **ACTION**: Create entry in `/memories/protocol-compliance/uncertainty-log.xml`
+- **FORMAT**: `<uncertainty><timestamp/><issue/><clarification-requested/><resolution/></uncertainty>`
+- **WHY**: Prevent recurring uncertainties, track drift prevention patterns
+
+**Law #2 Integration (Protocol Adherence):**
+- **WHEN**: Starting/completing protocol phases
+- **ACTION**: Update `/memories/protocol-compliance/protocol-status.xml`
+- **FORMAT**: Track phases completed, quality gates passed, violations encountered
+- **WHY**: Never lose protocol progress, resume exactly where left off
+
+**Law #3 Integration (Orchestration):**
+- **WHEN**: Each agent delegation or handoff
+- **ACTION**: Create context package in `/memories/agent-coordination/context-packages.xml`
+- **FORMAT**: Include task, context, success criteria, constraints, handoff instructions
+- **WHY**: Seamless multi-session agent coordination
+
+**Law #4 Integration (Surgical Precision):**
+- **WHEN**: Before Level 4+ changes or efficiency decisions
+- **ACTION**: Log analysis in `/memories/protocol-compliance/efficiency-metrics.xml`
+- **FORMAT**: Record minimalist options, decision rationale, alternatives considered
+- **WHY**: Build pattern library of efficient solutions
+
+**Law #5 Integration (Senior Developer Leadership):**
+- **WHEN**: Client interactions and status reports
+- **ACTION**: Update `/memories/client-context/` files
+- **FORMAT**: Log recommendations, approvals, learning opportunities
+- **WHY**: Maintain consistent mentorship context across sessions
+
+**CONTINUOUS LEARNING PROTOCOL:**
+
+**Development Patterns Accumulation:**
+1. **Debugging Solutions** - Record successful Level 1-7 resolutions in `/memories/development-patterns/debugging-solutions.xml`
+2. **Security Patterns** - Save security implementations in `/memories/development-patterns/security-patterns.xml`
+3. **Test Strategies** - Document TDD patterns that worked in `/memories/development-patterns/test-strategies.xml`
+4. **Task Templates** - Archive proven task decompositions in `/memories/development-patterns/task-templates.xml`
+
+**Project Knowledge Preservation:**
+- **Architecture Decisions** - Document in `/memories/project-knowledge/{project}/architecture.xml`
+- **Technical Debt Log** - Track debt authorization and status in `/memories/project-knowledge/{project}/tech-debt.xml`
+- **Security Audit Trail** - Maintain security findings in `/memories/project-knowledge/{project}/security-audit.xml`
+- **Lessons Learned** - Record project-specific insights in `/memories/project-knowledge/{project}/lessons.xml`
+
+**SESSION END PROTOCOL:**
+
+Before session completion or major interruptions:
+1. **UPDATE** `/memories/session-context/phase-status.xml` with current state
+2. **RECORD** pending decisions in `/memories/session-context/pending-decisions.xml`
+3. **SAVE** TodoWrite status to session context
+4. **DOCUMENT** any active agent handoffs
+5. **ARCHIVE** completed project context to project-specific files
+
+**MEMORY SECURITY & MAINTENANCE:**
+
+**Security Constraints:**
+- **Path Validation**: All paths MUST start with `/memories/` (use `scripts/validate-memory-path.js`)
+- **No Sensitive Data**: Never store API keys, tokens, credentials, or client-sensitive information
+- **File Size Limits**: Maximum 50KB per file, use pagination for larger content
+- **Path Traversal Protection**: Comprehensive validation against `../`, URL-encoding, null bytes
+
+**Maintenance Schedule:**
+- **Per-Session**: Archive completed projects, clear stale pending decisions
+- **Weekly**: Consolidate debugging solutions, update pattern libraries
+- **Monthly**: Archive old projects, clear expired session contexts
+
+**MEMORY TOOL USAGE:**
+
+**Essential Commands:**
+```
+view /memories/                              # List memory directory
+view /memories/session-context/active-project.xml  # Read specific file
+create /memories/{path}                      # Create or overwrite file
+str_replace /memories/{path}                 # Replace text in file
+insert /memories/{path}                      # Insert at line number
+delete /memories/{path}                      # Delete file/directory
+rename /memories/{old}  /memories/{new}      # Rename/move file
+```
+
+**INTEGRATION WITH AGENT WORKFLOWS:**
+
+**Agent Memory Responsibilities:**
+- **spec-architect**: Document architecture decisions, technology selections
+- **requirements-specialist**: Save requirement patterns, user story templates
+- **quality-assurance-specialist**: Record requirements audit results, compliance scoring
+- **security-specialist**: Maintain security patterns, threat model templates
+- **project-manager**: Track agent coordination, workflow efficiency metrics
+- **All Development Agents**: Log debugging solutions, implementation patterns
+
+**Context Package Template for Agent Handoffs:**
+```xml
+<handoff timestamp="[ISO-8601]">
+  <from>[agent-name]</from>
+  <to>[agent-name]</to>
+  <task>[objective]</task>
+  <context>
+    <decisions>[key decisions made]</decisions>
+    <files>[relevant file paths]</files>
+    <dependencies>[prerequisites]</dependencies>
+  </context>
+  <success-criteria>
+    <criterion>[specific requirement]</criterion>
+  </success-criteria>
+  <constraints>
+    <law-compliance>[Laws #1-5 requirements]</law-compliance>
+  </constraints>
+  <status>[pending|in-progress|completed]</status>
+</handoff>
+```
+
+**BENEFITS OF MEMORY SYSTEM:**
+
+**Cross-Session Continuity:**
+- Perfect recovery from session interruptions
+- No lost context or progress
+- Seamless multi-day project workflows
+
+**Continuous Learning:**
+- Debugging solutions accumulate across all projects
+- Security patterns library grows over time
+- Test strategies become more refined
+- Task decomposition improves with experience
+
+**Perfect Agent Coordination:**
+- Complete context preservation for multi-session agent workflows
+- No information loss in agent handoffs
+- Quality gates tracked across sessions
+
+**Client Context Preservation:**
+- Preferences and decisions maintained indefinitely
+- Communication history provides perfect context
+- Approval history prevents re-asking for decisions
+
+**Protocol Enforcement:**
+- Automatic tracking of Laws #1-5 compliance
+- Uncertainty patterns identified and prevented
+- Specification drift caught early
+- Efficiency metrics drive continuous improvement
+
+**EXAMPLE MEMORY WORKFLOW:**
+
+**Session 1: Start New Project**
+```
+1. View /memories/session-context/ (empty, new project)
+2. Start work on authentication feature
+3. Record architecture decision in /memories/project-knowledge/auth-service/architecture.xml
+4. Encounter uncertainty about token expiry → Log in /memories/protocol-compliance/uncertainty-log.xml
+5. Session ends → Update /memories/session-context/active-project.xml with status
+```
+
+**Session 2: Resume Project**
+```
+1. View /memories/session-context/active-project.xml (sees: auth feature in progress)
+2. View /memories/protocol-compliance/uncertainty-log.xml (sees: token expiry question)
+3. Client provides answer → Update uncertainty log with resolution
+4. Complete feature → Record successful implementation pattern
+5. Update session context with completion status
+```
+
+**Session 3: New Project Benefits from Learning**
+```
+1. View /memories/development-patterns/security-patterns.xml
+2. Find proven auth pattern from previous project
+3. Apply pattern to new project (faster, fewer mistakes)
+4. Add improvements to pattern library
+```
+
+**NEVER:**
+- Start session without viewing memory directory
+- Lose progress due to session interruption
+- Re-ask client for previously provided preferences
+- Repeat debugging approaches that failed before
+- Lose context in multi-session agent workflows
+- Allow knowledge to be session-bound instead of accumulated
+
+**REMEMBER:** Memory is not optional—it's foundational. Every session builds on previous sessions. Every project contributes to workspace-wide knowledge. Laws #1-5 enforcement is tracked across all time.
 
 ## Repository Overview
 

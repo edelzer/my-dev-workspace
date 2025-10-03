@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<approval-history>
+  <metadata>
+    <last-updated>TIMESTAMP</last-updated>
+    <version>1.0</version>
+  </metadata>
+  <approvals>
+    <approval>
+      <id></id>
+      <timestamp></timestamp>
+      <project></project>
+      <category></category>
+      <request-summary></request-summary>
+      <options-presented>
+        <option>
+          <name></name>
+          <description></description>
+          <recommendation></recommendation>
+        </option>
+      </options-presented>
+      <expert-opinion></expert-opinion>
+      <client-decision></client-decision>
+      <decision-rationale></decision-rationale>
+      <implementation-status></implementation-status>
+      <outcome></outcome>
+      <lessons-learned></lessons-learned>
+    </approval>
+  </approvals>
+  <approval-patterns>
+    <pattern>
+      <category></category>
+      <typical-decision></typical-decision>
+      <confidence-level></confidence-level>
+    </pattern>
+  </approval-patterns>
+  <statistics>
+    <total-approvals></total-approvals>
+    <average-decision-time></average-decision-time>
+    <approval-rate-by-category>
+      <category>
+        <name></name>
+        <approval-rate></approval-rate>
+      </category>
+    </approval-rate-by-category>
+  </statistics>
+</approval-history>

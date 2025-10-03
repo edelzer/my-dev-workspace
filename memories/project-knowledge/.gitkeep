@@ -1,0 +1,7 @@
+# Project Knowledge Directory
+
+This directory stores per-project learning and context files.
+
+Files are created dynamically following the pattern: [project-name].xml
+
+Example: my-api-project.xml, web-app-v2.xml, mobile-app.xml

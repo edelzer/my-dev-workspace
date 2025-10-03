@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<protocol-status>
+  <metadata>
+    <last-updated>TIMESTAMP</last-updated>
+    <version>1.0</version>
+    <law-reference>Law #2 - Strict Protocol Adherence</law-reference>
+  </metadata>
+  <protocol-sequences>
+    <sequence>
+      <name></name>
+      <phase></phase>
+      <steps-completed>
+        <step>
+          <name></name>
+          <completed></completed>
+          <agent></agent>
+          <validation></validation>
+        </step>
+      </steps-completed>
+      <current-step></current-step>
+      <next-step></next-step>
+      <compliance-status></compliance-status>
+    </sequence>
+  </protocol-sequences>
+  <quality-gates>
+    <gate>
+      <name></name>
+      <protocol></protocol>
+      <passed></passed>
+      <validation-date></validation-date>
+      <validator></validator>
+      <criteria-met>
+        <criterion>
+          <name></name>
+          <status></status>
+        </criterion>
+      </criteria-met>
+    </gate>
+  </quality-gates>
+  <violations>
+    <violation>
+      <timestamp></timestamp>
+      <agent></agent>
+      <protocol-violated></protocol-violated>
+      <description></description>
+      <severity></severity>
+      <stop-triggered></stop-triggered>
+      <corrective-action></corrective-action>
+      <prevention-measure></prevention-measure>
+    </violation>
+  </violations>
+  <compliance-metrics>
+    <protocol-adherence-rate></protocol-adherence-rate>
+    <violations-count></violations-count>
+    <average-resolution-time></average-resolution-time>
+  </compliance-metrics>
+</protocol-status>

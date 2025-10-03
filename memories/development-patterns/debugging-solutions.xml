@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<debugging-solutions>
+  <metadata>
+    <last-updated>TIMESTAMP</last-updated>
+    <version>1.0</version>
+  </metadata>
+  <solutions>
+    <solution>
+      <id></id>
+      <created></created>
+      <project></project>
+      <problem-category></problem-category>
+      <problem-description></problem-description>
+      <symptoms>
+        <symptom></symptom>
+      </symptoms>
+      <root-cause></root-cause>
+      <surgical-level></surgical-level>
+      <solution-approach></solution-approach>
+      <implementation>
+        <steps>
+          <step></step>
+        </steps>
+        <files-modified>
+          <file></file>
+        </files-modified>
+        <time-to-resolve></time-to-resolve>
+      </implementation>
+      <prevention></prevention>
+      <tags>
+        <tag></tag>
+      </tags>
+      <reusability-score></reusability-score>
+    </solution>
+  </solutions>
+  <patterns>
+    <pattern>
+      <name></name>
+      <category></category>
+      <description></description>
+      <when-to-apply></when-to-apply>
+      <examples>
+        <example></example>
+      </examples>
+    </pattern>
+  </patterns>
+</debugging-solutions>

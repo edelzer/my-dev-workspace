@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pending-decisions>
+  <metadata>
+    <last-updated>TIMESTAMP</last-updated>
+    <version>1.0</version>
+  </metadata>
+  <decisions>
+    <decision>
+      <id></id>
+      <created></created>
+      <priority></priority>
+      <type></type>
+      <question></question>
+      <context></context>
+      <options>
+        <option>
+          <name></name>
+          <description></description>
+          <pros></pros>
+          <cons></cons>
+          <effort></effort>
+        </option>
+      </options>
+      <recommendation></recommendation>
+      <blocking-tasks>
+        <task></task>
+      </blocking-tasks>
+      <status></status>
+    </decision>
+  </decisions>
+</pending-decisions>

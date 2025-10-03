@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quality-gates>
+  <metadata>
+    <last-updated>TIMESTAMP</last-updated>
+    <version>1.0</version>
+  </metadata>
+  <gates>
+    <gate>
+      <id></id>
+      <name></name>
+      <phase></phase>
+      <agent></agent>
+      <timestamp></timestamp>
+      <validation-type></validation-type>
+      <criteria>
+        <criterion>
+          <name></name>
+          <description></description>
+          <required></required>
+          <status></status>
+          <evidence></evidence>
+          <validator></validator>
+        </criterion>
+      </criteria>
+      <overall-status></overall-status>
+      <passed></passed>
+      <notes></notes>
+      <next-gate></next-gate>
+    </gate>
+  </gates>
+  <gate-statistics>
+    <total-gates></total-gates>
+    <passed-gates></passed-gates>
+    <failed-gates></failed-gates>
+    <pass-rate></pass-rate>
+  </gate-statistics>
+</quality-gates>
