@@ -596,4 +596,58 @@ severity_levels:
     escalation: "Security team, operations team"
 ```
 
+## Memory Integration (Law #6)
+
+**Memory Checkpoints for Security-First Protocol:**
+
+**Session Start:**
+- View `/memories/protocol-compliance/protocol-status.xml` for security phase tracking
+- Review `/memories/development-patterns/security-patterns.xml` for proven security implementations
+- Check `/memories/project-knowledge/{project}/security-audit.xml` for project-specific findings
+
+**During Security Analysis Phase:**
+- Record threat models in `/memories/project-knowledge/{project}/security-audit.xml`
+- Log security patterns in `/memories/development-patterns/security-patterns.xml`
+- Document compliance requirements in project knowledge files
+
+**During Implementation Phase:**
+- Record security control implementations with code references
+- Log successful security validation approaches
+- Document security test patterns for reuse
+
+**During Monitoring Phase:**
+- Update incident response records in `/memories/project-knowledge/{project}/security-audit.xml`
+- Log security event patterns and resolutions
+- Document lessons learned from security incidents
+
+**Session End:**
+- Update `/memories/protocol-compliance/protocol-status.xml` with security phase completion
+- Archive completed security implementations to project knowledge
+- Record security validation results for future reference
+
+**Memory Files:**
+- Primary: `/memories/development-patterns/security-patterns.xml`
+- Project-Specific: `/memories/project-knowledge/{project}/security-audit.xml`
+- Protocol Tracking: `/memories/protocol-compliance/protocol-status.xml`
+
+**Example Security Pattern Memory:**
+```xml
+<security-pattern>
+  <timestamp>2025-10-03T14:30:00Z</timestamp>
+  <pattern-name>JWT Authentication with Refresh Tokens</pattern-name>
+  <threat-addressed>Session hijacking and token theft</threat-addressed>
+  <implementation>
+    - Access token: 15 minute expiry
+    - Refresh token: 7 day expiry with rotation
+    - Secure HTTP-only cookies for token storage
+  </implementation>
+  <validation>Penetration tested, no vulnerabilities detected</validation>
+  <reusability>Applicable to all authentication implementations</reusability>
+</security-pattern>
+```
+
+**Cross-Reference**: See [Memory System Protocol](./memory_system_protocol.md) for complete memory usage guide.
+
+---
+
 This protocol ensures systematic security implementation with clear AI directives, mandatory checkpoints, and comprehensive validation at every phase of development.

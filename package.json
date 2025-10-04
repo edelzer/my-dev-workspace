@@ -5,6 +5,9 @@
   "scripts": {
     "performance:validate": "node .bmad-workspace/performance/optimization-validation.js",
     "performance:start": "node .bmad-workspace/performance/performance-integration.js",
-    "performance:dashboard": "echo 'Opening performance dashboard...' && start .bmad-workspace/performance/performance-dashboard.html"
+    "performance:dashboard": "echo 'Opening performance dashboard...' && start .bmad-workspace/performance/performance-dashboard.html",
+    "memory:archive": "node scripts/memory-archive.js",
+    "memory:analytics": "node scripts/memory-analytics.js",
+    "memory:cleanup": "node scripts/memory-cleanup.js"
   }
 }

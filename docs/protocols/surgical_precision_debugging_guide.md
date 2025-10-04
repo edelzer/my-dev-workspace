@@ -473,6 +473,68 @@ severity_levels:
     max_hierarchy: "Follow standard approval process"
 ```
 
+## Memory Integration (Law #6)
+
+**Memory Checkpoints for Surgical Debugging Protocol:**
+
+**Session Start:**
+- View `/memories/development-patterns/debugging-solutions.xml` for similar issue resolutions
+- Review `/memories/protocol-compliance/efficiency-metrics.xml` for escalation patterns
+- Check project-specific debugging history for recurring issues
+
+**During Error Analysis:**
+- Search `/memories/development-patterns/debugging-solutions.xml` for similar patterns
+- Review historical resolutions at same hierarchy level
+- Check for known issues in current project context
+
+**During Fix Application (Level 1-3):**
+- Record successful minimal fixes in `/memories/development-patterns/debugging-solutions.xml`
+- Log error patterns and root cause analysis
+- Document fix validation approach for reuse
+
+**During Fix Application (Level 4-7):**
+- Record complex debugging approaches and escalation decisions
+- Log root cause analysis methodology
+- Document team consultation outcomes and solutions
+
+**After Resolution:**
+- Update `/memories/development-patterns/debugging-solutions.xml` with complete solution
+- Record hierarchy level used and escalation path
+- Document prevention strategies for future occurrence
+
+**Session End:**
+- Archive debugging session results to pattern library
+- Update efficiency metrics with resolution time by level
+- Record lessons learned for continuous improvement
+
+**Memory Files:**
+- Primary: `/memories/development-patterns/debugging-solutions.xml`
+- Efficiency Tracking: `/memories/protocol-compliance/efficiency-metrics.xml`
+- Project-Specific: `/memories/project-knowledge/{project}/lessons.xml`
+
+**Example Debugging Solution Memory:**
+```xml
+<debugging-solution>
+  <timestamp>2025-10-03T17:00:00Z</timestamp>
+  <level>2</level>
+  <problem>React component re-rendering too frequently causing performance issues</problem>
+  <error-pattern>Performance degradation, excessive render calls</error-pattern>
+  <root-cause>useEffect missing dependency array causing infinite render loop</root-cause>
+  <fix-applied>
+    - Added dependency array to useEffect
+    - Used React.memo for expensive child components
+  </fix-applied>
+  <hierarchy-justification>Level 2 sufficient: Single line fix plus optimization</hierarchy-justification>
+  <validation>Performance profiler shows 90% reduction in renders</validation>
+  <prevention>Always include dependency arrays in useEffect</prevention>
+  <reusability>Common React performance pattern</reusability>
+</debugging-solution>
+```
+
+**Cross-Reference**: See [Memory System Protocol](./memory_system_protocol.md) for complete memory usage guide.
+
+---
+
 This protocol ensures systematic, AI-driven debugging with clear hierarchy enforcement, minimal intervention principles, and comprehensive validation at every level.
 
 

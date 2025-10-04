@@ -486,4 +486,80 @@ By combining proven TDD principles with modern AI-assisted development tools, te
 
 ---
 
+## Memory Integration (Law #6)
+
+**Memory Checkpoints for Enhanced TDD Protocol:**
+
+**Session Start:**
+- View `/memories/development-patterns/test-strategies.xml` for proven TDD patterns and cycles
+- Review `/memories/protocol-compliance/spec-adherence.xml` for test-specification alignment
+- Check project-specific testing frameworks and patterns from previous sessions
+
+**During Red Phase (Failing Tests):**
+- Record test generation patterns in `/memories/development-patterns/test-strategies.xml`
+- Log AI-assisted test creation approaches that worked well
+- Document test scenario templates for similar features
+
+**During Green Phase (Passing Tests):**
+- Record minimal implementation patterns that satisfy tests efficiently
+- Log implementation strategies that maintain specification compliance
+- Document test-driven design patterns that emerged
+
+**During Refactor Phase (Code Quality):**
+- Record successful refactoring patterns while maintaining green tests
+- Log code quality improvements and optimization techniques
+- Document performance improvements achieved through TDD
+
+**AI-Assisted TDD Sessions:**
+- Record AI collaboration patterns that enhanced TDD workflow
+- Log human-AI task division strategies for optimal results
+- Document AI tool usage patterns (Claude Code, Cursor, etc.)
+
+**Session End:**
+- Update `/memories/protocol-compliance/protocol-status.xml` with TDD cycle completion
+- Archive test strategies to pattern library for reuse
+- Record TDD efficiency metrics and test coverage achievements
+
+**Memory Files:**
+- Primary: `/memories/development-patterns/test-strategies.xml`
+- Specification Compliance: `/memories/protocol-compliance/spec-adherence.xml`
+- Protocol Status: `/memories/protocol-compliance/protocol-status.xml`
+
+**Example TDD Pattern Memory:**
+```xml
+<tdd-pattern>
+  <timestamp>2025-10-03T18:00:00Z</timestamp>
+  <feature>REST API endpoint with authentication</feature>
+  <red-phase>
+    - Generated test cases: authentication, authorization, input validation
+    - AI-assisted edge case identification
+    - Security test scenarios from OWASP patterns
+  </red-phase>
+  <green-phase>
+    - Minimal implementation: JWT middleware, validation logic
+    - Test-driven design emerged: separation of concerns pattern
+    - 100% test passage with minimal code
+  </green-phase>
+  <refactor-phase>
+    - Extracted auth middleware for reuse
+    - Performance optimization: caching JWT validation
+    - Maintained 100% test coverage through refactoring
+  </refactor-phase>
+  <ai-collaboration>
+    Human: Test scenario design and architecture decisions
+    AI: Test generation, boilerplate code, optimization suggestions
+  </ai-collaboration>
+  <metrics>
+    - Test coverage: 95%
+    - Development time: 40% faster than non-TDD approach
+    - Bugs found in production: 0 (vs. 3 in similar non-TDD feature)
+  </metrics>
+  <reusability>Authentication TDD pattern for all API endpoints</reusability>
+</tdd-pattern>
+```
+
+**Cross-Reference**: See [Memory System Protocol](./memory_system_protocol.md) for complete memory usage guide.
+
+---
+
 *Remember: TDD is not just about testing—it's about designing better software through a disciplined, feedback-driven approach to development.*

@@ -573,6 +573,68 @@ Bash "npm run build" # Verify production build
 - [ ] Ready to hand off or continue next session
 ```
 
+## Memory Integration (Law #6)
+
+**Memory Checkpoints for SDD/TDD Integration Protocol:**
+
+**Session Start:**
+- View `/memories/development-patterns/test-strategies.xml` for proven TDD patterns
+- Review `/memories/protocol-compliance/spec-adherence.xml` for specification compliance history
+- Check `/memories/project-knowledge/{project}/architecture.xml` for design context
+
+**During SPECIFY Phase:**
+- Record specification patterns in `/memories/development-patterns/requirements-patterns.xml`
+- Log design decisions in `/memories/project-knowledge/{project}/architecture.xml`
+- Document task decomposition templates in `/memories/development-patterns/task-templates.xml`
+
+**During TEST Phase:**
+- Record successful test patterns in `/memories/development-patterns/test-strategies.xml`
+- Log test coverage strategies and lessons learned
+- Document test frameworks and tooling configurations
+
+**During IMPLEMENT Phase:**
+- Track specification compliance in `/memories/protocol-compliance/spec-adherence.xml`
+- Record implementation patterns that worked well
+- Document integration approaches for similar features
+
+**During REFACTOR Phase:**
+- Log refactoring patterns and techniques
+- Document performance optimization strategies
+- Record code quality improvements and lessons learned
+
+**Session End:**
+- Update `/memories/protocol-compliance/protocol-status.xml` with TDD cycle completion
+- Archive completed specifications and test strategies
+- Record specification-to-implementation traceability success metrics
+
+**Memory Files:**
+- Primary: `/memories/development-patterns/test-strategies.xml`
+- Specification Tracking: `/memories/protocol-compliance/spec-adherence.xml`
+- Requirements Patterns: `/memories/development-patterns/requirements-patterns.xml`
+
+**Example Test Strategy Memory:**
+```xml
+<test-strategy>
+  <timestamp>2025-10-03T15:00:00Z</timestamp>
+  <feature>User authentication flow</feature>
+  <tdd-approach>Red-Green-Refactor with security tests</tdd-approach>
+  <test-coverage>
+    - Unit tests: 95% coverage
+    - Integration tests: API endpoints and database
+    - Security tests: XSS, CSRF, SQL injection protection
+  </test-coverage>
+  <lessons-learned>
+    Security tests written first prevented 3 vulnerabilities
+    Mock service pattern improved test isolation
+  </lessons-learned>
+  <reusability>Pattern applicable to all authentication features</reusability>
+</test-strategy>
+```
+
+**Cross-Reference**: See [Memory System Protocol](./memory_system_protocol.md) for complete memory usage guide.
+
+---
+
 This protocol ensures consistent, high-quality development practices with AI tools while maintaining complete traceability from business requirements through technical implementation.
 
 

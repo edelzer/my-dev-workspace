@@ -211,4 +211,80 @@ Implementation Team → quality-assurance-specialist → security-specialist →
 - **Quality Gate Training**: Establish understanding of cross-validation requirements
 - **Escalation Training**: Ensure teams understand conflict resolution and escalation procedures
 
+## Memory Integration (Law #6)
+
+**Memory Checkpoints for Team Boundary Management:**
+
+**Session Start:**
+- View `/memories/agent-coordination/handoff-log.xml` for recent team transitions
+- Review `/memories/agent-coordination/context-packages.xml` for active handoffs
+- Check `/memories/agent-coordination/quality-gates.xml` for validation status
+
+**During BMAD Strategic Planning:**
+- Record strategic decisions in `/memories/agent-coordination/bmad-planning-sessions.xml`
+- Log business requirements and strategic context for Custom team handoff
+- Document technology direction and resource allocation decisions
+
+**During BMAD → Custom Handoff:**
+- Create handoff context package in `/memories/agent-coordination/context-packages.xml`
+- Record business requirements, success criteria, and constraints
+- Document Custom team feasibility validation and acceptance
+
+**During Custom Implementation:**
+- Record technical decisions and architecture details
+- Log implementation progress and quality metrics
+- Document integration approaches and lessons learned
+
+**During Custom → BMAD Validation:**
+- Create validation context package with deliverables and test results
+- Record business value delivery assessment
+- Document strategic alignment verification results
+
+**Cross-Team Quality Gates:**
+- Update `/memories/agent-coordination/quality-gates.xml` with gate passage status
+- Record dual validation results from both teams
+- Document approval decisions and deployment authorization
+
+**Session End:**
+- Archive completed handoff sessions to coordination history
+- Update handoff efficiency metrics and quality indicators
+- Record team independence metrics and collaboration patterns
+
+**Memory Files:**
+- Primary: `/memories/agent-coordination/context-packages.xml`
+- Handoff Tracking: `/memories/agent-coordination/handoff-log.xml`
+- Quality Gates: `/memories/agent-coordination/quality-gates.xml`
+
+**Example Team Handoff Memory:**
+```xml
+<team-handoff>
+  <timestamp>2025-10-03T19:00:00Z</timestamp>
+  <from-team>BMAD Strategic</from-team>
+  <to-team>Custom Implementation</to-team>
+  <handoff-type>Strategic → Technical Transition</handoff-type>
+  <context-package>
+    <business-requirements>User dashboard with analytics and reporting</business-requirements>
+    <strategic-objectives>Improve user engagement, data-driven decision making</strategic-objectives>
+    <technology-decisions>React frontend, Node.js backend, PostgreSQL database</technology-decisions>
+    <success-criteria>
+      - User analytics dashboard operational
+      - Real-time data visualization
+      - Export functionality for reports
+    </success-criteria>
+    <constraints>4-week timeline, existing authentication system integration</constraints>
+  </context-package>
+  <custom-validation>
+    <feasibility>Confirmed - architecture sound</feasibility>
+    <timeline>Validated - 4 weeks achievable</timeline>
+    <resource-requirements>1 frontend + 1 backend developer</resource-requirements>
+  </custom-validation>
+  <handoff-quality>Excellent - complete context provided</handoff-quality>
+  <lessons-learned>Early technical validation prevented scope creep</lessons-learned>
+</team-handoff>
+```
+
+**Cross-Reference**: See [Memory System Protocol](./memory_system_protocol.md) for complete memory usage guide.
+
+---
+
 This framework enables maximum efficiency through specialized team operation while ensuring comprehensive quality assurance through strategic dual validation.

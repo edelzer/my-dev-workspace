@@ -318,4 +318,81 @@ This document establishes **independent team validation workflows** that enable 
 - **User Satisfaction**: End-user satisfaction with dual-validated deliverables
 - **Strategic Objective Achievement**: Success rate of achieving strategic objectives
 
+## Memory Integration (Law #6)
+
+**Memory Checkpoints for Cross-Team Validation:**
+
+**Session Start:**
+- View `/memories/agent-coordination/quality-gates.xml` for validation checkpoint status
+- Review `/memories/agent-coordination/validation-history.xml` for previous validation patterns
+- Check `/memories/client-context/approval-history.xml` for deployment authorization history
+
+**During Business Value Validation (BMAD Team):**
+- Record business requirements compliance results
+- Log strategic alignment assessment and user experience validation
+- Document business quality standards verification
+
+**During Technical Feasibility Validation (Custom Team):**
+- Record architecture review results and technical soundness assessment
+- Log implementation complexity analysis and resource validation
+- Document security architecture evaluation and compliance verification
+
+**At Quality Gate 1 (Strategic → Technical):**
+- Create comprehensive handoff record in `/memories/agent-coordination/quality-gates.xml`
+- Document both team validation results and joint sign-off
+- Record risk mitigation strategies and timeline agreements
+
+**At Quality Gate 2 (Implementation → Business):**
+- Update validation results from both BMAD and Custom teams
+- Log business value confirmation and technical quality assurance
+- Document user experience validation and deployment readiness
+
+**At Quality Gate 3 (Deployment Authorization):**
+- Record dual authorization from both teams
+- Log comprehensive risk assessment and operational readiness
+- Document final deployment approval and rollback plans
+
+**Conflict Resolution Sessions:**
+- Record conflict details and resolution approach
+- Log escalation paths used and decision outcomes
+- Document lessons learned for future conflict prevention
+
+**Session End:**
+- Archive completed validation sessions to quality history
+- Update validation effectiveness metrics and team satisfaction scores
+- Record continuous improvement opportunities identified
+
+**Memory Files:**
+- Primary: `/memories/agent-coordination/quality-gates.xml`
+- Validation History: `/memories/agent-coordination/validation-history.xml`
+- Approval Tracking: `/memories/client-context/approval-history.xml`
+
+**Example Quality Gate Memory:**
+```xml
+<quality-gate>
+  <gate-id>QG2-user-dashboard</gate-id>
+  <timestamp>2025-10-03T20:00:00Z</timestamp>
+  <gate-type>Implementation → Business Validation</gate-type>
+  <custom-team-deliverables>
+    <implementation-summary>Complete user dashboard with analytics</implementation-summary>
+    <quality-assurance>100% test coverage, zero critical issues</quality-assurance>
+    <security-validation>Security scan passed, no vulnerabilities</security-validation>
+    <deployment-readiness>Production-ready, rollback plan validated</deployment-readiness>
+  </custom-team-deliverables>
+  <bmad-team-validation>
+    <business-requirements>All requirements satisfied - analytics, reporting, export</business-requirements>
+    <strategic-alignment>Confirmed - supports user engagement objectives</strategic-alignment>
+    <user-experience>Excellent - WCAG compliant, intuitive interface</user-experience>
+    <business-value>High - enables data-driven decision making</business-value>
+  </bmad-team-validation>
+  <dual-validation-result>PASSED - Both teams approve for deployment</dual-validation-result>
+  <deployment-authorization>Granted by /bmad-master and project-manager</deployment-authorization>
+  <lessons-learned>Early UX validation prevented late-stage design changes</lessons-learned>
+</quality-gate>
+```
+
+**Cross-Reference**: See [Memory System Protocol](./memory_system_protocol.md) for complete memory usage guide.
+
+---
+
 This framework ensures maximum quality through comprehensive dual validation while enabling efficient independent team operation.

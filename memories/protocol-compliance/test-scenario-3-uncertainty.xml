@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uncertainty-log>
+  <metadata>
+    <timestamp>2025-10-03T20:10:00Z</timestamp>
+    <version>1.0</version>
+    <scenario>Integration Test Scenario 3</scenario>
+  </metadata>
+  <uncertainty id="UNCERT-001">
+    <timestamp>2025-10-03T18:30:00Z</timestamp>
+    <issue>JWT token expiry time not specified in requirements</issue>
+    <context>Implementing authentication middleware for user management API. Security requirements specify JWT authentication but do not define token expiry duration. Industry standards vary from 5 minutes to 24 hours depending on use case.</context>
+    <clarification-requested>What is the required JWT token expiry time for this application? Should we implement refresh tokens for longer session persistence?</clarification-requested>
+    <options-presented>
+      <option id="A">5 minutes (high security, frequent refreshes required)</option>
+      <option id="B">15 minutes (balanced security and UX, industry standard for sensitive applications)</option>
+      <option id="C">1 hour (better UX, lower security for sensitive operations)</option>
+      <option id="D">24 hours (maximum convenience, requires additional security measures)</option>
+    </options-presented>
+    <resolution>Client approved Option B: 15 minutes (900 seconds) with refresh token mechanism for session extension</resolution>
+    <resolved-at>2025-10-03T19:00:00Z</resolved-at>
+    <resolved-by>Client (Product Owner)</resolved-by>
+    <impact>
+      <implementation>Token expiry constant set to 900 seconds in JWT utility module</implementation>
+      <additional-work>Refresh token endpoint added to implementation plan (Level 3 feature)</additional-work>
+      <documentation>Token lifecycle documented in API specification</documentation>
+    </impact>
+    <status>resolved</status>
+  </uncertainty>
+  <uncertainty id="UNCERT-002">
+    <timestamp>2025-10-03T19:15:00Z</timestamp>
+    <issue>Password strength requirements undefined</issue>
+    <context>Implementing user registration endpoint. Security requirements mention "strong passwords" but do not specify minimum length, character requirements, or complexity rules.</context>
+    <clarification-requested>What are the specific password strength requirements? Should we follow NIST guidelines, OWASP recommendations, or custom requirements?</clarification-requested>
+    <options-presented>
+      <option id="A">NIST 800-63B: Minimum 8 characters, no complexity requirements (focus on length and breach checking)</option>
+      <option id="B">OWASP: Minimum 10 characters, at least 3 of 4 character types (uppercase, lowercase, numbers, special)</option>
+      <option id="C">Enterprise: Minimum 12 characters with complexity requirements and password history</option>
+    </options-presented>
+    <resolution>Client approved Option A: NIST 800-63B guidelines - minimum 8 characters, no mandatory complexity, implement breach detection via HaveIBeenPwned API</resolution>
+    <resolved-at>2025-10-03T20:12:00Z</resolved-at>
+    <resolved-by>Client (Product Owner)</resolved-by>
+    <impact>
+      <implementation>Password validation updated to NIST guidelines with breach checking</implementation>
+      <additional-work>Integration with HaveIBeenPwned API for password breach detection</additional-work>
+      <documentation>Password policy documented in user registration API specification</documentation>
+    </impact>
+    <status>resolved</status>
+  </uncertainty>
+</uncertainty-log>

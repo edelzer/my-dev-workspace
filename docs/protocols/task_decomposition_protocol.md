@@ -614,4 +614,70 @@ context_recovery:
 - **Estimated Time**: [15-30 minute target]
 ```
 
+## Memory Integration (Law #6)
+
+**Memory Checkpoints for Task Decomposition Protocol:**
+
+**Session Start:**
+- View `/memories/session-context/phase-status.xml` for current task state and TodoWrite status
+- Review `/memories/development-patterns/task-templates.xml` for proven decomposition patterns
+- Check `/memories/protocol-compliance/efficiency-metrics.xml` for estimation accuracy history
+
+**During ANALYZE Phase:**
+- Record complexity analysis patterns in `/memories/development-patterns/task-templates.xml`
+- Log dependency mapping approaches that worked well
+- Document complexity indicators for future reference
+
+**During DECOMPOSE Phase:**
+- Record successful decomposition templates for reuse
+- Log task breakdown patterns by feature type
+- Document micro-task sizing lessons learned (15-30 min validation)
+
+**During SEQUENCE Phase:**
+- Record dependency resolution strategies
+- Log parallel execution opportunities identified
+- Document critical path determination approaches
+
+**During EXECUTE Phase:**
+- Update `/memories/session-context/phase-status.xml` with TodoWrite progress
+- Record task completion times vs. estimates for accuracy improvement
+- Document context handoff patterns between tasks
+
+**During VALIDATE Phase:**
+- Log validation checkpoint effectiveness
+- Record integration validation patterns
+- Document progression readiness criteria
+
+**Session End:**
+- Update `/memories/session-context/phase-status.xml` with current task progress
+- Archive completed decomposition templates to pattern library
+- Record estimation accuracy metrics for continuous improvement
+
+**Memory Files:**
+- Primary: `/memories/development-patterns/task-templates.xml`
+- Session Tracking: `/memories/session-context/phase-status.xml`
+- Efficiency Metrics: `/memories/protocol-compliance/efficiency-metrics.xml`
+
+**Example Task Template Memory:**
+```xml
+<task-template>
+  <timestamp>2025-10-03T16:00:00Z</timestamp>
+  <template-name>API Endpoint Implementation</template-name>
+  <decomposition-pattern>Layer-based (DB → Service → API → Tests)</decomposition-pattern>
+  <micro-tasks>
+    - Task 1: Database schema and migration (20 min)
+    - Task 2: Service layer business logic (25 min)
+    - Task 3: API endpoint with validation (30 min)
+    - Task 4: Integration tests (25 min)
+  </micro-tasks>
+  <dependencies>Sequential: DB → Service → API → Tests</dependencies>
+  <estimation-accuracy>95% (actual vs. estimated times)</estimation-accuracy>
+  <reusability>Applicable to all RESTful API development</reusability>
+</task-template>
+```
+
+**Cross-Reference**: See [Memory System Protocol](./memory_system_protocol.md) for complete memory usage guide.
+
+---
+
 This protocol ensures systematic, AI-driven task management with clear decomposition strategies, dependency tracking, and comprehensive validation at every micro-task level.

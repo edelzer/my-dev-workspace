@@ -527,4 +527,73 @@ severity_levels:
     authorization: "Individual developer with documentation"
 ```
 
+## Memory Integration (Law #6)
+
+**Memory Checkpoints for Technical Debt Protocol:**
+
+**Session Start:**
+- View `/memories/project-knowledge/{project}/tech-debt.xml` for active debt inventory
+- Review `/memories/protocol-compliance/efficiency-metrics.xml` for debt impact analysis
+- Check `/memories/session-context/pending-decisions.xml` for debt authorization status
+
+**During IDENTIFY Phase:**
+- Record detected debt patterns in `/memories/project-knowledge/{project}/tech-debt.xml`
+- Log debt identification triggers and patterns
+- Document shortcut decision context for future reference
+
+**During EVALUATE Phase:**
+- Record business justification and cost analysis
+- Log interest rate calculations and impact assessments
+- Document remediation effort estimates and strategies
+
+**During AUTHORIZE Phase:**
+- Update `/memories/project-knowledge/{project}/tech-debt.xml` with authorization decisions
+- Log approval process and conditions
+- Document stakeholder decisions for audit trail
+
+**During DOCUMENT Phase:**
+- Create comprehensive debt records in project knowledge
+- Record TodoWrite tasks for debt remediation
+- Document inline code annotations linking to debt records
+
+**During TRACK/REMEDIATE Phase:**
+- Update debt status in `/memories/project-knowledge/{project}/tech-debt.xml`
+- Log remediation progress and completion
+- Record actual vs. estimated remediation effort for accuracy improvement
+
+**Session End:**
+- Update `/memories/session-context/pending-decisions.xml` with debt authorization status
+- Archive completed debt remediation to lessons learned
+- Record debt management metrics for strategic planning
+
+**Memory Files:**
+- Primary: `/memories/project-knowledge/{project}/tech-debt.xml`
+- Decision Tracking: `/memories/session-context/pending-decisions.xml`
+- Efficiency Metrics: `/memories/protocol-compliance/efficiency-metrics.xml`
+
+**Example Debt Record Memory:**
+```xml
+<technical-debt>
+  <debt-id>DEBT-001</debt-id>
+  <timestamp>2025-10-03T14:00:00Z</timestamp>
+  <status>scheduled-for-remediation</status>
+  <shortcut-description>Hardcoded configuration values instead of config service</shortcut-description>
+  <business-justification>Meet Q3 client demo deadline</business-justification>
+  <interest-rate>2 hours per sprint (maintenance overhead)</interest-rate>
+  <remediation-plan>
+    - Strategy: Implement ConfigService
+    - Effort: 8 hours
+    - Scheduled: Sprint 15
+    - Assigned: backend-developer
+  </remediation-plan>
+  <authorization>Team Lead approved, conditions: Complete by Sprint 15</authorization>
+  <actual-remediation>6 hours (under estimate), completed Sprint 14</actual-remediation>
+  <lessons-learned>Config service pattern reusable across projects</lessons-learned>
+</technical-debt>
+```
+
+**Cross-Reference**: See [Memory System Protocol](./memory_system_protocol.md) for complete memory usage guide.
+
+---
+
 This protocol ensures systematic, AI-driven debt management with clear decision frameworks, comprehensive documentation, and proactive remediation tracking throughout the development lifecycle.
