@@ -193,3 +193,6 @@ docs/*-ultrathink.md
 docs/improvement-suggestions.json
 docs/learning-analytics.json
 docs/knowledge-index.json
+
+# Spec-Kit workflow projects (temporary planning repositories)
+projects/*-spec-project/
