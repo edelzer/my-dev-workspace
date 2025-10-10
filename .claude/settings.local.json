@@ -1,4 +1,5 @@
 {
+  "settingSources": ["project"],
   "permissions": {
     "allow": [
       "mcp__filesystem__list_directory",
