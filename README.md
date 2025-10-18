@@ -534,10 +534,52 @@ npm run security:report  # Generate security report
 - **Preview**: Branch-based preview deployments
 - **Rollback**: One-click rollback capabilities
 
+## 🐳 Docker Support
+
+**All templates include production-ready Docker configurations!**
+
+### Quick Docker Start
+
+```bash
+# Web template (React + Nginx)
+cd ~/development/my-web-app
+docker compose up -d
+
+# API template (Node.js + PostgreSQL + Redis)
+cd ~/development/my-api
+docker compose up -d
+```
+
+### Template Docker Features
+
+- ✅ **Web**: Multi-stage build (~25MB), nginx with security headers, SPA routing
+- ✅ **API**: Multi-service stack (API + PostgreSQL + Redis), health checks, persistent volumes
+- ✅ **Python**: FastAPI with Poetry, async support, multi-stage optimization
+- ✅ **Java**: Spring Boot with Gradle, JVM-optimized, comprehensive monitoring
+- ✅ **Go**: Ultra-minimal scratch base (~10MB), static binary, fastest startup
+
+### Deploy Anywhere
+
+- **AWS ECS**: Elastic Container Service with Fargate
+- **Google Cloud Run**: Serverless container deployment
+- **Azure Container Apps**: Fully managed container platform
+- **DigitalOcean**: App Platform with managed databases
+- **Any Kubernetes**: Standard container orchestration
+
+### Comprehensive Guide
+
+📖 **[Complete Docker Deployment Guide](docs/DOCKER-GUIDE.md)**
+- Template-specific Docker guides for all 5 templates
+- Production deployment examples (AWS, GCP, Azure, DigitalOcean)
+- Security best practices (multi-stage builds, non-root users, scanning)
+- Troubleshooting guide for common issues
+- CI/CD integration examples
+
 ## 📚 Documentation & Learning
 
 ### Team Resources
 
+- **Docker Deployment**: [docs/DOCKER-GUIDE.md](docs/DOCKER-GUIDE.md) - Comprehensive Docker guide for all templates
 - **Getting Started Guide**: [docs/WORKSPACE_GUIDE.md](docs/WORKSPACE_GUIDE.md)
 - **Best Practices**: [docs/knowledge-base/best-practices/](docs/knowledge-base/best-practices/)
 - **Architecture Patterns**: [docs/knowledge-base/patterns/](docs/knowledge-base/patterns/)
