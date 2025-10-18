@@ -114,12 +114,12 @@ function checkTemplates() {
 }
 
 function checkSpecKitDocument() {
-  const specKitPath = path.join(process.cwd(), 'docs', 'SPEC-KIT-PLANNING.md');
+  const specKitPath = path.join(process.cwd(), 'docs', 'SPEC-KIT-INTEGRATION-PLAN.md');
 
   if (fs.existsSync(specKitPath)) {
     printCheck(true, 'Spec-Kit planning document exists');
   } else {
-    printCheck(false, 'Spec-Kit planning document missing (docs/SPEC-KIT-PLANNING.md)', true);
+    printCheck(false, 'Spec-Kit planning document missing (docs/SPEC-KIT-INTEGRATION-PLAN.md)', true);
   }
 }
 
