@@ -1,25 +1,37 @@
 # Professional Development Workspace
 
+> **🎯 Template Repository** - Clone this workspace to access production-ready project templates. Create independent projects in `~/development/` using `create-project-repo.js`. This workspace is NOT for nested project development.
+
 A comprehensive, production-ready development environment designed for teams to build high-quality software efficiently. This workspace provides everything your team needs to start developing immediately with best practices built-in.
 
 ## 🚀 Quick Start (< 5 minutes)
 
+### 1. Clone Template Repository
 ```bash
-# 1. Clone this workspace
-git clone https://github.com/your-org/my-dev-workspace.git
+git clone https://github.com/edelzer/my-dev-workspace.git
 cd my-dev-workspace
-
-# 2. Install dependencies
 npm install
+```
 
-# 3. Create your first project
-node scripts/new-project.js my-awesome-app web
+### 2. Create Your First Project
+```bash
+# Create independent project from template
+node scripts/create-project-repo.js my-app web
 
-# 4. Start developing
-cd projects/my-awesome-app
+# Navigate and start developing
+cd ~/development/my-app
 npm install
 npm run dev
 ```
+
+### 3. Available Templates
+- **web** - React + TypeScript + Vite
+- **api** - Node.js + TypeScript + Express
+- **python** - FastAPI + Async
+- **java** - Spring Boot
+- **go** - Gin framework
+- **mobile** - React Native
+- **desktop** - Electron
 
 **That's it!** Your professional development environment is ready with security, testing, and best practices pre-configured.
 
@@ -127,7 +139,7 @@ Unlock achievements as you master the workspace:
 
 ```
 my-dev-workspace/
-├── projects/                 # Your team's projects go here
+├── projects/                 # Experimental projects only (use create-project-repo.js for production)
 ├── templates/               # Production-ready templates
 │   ├── web/                # React + TypeScript template
 │   ├── api/                # Node.js + Express template
@@ -135,30 +147,51 @@ my-dev-workspace/
 │   ├── java/               # Spring Boot template
 │   └── go/                 # Gin template
 ├── scripts/                # Automation scripts
+│   └── create-project-repo.js  # Create independent project repositories
 ├── config/                 # Centralized configurations
 ├── docs/                   # Team documentation
+│   └── spec-kit-planning.md  # Spec-Kit implementation roadmap
 └── tools/                  # Development utilities
 ```
 
+**Important:** The `/projects` directory is for quick experiments only. For production work, use `create-project-repo.js` to create independent repositories in `~/development/`.
+
 ## 🛠️ Creating New Projects
+
+### Production Workflow (Recommended)
+
+```bash
+# Create independent project repository
+node scripts/create-project-repo.js my-production-app web
+
+# Navigate to new project
+cd ~/development/my-production-app
+
+# Start development
+npm install
+npm run dev
+
+# Create GitHub repository (optional)
+gh repo create my-production-app --private --source=. --push
+```
 
 ### Available Project Types
 
 ```bash
 # Web Application (React + TypeScript)
-node scripts/new-project.js frontend-app web
+node scripts/create-project-repo.js frontend-app web
 
 # REST API (Node.js + Express)
-node scripts/new-project.js backend-api api
+node scripts/create-project-repo.js backend-api api
 
 # Python API (FastAPI)
-node scripts/new-project.js python-service python
+node scripts/create-project-repo.js python-service python
 
 # Java Service (Spring Boot)
-node scripts/new-project.js java-service java
+node scripts/create-project-repo.js java-service java
 
 # Go Service (Gin)
-node scripts/new-project.js go-service go
+node scripts/create-project-repo.js go-service go
 ```
 
 ### What Each Template Includes
@@ -509,6 +542,7 @@ npm run security:report  # Generate security report
 - **Best Practices**: [docs/knowledge-base/best-practices/](docs/knowledge-base/best-practices/)
 - **Architecture Patterns**: [docs/knowledge-base/patterns/](docs/knowledge-base/patterns/)
 - **Troubleshooting**: [docs/knowledge-base/troubleshooting/](docs/knowledge-base/troubleshooting/)
+- **Spec-Kit Planning**: [docs/spec-kit-planning.md](docs/spec-kit-planning.md) - Future integration roadmap
 
 ### Development Protocols
 
@@ -545,10 +579,10 @@ npm run security:report  # Generate security report
 ### Custom Scripts
 
 ```bash
-node scripts/new-project.js <name> <type>  # Create new project
-node scripts/config-validator.js           # Validate configurations
-node scripts/ai-security/setup.js         # Setup security scanning
-node scripts/bmad-performance-tracker.js  # Track team performance
+node scripts/create-project-repo.js <name> <type>  # Create new project
+node scripts/config-validator.js                   # Validate configurations
+node scripts/ai-security/setup.js                  # Setup security scanning
+node scripts/bmad-performance-tracker.js           # Track team performance
 ```
 
 ## 🔮 Future Roadmap
@@ -560,6 +594,7 @@ node scripts/bmad-performance-tracker.js  # Track team performance
 - **DevOps Templates**: Kubernetes + Docker
 - **Data Science Templates**: Jupyter + MLOps
 - **Game Development**: Unity + Godot templates
+- **Spec-Kit Integration**: Formal specification-driven development (see [docs/spec-kit-planning.md](docs/spec-kit-planning.md))
 
 ### Advanced Intelligence
 
@@ -594,15 +629,15 @@ npm run health-check
 
 ```bash
 # Project management
-node scripts/new-project.js           # Create new project
-npm run lint                          # Check code quality
-npm run test                          # Run tests
-npm run build                         # Build for production
+node scripts/create-project-repo.js      # Create new project
+npm run lint                             # Check code quality
+npm run test                             # Run tests
+npm run build                            # Build for production
 
 # Team coordination
-npm run team:status                   # Check team progress
-npm run team:sync                     # Sync configurations
-npm run team:validate                 # Validate team setup
+npm run team:status                      # Check team progress
+npm run team:sync                        # Sync configurations
+npm run team:validate                    # Validate team setup
 ```
 
 ## 🎮 Claude Code Command Center
@@ -893,7 +928,7 @@ This workspace is designed to get your team building high-quality software immed
 **Start your first project now**:
 
 ```bash
-node scripts/new-project.js my-awesome-project web
+node scripts/create-project-repo.js my-awesome-project web
 ```
 
 **Questions?** Check our [documentation](docs/) or ask our AI agents for help.

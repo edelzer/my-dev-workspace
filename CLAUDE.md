@@ -183,9 +183,9 @@ You must thoughtfully select agents based on task requirements:
 - **project-manager** - Workflow coordination, team management
 
 **Spec-Kit Alternative (Formal Specifications):**
-- Use `scripts\use-spec-kit.cmd` for projects requiring formal documentation
-- Commands: /constitution → /specify → /plan → /tasks → /implement
-- Choose when: Fixed requirements, regulatory needs, client documentation
+- **STATUS**: 🟡 **PLANNED** - See `docs/spec-kit-planning.md` for implementation roadmap
+- **Use when**: Fixed requirements, regulatory needs, client documentation
+- **Commands**: /constitution → /specify → /plan → /tasks → /implement
 
 **Implementation Team (Development):**
 - **frontend-developer** - UI/UX implementation, React/TypeScript
@@ -305,7 +305,7 @@ When uncertain about approach, present structured options:
 ```
 APPROACH OPTIONS:
 Option A (Minimalist): [description, effort, pros/cons]
-Option B (Moderate): [description, effort, pros/cons]  
+Option B (Moderate): [description, effort, pros/cons]
 Option C (Comprehensive): [description, effort, pros/cons]
 
 RECOMMENDATION: [preferred option with reasoning]
@@ -345,7 +345,7 @@ Stop and request guidance when:
 **Example Efficiency Assessment:**
 "SOLUTION ANALYSIS:
 - Problem: [specific issue]
-- Level 1 Option: [minimal change approach] 
+- Level 1 Option: [minimal change approach]
 - Level 2 Option: [targeted enhancement]
 - Level 3 Option: [focused feature addition]
 - RECOMMENDATION: Level 1 approach because [reasoning]
@@ -727,8 +727,8 @@ Leverage AI tools systematically while maintaining human oversight and decision-
 ### BMAD Multi-Agent Orchestration
 Professional enterprise-grade agile development using coordinated AI agents for planning, development, and quality assurance phases.
 
-### Spec-Kit Integration (Optional)
-GitHub Spec-Kit provides formal specification-driven development for projects requiring detailed documentation and multi-phase specification cycles.
+### Spec-Kit Integration (Planned)
+See `docs/spec-kit-planning.md` for implementation roadmap. GitHub Spec-Kit will provide formal specification-driven development for projects requiring detailed documentation and multi-phase specification cycles.
 
 ## Protocol Reference Guide
 
@@ -738,7 +738,7 @@ All protocols follow the 5-phase sequences defined in the Absolute Laws above. R
 
 ```
 my-dev-workspace/
-├── projects/           # Individual development projects
+├── projects/           # Experimental projects only (use create-project-repo.js for production)
 ├── templates/          # Project templates (web, api, mobile, desktop)
 │   ├── claude-md-templates/  # 7 comprehensive CLAUDE.md templates
 │   ├── shared-config/ # Shared ESLint, Prettier, TypeScript configurations
@@ -747,8 +747,10 @@ my-dev-workspace/
 │   ├── mobile/        # React Native cross-platform template
 │   └── desktop/       # Electron template with native integration
 ├── scripts/           # Utility scripts for project management
+│   └── create-project-repo.js  # Create independent project repositories
 ├── docs/              # Documentation and guides
 │   ├── protocols/     # Full development protocol documentation
+│   ├── spec-kit-planning.md  # Spec-Kit implementation roadmap
 │   └── knowledge-base/ # AI-powered knowledge management system
 │       ├── patterns/  # Architecture, testing, security, performance patterns
 │       ├── best-practices/ # Development standards and code review guidelines
@@ -768,6 +770,7 @@ my-dev-workspace/
 ├── .github/           # GitHub Actions CI/CD workflows (5 comprehensive pipelines)
 ├── .ide/              # Cross-platform IDE integration configurations
 ├── README.md          # Main documentation
+├── QUICKSTART.md      # 5-minute quick start guide
 ├── LICENSE            # MIT License
 └── CLAUDE.md          # This file - Claude Code instructions
 ```
@@ -830,10 +833,12 @@ claude mcp add serena -- uvx --from git+https://github.com/oraios/serena serena 
 ## Working with Projects
 
 ### Creating New Projects
-Use the project creation script with integrated protocols:
+Use the project creation script to create independent project repositories:
 ```bash
-node scripts/new-project.js <project-name> <project-type>
+node scripts/create-project-repo.js <project-name> <project-type>
 ```
+
+**Important**: This creates independent repositories in `~/development/`, NOT nested projects in the workspace.
 
 Available project types:
 - `web`: React + TypeScript + Vite + Security configs
@@ -890,7 +895,7 @@ Available project types:
 
 **Custom Claude Code Agents** (`.claude/agents/`) - Technical Implementation:
 - **Foundation Team**: project-manager, spec-analyst, spec-architect, spec-planner
-- **Implementation Team**: frontend-developer, backend-developer, spec-developer  
+- **Implementation Team**: frontend-developer, backend-developer, spec-developer
 - **Quality & Security Team**: spec-tester, quality-assurance-specialist, security-specialist
 
 **BMAD Strategic Agents** - Planning & Coordination:
@@ -918,7 +923,7 @@ Available project types:
 - Internal tools and MVPs
 - When speed and flexibility are priorities
 
-**When to use Spec-Kit** (Optional):
+**When to use Spec-Kit** (Planned - see docs/spec-kit-planning.md):
 - Client projects requiring formal documentation
 - Regulatory/compliance-driven development
 - Fixed-bid contracts with detailed specifications
@@ -928,18 +933,19 @@ Available project types:
 **Decision Criteria:**
 ```
 IF project requires:
-  - Formal specification documents → Use Spec-Kit
-  - Multiple approval cycles → Use Spec-Kit
-  - Regulatory compliance docs → Use Spec-Kit
-  - Fixed requirements upfront → Use Spec-Kit
+  - Formal specification documents → Use Spec-Kit (when implemented)
+  - Multiple approval cycles → Use Spec-Kit (when implemented)
+  - Regulatory compliance docs → Use Spec-Kit (when implemented)
+  - Fixed requirements upfront → Use Spec-Kit (when implemented)
 ELSE:
   - Use BMAD agents (faster, more flexible)
 ```
 
-**Spec-Kit Usage:**
+**Spec-Kit Future Usage** (see docs/spec-kit-planning.md):
 ```bash
+# Planned workflow (not yet implemented)
 # Create spec-driven project
-scripts\use-spec-kit.cmd <project-name>
+node scripts/create-spec-kit-project.js <project-name>
 
 # Then use Spec-Kit commands:
 /constitution  # Define principles
@@ -953,10 +959,9 @@ scripts\use-spec-kit.cmd <project-name>
 
 ```bash
 # Project Setup
-node scripts/new-project.js <name> <type>  # Create new project with protocols
-scripts\use-spec-kit.cmd <name>            # Create spec-driven project (formal docs)
+node scripts/create-project-repo.js <name> <type>  # Create independent project repository
 
-# Development Workflow  
+# Development Workflow
 npm run dev          # Start development
 npm run test:tdd     # TDD cycle
 npm run security:scan # Security check
@@ -989,7 +994,8 @@ uvx --from git+https://github.com/oraios/serena serena start-mcp-server  # Seren
 
 ## Project Status
 
-**Repository Status**: Optimized for public team sharing with comprehensive onboarding and clean structure
+**Repository Status**: Template repository for independent project creation
+**Workspace Model**: Create projects in `~/development/` using `create-project-repo.js`
 **Completed Phases**: All development phases successfully implemented and workspace team-ready
 **Agent Systems**: 21 total agents (11 Custom + 10 BMAD) with 100% coordination success
 **Template Portfolio**: 5 production-ready templates (Web/API/Python/Java/Go) + 7 CLAUDE.md templates
@@ -1001,6 +1007,7 @@ uvx --from git+https://github.com/oraios/serena serena start-mcp-server  # Seren
 ## Future Development
 
 **Phase 5 Goals**: Advanced orchestration, enterprise integration, cross-project analytics, AI-enhanced monitoring
+**Spec-Kit Integration**: Formal specification-driven development (see docs/spec-kit-planning.md)
 **Long-Term Vision**: Automated dashboards, predictive analytics, intelligent recommendations, audit systems
 
 ## Remember: Protocols Enable Excellence
