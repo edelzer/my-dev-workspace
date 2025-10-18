@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: react-web-app
+    ports:
+      - "80:80"
+    environment:
+      # Vite environment variables (build-time)
+      - VITE_APP_NAME=React Web App
+      - VITE_API_URL=http://localhost:3000
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    networks:
+      - web-network
+
+networks:
+  web-network:
+    driver: bridge
