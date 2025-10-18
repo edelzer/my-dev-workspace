@@ -1,0 +1,138 @@
+# Docker Ignore Template for Node.js Projects
+# This file prevents unnecessary files from being sent to Docker build context
+# Copy this as .dockerignore to your project root and customize as needed
+
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json  # Regenerate in container
+yarn.lock         # Regenerate in container
+
+# Build outputs
+dist/
+build/
+out/
+.next/
+.nuxt/
+
+# Testing
+coverage/
+.nyc_output/
+*.test.js
+*.spec.js
+*.test.ts
+*.spec.ts
+tests/
+__tests__/
+test/
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+
+# Git
+.git/
+.gitignore
+.gitattributes
+.github/
+
+# CI/CD
+.circleci/
+.travis.yml
+.gitlab-ci.yml
+azure-pipelines.yml
+Jenkinsfile
+
+# Environment files (NEVER include secrets in images)
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.env.*.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Documentation (keep README.md)
+*.md
+!README.md
+docs/
+documentation/
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+*.tmp
+*.bak
+*.swp
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Development tools
+.eslintcache
+.stylelintcache
+.prettierignore
+
+# Docker files themselves (don't include in context recursively)
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Workspace-specific
+.bmad-workspace/
+.claude/
+memories/
+
+# Python (if using Python in Node.js project)
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+venv/
+env/
+ENV/
+
+# Go (if using Go in Node.js project)
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# TypeScript (additional)
+*.tsbuildinfo
+
+# Misc
+.cache/
+.parcel-cache/
+.vite/
+*.local
