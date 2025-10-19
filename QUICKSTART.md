@@ -112,7 +112,7 @@ node scripts/create-project-repo.js my-go-service go
 
 - **[README.md](README.md)** - Complete workspace documentation
 - **[CLAUDE.md](CLAUDE.md)** - AI development protocols and Laws #1-6
-- **[docs/spec-kit-planning.md](docs/spec-kit-planning.md)** - Future formal specification integration
+- **[docs/spec-kit-planning.md](docs/spec-kit-planning.md)** - Spec-Kit formal specification workflow (NOW INSTALLED)
 
 ### 2. Learn About Templates
 
@@ -167,6 +167,17 @@ Leverage 21 specialized AI agents:
 - `frontend-developer` - UI/UX implementation
 - `backend-developer` - Server-side logic
 - `security-specialist` - Security validation
+
+**Spec-Kit Workflow (Formal Specifications):**
+```bash
+/speckit.constitution  # Establish project principles
+/speckit.specify       # Create feature specification
+/speckit.plan          # Generate technical plan
+/speckit.tasks         # Break down into tasks
+/speckit.implement     # Execute implementation
+```
+
+Use Spec-Kit for client projects or when formal documentation is required. See [docs/spec-kit-planning.md](docs/spec-kit-planning.md).
 
 ### 6. Create GitHub Repository (Optional)
 

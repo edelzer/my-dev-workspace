@@ -183,9 +183,9 @@ You must thoughtfully select agents based on task requirements:
 - **project-manager** - Workflow coordination, team management
 
 **Spec-Kit Alternative (Formal Specifications):**
-- **STATUS**: 🟡 **PLANNED** - See `docs/spec-kit-planning.md` for implementation roadmap
+- **STATUS**: ✅ **INSTALLED** - See `docs/spec-kit-planning.md` for complete guide
 - **Use when**: Fixed requirements, regulatory needs, client documentation
-- **Commands**: /constitution → /specify → /plan → /tasks → /implement
+- **Commands**: /speckit.constitution → /speckit.specify → /speckit.plan → /speckit.tasks → /speckit.implement
 
 **Implementation Team (Development):**
 - **frontend-developer** - UI/UX implementation, React/TypeScript
@@ -727,8 +727,8 @@ Leverage AI tools systematically while maintaining human oversight and decision-
 ### BMAD Multi-Agent Orchestration
 Professional enterprise-grade agile development using coordinated AI agents for planning, development, and quality assurance phases.
 
-### Spec-Kit Integration (Planned)
-See `docs/spec-kit-planning.md` for implementation roadmap. GitHub Spec-Kit will provide formal specification-driven development for projects requiring detailed documentation and multi-phase specification cycles.
+### Spec-Kit Integration (Installed)
+Spec-Kit is now integrated and ready for use. GitHub Spec-Kit provides formal specification-driven development for projects requiring detailed documentation and multi-phase specification cycles. See `docs/spec-kit-planning.md` for complete usage guide.
 
 ## Protocol Reference Guide
 
@@ -923,7 +923,7 @@ Available project types:
 - Internal tools and MVPs
 - When speed and flexibility are priorities
 
-**When to use Spec-Kit** (Planned - see docs/spec-kit-planning.md):
+**When to use Spec-Kit** (see docs/spec-kit-planning.md):
 - Client projects requiring formal documentation
 - Regulatory/compliance-driven development
 - Fixed-bid contracts with detailed specifications
@@ -933,26 +933,27 @@ Available project types:
 **Decision Criteria:**
 ```
 IF project requires:
-  - Formal specification documents → Use Spec-Kit (when implemented)
-  - Multiple approval cycles → Use Spec-Kit (when implemented)
-  - Regulatory compliance docs → Use Spec-Kit (when implemented)
-  - Fixed requirements upfront → Use Spec-Kit (when implemented)
+  - Formal specification documents → Use Spec-Kit
+  - Multiple approval cycles → Use Spec-Kit
+  - Regulatory compliance docs → Use Spec-Kit
+  - Fixed requirements upfront → Use Spec-Kit
 ELSE:
   - Use BMAD agents (faster, more flexible)
 ```
 
-**Spec-Kit Future Usage** (see docs/spec-kit-planning.md):
+**Spec-Kit Workflow** (see docs/spec-kit-planning.md):
 ```bash
-# Planned workflow (not yet implemented)
-# Create spec-driven project
-node scripts/create-spec-kit-project.js <project-name>
+# Core workflow commands (use in sequence):
+/speckit.constitution  # Define project principles and governance
+/speckit.specify       # Create baseline feature specification
+/speckit.plan          # Generate technical implementation plan
+/speckit.tasks         # Break down into actionable tasks
+/speckit.implement     # Execute specification-compliant implementation
 
-# Then use Spec-Kit commands:
-/constitution  # Define principles
-/specify       # Create specifications
-/plan          # Technical planning
-/tasks         # Task breakdown
-/implement     # Execute implementation
+# Optional enhancement commands:
+/speckit.clarify       # Ask structured questions (use before /speckit.plan)
+/speckit.analyze       # Cross-artifact consistency report (use after /speckit.tasks)
+/speckit.checklist     # Generate quality checklists (use after /speckit.plan)
 ```
 
 ### Essential Commands

@@ -235,6 +235,49 @@ npm run build           # Production build
 npm run deploy:staging  # Staging deployment
 ```
 
+### 4. **Spec-Kit Workflow** (Optional - For Formal Specifications)
+
+Use Spec-Kit for projects requiring detailed specifications and documentation:
+
+```bash
+# 1. Establish project governance
+/speckit.constitution   # Define project principles and standards
+
+# 2. Create feature specification
+/speckit.specify       # Baseline feature specification with user stories
+
+# 3. Optional: Clarify ambiguities
+/speckit.clarify       # Ask structured questions to de-risk uncertain areas
+
+# 4. Generate implementation plan
+/speckit.plan          # Technical planning with architecture and tasks
+
+# 5. Optional: Generate quality checklist
+/speckit.checklist     # Quality validation checklist
+
+# 6. Break down into tasks
+/speckit.tasks         # Actionable task breakdown with dependencies
+
+# 7. Optional: Analyze consistency
+/speckit.analyze       # Cross-artifact consistency report
+
+# 8. Execute implementation
+/speckit.implement     # Specification-compliant implementation
+```
+
+**When to use Spec-Kit:**
+- Client projects requiring formal documentation
+- Regulatory/compliance-driven development
+- Fixed-bid contracts with detailed specifications
+- Projects with multiple stakeholder approvals
+
+**When to use BMAD agents instead:**
+- Rapid prototyping and iterative development
+- Internal tools and MVPs
+- Agile sprints with evolving requirements
+
+See [docs/spec-kit-planning.md](docs/spec-kit-planning.md) for complete guide.
+
 ## 🤖 AI Development Teams
 
 ### Custom Development Agents
@@ -584,7 +627,7 @@ docker compose up -d
 - **Best Practices**: [docs/knowledge-base/best-practices/](docs/knowledge-base/best-practices/)
 - **Architecture Patterns**: [docs/knowledge-base/patterns/](docs/knowledge-base/patterns/)
 - **Troubleshooting**: [docs/knowledge-base/troubleshooting/](docs/knowledge-base/troubleshooting/)
-- **Spec-Kit Planning**: [docs/spec-kit-planning.md](docs/spec-kit-planning.md) - Future integration roadmap
+- **Spec-Kit Integration**: [docs/spec-kit-planning.md](docs/spec-kit-planning.md) - Formal specification-driven development
 
 ### Development Protocols
 
@@ -636,7 +679,7 @@ node scripts/bmad-performance-tracker.js           # Track team performance
 - **DevOps Templates**: Kubernetes + Docker
 - **Data Science Templates**: Jupyter + MLOps
 - **Game Development**: Unity + Godot templates
-- **Spec-Kit Integration**: Formal specification-driven development (see [docs/spec-kit-planning.md](docs/spec-kit-planning.md))
+- **✅ Spec-Kit Integration**: Formal specification-driven development - **NOW AVAILABLE** (see [docs/spec-kit-planning.md](docs/spec-kit-planning.md))
 
 ### Advanced Intelligence
 
