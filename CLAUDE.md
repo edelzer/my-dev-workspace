@@ -765,284 +765,47 @@ rename /memories/{old}  /memories/{new}      # Rename/move file
 
 **REMEMBER:** Memory is not optional—it's foundational. Every session builds on previous sessions. Every project contributes to workspace-wide knowledge. Laws #1-5 enforcement is tracked across all time.
 
-## Repository Overview
+---
 
-This is `my-dev-workspace` - a professional development environment designed for integration with Cursor, Claude Code, and GitHub. It provides organized project structure, templates, and tools for efficient development workflow with integrated security-first, test-driven, and AI-enhanced development practices.
+## Quick Reference Guide
 
-## Core Development Philosophy
+### 📚 Complete Documentation
+All implementation details have been extracted to `/docs/` for better performance and maintainability.
 
-### Security-First Mindset
-Every development decision prioritizes security from design through deployment. Security is not a feature to add later—it's a foundational design principle.
+**Core Documentation:**
+- **[Project Structure](docs/project-structure.md)** - Repository organization and development philosophy
+- **[Project Templates](docs/project-templates.md)** - All 5 templates, agent workflows, Spec-Kit guide
+- **[Command Reference](docs/command-reference.md)** - Essential commands and quick-start sequences
+- **[Integration Framework](docs/integration-framework.md)** - Security, debt, testing, debugging integration
+- **[System Capabilities](docs/system-capabilities.md)** - Agent teams, templates, automation, metrics
+- **[External Tools](docs/external-tools.md)** - Rule2Hook, Semgrep, Serena integration guides
+- **[Project Status](docs/project-status.md)** - Current completion status and metrics
+- **[Roadmap](docs/roadmap.md)** - Phase 5 goals and long-term vision
 
-### Strategic Technical Debt Management
-Technical debt is a conscious strategic tool, not an accident. Every shortcut decision is evaluated, documented, and actively managed.
-
-### Test-Driven Development Integration
-Specifications and tests drive implementation. Code quality is ensured through comprehensive testing strategies and continuous validation.
-
-### Surgical Debugging Methodology
-Problems are resolved through systematic, minimal-impact interventions. Start with the smallest possible fix and escalate only when necessary, preserving system stability and avoiding scope creep.
-
-### Strategic Task Decomposition
-Complex development challenges are broken into 15-30 minute micro-sessions with tangible outcomes. Each task has clear success criteria and builds incrementally toward larger objectives.
-
-### AI-Enhanced Development
-Leverage AI tools systematically while maintaining human oversight and decision-making authority.
-
-### BMAD Multi-Agent Orchestration
-Professional enterprise-grade agile development using coordinated AI agents for planning, development, and quality assurance phases.
-
-### Spec-Kit Integration (Installed)
-Spec-Kit is now integrated and ready for use. GitHub Spec-Kit provides formal specification-driven development for projects requiring detailed documentation and multi-phase specification cycles. See `docs/spec-kit-planning.md` for complete usage guide.
-
-## Protocol Reference Guide
-
-All protocols follow the 5-phase sequences defined in the Absolute Laws above. Refer to Laws #2-4 for complete protocol implementations including Security-First, SDD/TDD Integration, Surgical Debugging, Task Decomposition, and Technical Debt Management workflows.
-
-## Project Structure
-
-```
-my-dev-workspace/
-├── projects/           # Experimental projects only (use create-project-repo.js for production)
-├── templates/          # Project templates (web, api, mobile, desktop)
-│   ├── claude-md-templates/  # 7 comprehensive CLAUDE.md templates
-│   ├── shared-config/ # Shared ESLint, Prettier, TypeScript configurations
-│   ├── web/           # React/TypeScript template with complete toolchain
-│   ├── api/           # Node.js/Express template with security middleware
-│   ├── mobile/        # React Native cross-platform template
-│   └── desktop/       # Electron template with native integration
-├── scripts/           # Utility scripts for project management
-│   └── create-project-repo.js  # Create independent project repositories
-├── docs/              # Documentation and guides
-│   ├── protocols/     # Full development protocol documentation
-│   ├── spec-kit-planning.md  # Spec-Kit implementation roadmap
-│   └── knowledge-base/ # AI-powered knowledge management system
-│       ├── patterns/  # Architecture, testing, security, performance patterns
-│       ├── best-practices/ # Development standards and code review guidelines
-│       ├── lessons-learned/ # Project retrospectives and technical decisions
-│       └── troubleshooting/ # Common issues and diagnostic guides
-├── tools/             # Development tools and utilities
-├── config/            # Shared configuration files (ESLint, Prettier)
-├── .ai-config/        # AI tool configurations and rules
-├── .bmad-core/        # BMAD-METHOD framework (v4.36.2)
-├── .bmad-workspace/   # Shared multi-agent workspace
-├── .claude/           # Claude Code configurations and commands
-│   ├── commands/      # Custom Claude Code commands
-│   │   └── BMad/     # BMAD agent commands (10 agents + 17 tasks)
-│   ├── hooks.json    # 36+ intelligent automation hooks
-│   └── integration-hooks.json # Cross-platform IDE integration
-├── .cursor/           # Advanced Cursor IDE configurations with performance optimization
-├── .github/           # GitHub Actions CI/CD workflows (5 comprehensive pipelines)
-├── .ide/              # Cross-platform IDE integration configurations
-├── README.md          # Main documentation
-├── QUICKSTART.md      # 5-minute quick start guide
-├── LICENSE            # MIT License
-└── CLAUDE.md          # This file - Claude Code instructions
-```
-
-## Integration Framework
-
-**Security**: Templates include security configs, automated scanning, validation gates in CI/CD
-**Technical Debt**: Budget allocation (max 20% new, min 15% reduction), authorization requirements, impact assessment
-**Testing**: TDD workflow with AI-enhanced test generation, comprehensive coverage (unit/integration/E2E)
-**Debugging**: Systematic Level 1-7 escalation, minimal-impact interventions, context preservation
-**Task Management**: 15-30 minute micro-sessions, TodoWrite tracking, incremental complexity building
-**Multi-Agent**: Shared `.bmad-workspace/`, 17 task commands, quality gates, cross-agent coordination
-
-## System Capabilities
-
-**Development Teams**: 11 Custom Claude Code agents + 10 BMAD strategic agents with 17 task commands
-**Project Templates**: 7 CLAUDE.md templates + 5 production-ready templates (Web/API/Python/Java/Go)
-**Automation**: 36+ intelligent hooks, Clean tool integration, CI/CD pipelines
-**IDE Integration**: VS Code, JetBrains, Cursor, Windsurf with context sharing and diagnostics
-**Knowledge Management**: AI-powered search, learning analytics, comprehensive protocol documentation
-**Security Framework**: Scanning, validation, monitoring across all workflows with security-first protocols
-
-## External Tool Integration
-
-External tools are now integrated via clean external methods rather than embedded repositories. This approach maintains workspace cleanliness while providing full tool functionality.
-
-### claudecode-rule2hook
-**Purpose**: Natural language rule automation for Claude Code hooks
-**Status**: ✅ **INTEGRATED** - Command available in workspace
-**Location**: `.claude/commands/rule2hook.md`
-**Usage**: Use `/project:rule2hook` command directly in Claude Code
-**External Setup**: Clone externally when source inspection needed:
+### 🚀 Quick Start (3 Commands)
 ```bash
-# Clone for development/inspection (external to workspace)
-git clone https://github.com/zxdxjtu/claudecode-rule2hook.git ~/tools/claudecode-rule2hook
+# 1. Create new project
+node scripts/create-project-repo.js my-app web
+
+# 2. Navigate and install
+cd ~/development/my-app && npm install
+
+# 3. Start development
+npm run dev
 ```
 
-### Semgrep MCP
-**Purpose**: Security scanning via Model Context Protocol
-**Status**: 🟡 **READY FOR SETUP** - Setup when needed
-**Integration Method**: MCP server via package manager
+### 🤖 Agent Quick Reference
+**Custom Agents** (Technical): spec-analyst → spec-architect → spec-planner → backend-developer → frontend-developer → spec-tester → quality-assurance-specialist → security-specialist
+
+**BMAD Agents** (Strategic): /analyst → /pm → /architect → /po → /dev → /qa → /bmad-orchestrator
+
+### 📋 Essential Commands
 ```bash
-# Add to Claude Code MCP configuration
-claude mcp add semgrep uvx semgrep-mcp
-# OR install globally
-uvx semgrep-mcp
-```
-**Repository**: https://github.com/semgrep/mcp.git
-
-### Serena
-**Purpose**: Semantic code analysis and editing toolkit
-**Status**: 🟡 **READY FOR SETUP** - Setup when needed
-**Integration Method**: MCP server via uvx
-```bash
-# Add to Claude Code MCP configuration
-claude mcp add serena -- uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context ide-assistant
-```
-**Repository**: https://github.com/oraios/serena.git
-
-## Working with Projects
-
-### Creating New Projects
-Use the project creation script to create independent project repositories:
-```bash
-node scripts/create-project-repo.js <project-name> <project-type>
-```
-
-**Important**: This creates independent repositories in `~/development/`, NOT nested projects in the workspace.
-
-Available project types:
-- `web`: React + TypeScript + Vite + Security configs
-- `api`: Node.js + TypeScript + Express + Security middleware
-- `python`: FastAPI + Async + Security + Testing + Docker
-- `java`: Spring Boot + Security + Monitoring + Docker
-- `go`: Gin + High Performance + Security + Docker
-- `mobile`: React Native (template ready)
-- `desktop`: Electron (template ready)
-
-### Project Templates
-
-**Web Template** (`templates/web/`):
-- React 18 with TypeScript
-- Vite for build tooling
-- ESLint + TypeScript + Security rules
-- Vitest for testing with TDD setup
-- Security-first configurations (CSP, HTTPS, etc.)
-- Debt tracking and documentation templates
-
-**API Template** (`templates/api/`):
-- Node.js with TypeScript
-- Express.js framework
-- Security middleware (Helmet, CORS, rate limiting)
-- Jest for testing with comprehensive coverage
-- Input validation and authentication patterns
-- Monitoring and logging for security events
-
-**Python Template** (`templates/python/`):
-- FastAPI framework with async support
-- Pydantic for data validation and serialization
-- SQLAlchemy ORM with Alembic migrations
-- pytest testing framework with comprehensive coverage
-- Security middleware and authentication patterns
-- Docker containerization and deployment configs
-
-**Java Template** (`templates/java/`):
-- Spring Boot framework with Security
-- JPA/Hibernate for database integration
-- JWT authentication and authorization
-- JUnit testing with comprehensive test coverage
-- Docker containerization and monitoring
-- Production-ready configuration management
-
-**Go Template** (`templates/go/`):
-- Gin framework for high-performance APIs
-- GORM for database operations and migrations
-- JWT authentication and middleware
-- Go testing framework with benchmarks
-- Docker containerization and deployment
-- Security-first design with rate limiting
-
-### Multi-Agent Development Teams
-
-**Custom Claude Code Agents** (`.claude/agents/`) - Technical Implementation:
-- **Foundation Team**: project-manager, spec-analyst, spec-architect, spec-planner
-- **Implementation Team**: frontend-developer, backend-developer, spec-developer
-- **Quality & Security Team**: spec-tester, quality-assurance-specialist, security-specialist
-
-**BMAD Strategic Agents** - Planning & Coordination:
-- **Planning**: /analyst, /pm, /architect, /po
-- **Development**: /dev, /ux-expert, /qa, /sm
-- **Orchestration**: /bmad-orchestrator, /bmad-master
-
-**Agent Selection Guide:**
-- **Custom Agents**: Code-level work, testing, security analysis, debugging
-- **BMAD Agents**: Strategic planning, business analysis, cross-project coordination
-
-**Workflow Sequence:**
-1. **Strategic Planning**: /analyst → /pm → /po (BMAD agents)
-2. **Technical Foundation**: spec-analyst → spec-architect → spec-planner (Custom agents)
-3. **Implementation**: backend-developer + frontend-developer + /ux-expert (Hybrid)
-4. **Quality Assurance**: spec-tester → quality-assurance-specialist → security-specialist (Custom agents)
-5. **Deployment**: /qa → /bmad-orchestrator (BMAD agents)
-
-### Planning Methodology Selection Guide
-
-**When to use BMAD Agents** (Default):
-- Rapid prototyping and iterative development
-- Projects with evolving requirements
-- Agile sprints and continuous delivery
-- Internal tools and MVPs
-- When speed and flexibility are priorities
-
-**When to use Spec-Kit** (see docs/spec-kit-planning.md):
-- Client projects requiring formal documentation
-- Regulatory/compliance-driven development
-- Fixed-bid contracts with detailed specifications
-- Projects with multiple stakeholder approvals
-- When comprehensive upfront design is required
-
-**Decision Criteria:**
-```
-IF project requires:
-  - Formal specification documents → Use Spec-Kit
-  - Multiple approval cycles → Use Spec-Kit
-  - Regulatory compliance docs → Use Spec-Kit
-  - Fixed requirements upfront → Use Spec-Kit
-ELSE:
-  - Use BMAD agents (faster, more flexible)
-```
-
-**Spec-Kit Workflow** (see docs/spec-kit-planning.md):
-```bash
-# Core workflow commands (use in sequence):
-/speckit.constitution  # Define project principles and governance
-/speckit.specify       # Create baseline feature specification
-/speckit.plan          # Generate technical implementation plan
-/speckit.tasks         # Break down into actionable tasks
-/speckit.implement     # Execute specification-compliant implementation
-
-# Optional enhancement commands:
-/speckit.clarify       # Ask structured questions (use before /speckit.plan)
-/speckit.analyze       # Cross-artifact consistency report (use after /speckit.tasks)
-/speckit.checklist     # Generate quality checklists (use after /speckit.plan)
-```
-
-### Essential Commands
-
-```bash
-# Project Setup
-node scripts/create-project-repo.js <name> <type>  # Create independent project repository
-
-# Development Workflow
-npm run dev          # Start development
-npm run test:tdd     # TDD cycle
-npm run security:scan # Security check
-npm run debt:analyze # Debt assessment
-
-# Multi-Agent Coordination
-/analyst → /pm → /architect → /po        # Strategic planning
-claude --agent spec-analyst → spec-architect → spec-planner  # Technical foundation
-/dev + /ux-expert + custom agents        # Implementation
-/qa → /bmad-orchestrator                 # Quality & deployment
-
-# External Tool Integration
-git clone https://github.com/zxdxjtu/claudecode-rule2hook.git  # Rule2Hook
-uvx semgrep-mcp                          # Semgrep MCP
-uvx --from git+https://github.com/oraios/serena serena start-mcp-server  # Serena
+node scripts/create-project-repo.js <name> <type>  # Create project (web/api/python/java/go)
+npm run dev                                         # Start development server
+npm run test:tdd                                    # TDD workflow
+npm run security:scan                               # Security check
+/speckit.constitution → /speckit.specify → /speckit.plan → /speckit.tasks  # Spec-Kit workflow
 ```
 
 ## Development Standards
@@ -1051,35 +814,10 @@ uvx --from git+https://github.com/oraios/serena serena start-mcp-server  # Seren
 **Protocol Compliance**: Mandatory phase sequences, quality gates, agent coordination, TodoWrite tracking
 **Emergency Response**: Security containment, debt freeze procedures, systematic debugging, agent fallback protocols
 
-## Claude Code Integration
-
-**AI Protocol Execution**: Systematic phase sequences, TodoWrite tracking, quality gates, context preservation
-**Command Integration**: Read/Write/Edit for files, Grep/Glob for analysis, Bash for testing, Task for complex operations
-**Validation Framework**: Pre-phase checks, transition gates, quality checkpoints, session recovery
-**Documentation**: Complete protocol guides in `docs/protocols/` with AI-executable templates
-
-## Project Status
-
-**Repository Status**: Template repository for independent project creation
-**Workspace Model**: Create projects in `~/development/` using `create-project-repo.js`
-**Completed Phases**: All development phases successfully implemented and workspace team-ready
-**Agent Systems**: 21 total agents (11 Custom + 10 BMAD) with 100% coordination success
-**Template Portfolio**: 5 production-ready templates (Web/API/Python/Java/Go) + 7 CLAUDE.md templates
-**Automation**: 36+ hooks, Clean external tool integration, CI/CD pipelines with 100% test pass rates
-**Team Features**: Interactive onboarding, achievement tracking, 5-minute quick start, guided tours
-**Integration**: Cross-platform IDE support, knowledge management, security frameworks
-**Metrics**: Zero critical vulnerabilities, >95% Level 1-3 debugging success, 100% TodoWrite compliance
-
-## Future Development
-
-**Phase 5 Goals**: Advanced orchestration, enterprise integration, cross-project analytics, AI-enhanced monitoring
-**Spec-Kit Integration**: Formal specification-driven development (see docs/spec-kit-planning.md)
-**Long-Term Vision**: Automated dashboards, predictive analytics, intelligent recommendations, audit systems
+---
 
 ## Remember: Protocols Enable Excellence
 
 These protocols are not constraints—they're enablers that allow us to build secure, maintainable, high-quality software faster and more reliably. Every protocol decision should ask: "Does this help us deliver better software more efficiently?"
 
-**Implementation Priorities**: Follow protocol sequences, use TodoWrite tracking, validate quality gates, respect authorization levels, preserve context, apply emergency protocols when needed.
-
-**BMAD Guidelines**: Use agent sequences (/analyst → /pm → /architect → /po), maintain shared workspace integrity, validate handoffs through quality gates.
+**For complete implementation details**, see the [Quick Reference Guide](#quick-reference-guide) above and the comprehensive documentation in `/docs/`.
