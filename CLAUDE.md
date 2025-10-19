@@ -500,8 +500,73 @@ Before ANY work, you MUST:
 3. **REVIEW** `/memories/client-context/preferences.xml` for client guidance
 4. **LOAD** relevant project knowledge from `/memories/project-knowledge/{project}/`
 5. **SYNC** TodoWrite status with memory records
+6. **CHECK** if context was recently cleared (inspect session-context metadata)
 
 **NEVER** start work without first checking memory—your context window may have been reset.
+
+**CONTEXT EDITING INTEGRATION:**
+
+The memory system integrates with Anthropic's context editing feature for unlimited session length:
+
+**How It Works:**
+- When conversation context approaches clearing threshold (100K tokens), automatic warning received
+- Claude preserves critical information to memory files BEFORE context clearing
+- Anthropic API clears oldest tool results (replaced with placeholders)
+- Memory tool operations are NEVER cleared (excluded automatically)
+- Session continues indefinitely by referencing memory files for cleared information
+
+**Context Clearing Response Protocol:**
+
+When receiving automatic context threshold warning:
+
+1. **PRESERVE CRITICAL STATE** (MANDATORY):
+   - Update `/memories/session-context/active-project.xml` with current work status
+   - Save `/memories/protocol-compliance/protocol-status.xml` phase progress
+   - Record active `/memories/agent-coordination/context-packages.xml` handoffs
+   - Document `/memories/client-context/pending-decisions.xml` blocking items
+
+2. **SUMMARIZE TOOL RESULTS** (IMPORTANT):
+   - Extract key findings from tool results being cleared
+   - Document important code patterns discovered
+   - Record debugging insights and solutions found
+   - Note security findings and architectural decisions made
+
+3. **UPDATE MEMORY METADATA** (REQUIRED):
+   - Mark files with `<context-preservation-trigger>approaching-threshold</context-preservation-trigger>`
+   - Record `<context-clear-timestamp>` for tracking
+   - Note estimated tokens cleared
+   - Document what critical information was preserved
+
+4. **CONTINUE SEAMLESSLY** (EXPECTED):
+   - Reference memory files for any cleared information needed
+   - Proceed with current task without interruption or re-clarification
+   - Trust memory system for historical context
+   - Never ask user to repeat previously provided information
+
+**Memory Preservation Priority:**
+
+**CRITICAL (Must Always Preserve Before Clearing):**
+1. `session-context/active-project.xml` - Current work state
+2. `session-context/phase-status.xml` - Protocol execution status
+3. `protocol-compliance/uncertainty-log.xml` - Active uncertainties
+4. `client-context/pending-decisions.xml` - Blocking client approvals
+
+**HIGH PRIORITY (Preserve Recent State):**
+5. `agent-coordination/context-packages.xml` - Active agent handoffs
+6. `development-patterns/debugging-solutions.xml` - Current debugging progress
+7. `project-knowledge/{project}.xml` - Project-specific learnings
+
+**MEDIUM PRIORITY (Summarize and Archive):**
+8. `protocol-compliance/efficiency-metrics.xml` - Surgical level statistics
+9. `client-context/communication-log.xml` - Recent client interactions
+10. `development-patterns/test-strategies.xml` - Testing approaches used
+
+**Configuration Notes:**
+- Context editing happens server-side (Anthropic API)
+- Claude Code handles this automatically with memory tool integration
+- No manual configuration required for typical development sessions
+- Memory tool is automatically excluded from clearing
+- See `docs/context-editing-integration.md` for detailed configuration options
 
 **MEMORY DIRECTORY ARCHITECTURE:**
 
