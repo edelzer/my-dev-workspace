@@ -799,6 +799,95 @@ npm run dev
 
 **BMAD Agents** (Strategic): /analyst → /pm → /architect → /po → /dev → /qa → /bmad-orchestrator
 
+### ⚡ Agent Skills (Auto-Activating Capabilities)
+**STATUS**: ✅ **INSTALLED** - 35 Skills across 3 marketplaces
+
+**Skills activate automatically** when relevant to your task - no manual invocation needed!
+
+#### **Document Skills** (4 Skills - Microsoft Office Suite)
+- `xlsx` - Spreadsheet creation, editing, analysis with formulas/formatting
+- `docx` - Document creation/editing with tracked changes
+- `pptx` - Presentation creation with layouts and speaker notes
+- `pdf` - PDF manipulation: extraction, creation, merging/splitting
+
+#### **Development & Testing Skills** (11 Skills - Anthropic Example Skills)
+- `skill-creator` ⭐ - **CRITICAL**: Create custom workspace Skills
+- `mcp-builder` - Build MCP servers in Python/TypeScript
+- `webapp-testing` - Playwright testing for local web apps
+- `artifacts-builder` - Multi-component React artifacts
+- `canvas-design` - Visual art creation in PNG/PDF
+- `algorithmic-art` - Generative art using p5.js
+- `internal-comms` - Status reports, newsletters, updates
+- `slack-gif-creator` - Animated GIFs optimized for Slack
+- `theme-factory` - Style artifacts with pre-set/custom themes
+- `brand-guidelines` - Anthropic brand colors/typography
+
+#### **Superpowers Skills** (20 Skills - Professional Workflows)
+**Testing & Quality**:
+- `test-driven-development` - RED-GREEN-REFACTOR TDD cycle
+- `testing-anti-patterns` - Prevent common testing mistakes
+- `condition-based-waiting` - Async test patterns
+- `verification-before-completion` - Verify before claiming done
+
+**Debugging & Problem Solving**:
+- `systematic-debugging` - 4-phase root cause framework
+- `root-cause-tracing` - Trace bugs backward through call stack
+- `defense-in-depth` - Multi-layer validation
+
+**Planning & Execution**:
+- `brainstorming` - Socratic design refinement (also `/superpowers:brainstorm`)
+- `writing-plans` - Detailed implementation plans (also `/superpowers:write-plan`)
+- `executing-plans` - Batch execution with checkpoints (also `/superpowers:execute-plan`)
+
+**Collaboration & Workflow**:
+- `dispatching-parallel-agents` - Concurrent subagent workflows
+- `requesting-code-review` - Pre-review checklist
+- `receiving-code-review` - Handle feedback with rigor
+- `subagent-driven-development` - Fresh subagents per task
+- `finishing-a-development-branch` - Merge/PR decision workflow
+- `using-git-worktrees` - Isolated git worktrees
+
+**Meta & Skill Development**:
+- `writing-skills` - Create skills using TDD
+- `testing-skills-with-subagents` - Verify skill quality
+- `sharing-skills` - Contribute skills via PR
+- `using-superpowers` - Mandatory workflow system
+
+#### **How Skills Work**
+```
+AUTO-ACTIVATION EXAMPLE:
+You: "Extract text from report.pdf"
+Claude: [Automatically invokes 'pdf' Skill]
+        → Uses pypdf library
+        → Extracts text
+        → Returns results
+
+NO MANUAL COMMANDS NEEDED!
+```
+
+#### **Skills Installation** (Already Complete ✅)
+```bash
+# In Claude Code CLI terminal:
+/plugin marketplace add anthropics/skills
+/plugin install example-skills@anthropic-agent-skills
+/plugin install document-skills@anthropic-agent-skills
+
+/plugin marketplace add obra/superpowers-marketplace
+/plugin install superpowers@superpowers-marketplace
+
+# Verify installation:
+What Skills are available?
+```
+
+#### **Custom Workspace Skills** (Planned)
+Use `skill-creator` to build protocol-enforcing Skills:
+- `uncertainty-protocol-enforcer` - Law #1A enforcement
+- `specification-adherence-checker` - Law #1B drift prevention
+- `surgical-precision-guide` - Law #4 minimalist approach
+- `session-recovery` - Law #6 memory integration
+- `security-first-analyzer` - Security-first protocol
+- `technical-debt-evaluator` - Debt consciousness protocol
+
 ### 📋 Essential Commands
 ```bash
 node scripts/create-project-repo.js <name> <type>  # Create project (web/api/python/java/go)
@@ -806,6 +895,11 @@ npm run dev                                         # Start development server
 npm run test:tdd                                    # TDD workflow
 npm run security:scan                               # Security check
 /speckit.constitution → /speckit.specify → /speckit.plan → /speckit.tasks  # Spec-Kit workflow
+
+# Superpowers Commands (Skills-powered):
+/superpowers:brainstorm                             # Interactive design refinement
+/superpowers:write-plan                             # Create implementation plan
+/superpowers:execute-plan                           # Execute plan in batches
 ```
 
 ## Development Standards
