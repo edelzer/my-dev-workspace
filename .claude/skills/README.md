@@ -1,14 +1,16 @@
 # Agent Skills Reference Guide
 
-**Last Updated**: 2025-10-29
-**Total Skills Installed**: 35
+**Last Updated**: 2025-10-30
+**Total Skills Installed**: 38 (35 installed + 3 custom)
 **Marketplaces**: 3 (Anthropic example-skills, Anthropic document-skills, obra/superpowers)
+**Custom Skills**: 3 (Phase 1 complete)
 
 ## 📋 Table of Contents
 
 - [Overview](#overview)
 - [How Skills Work](#how-skills-work)
 - [Skills Inventory](#skills-inventory)
+  - [**Custom Skills (3) - Phase 1**](#custom-skills-phase-1)
   - [Document Skills (4)](#document-skills)
   - [Development & Testing Skills (11)](#development--testing-skills)
   - [Superpowers: Testing & Quality (4)](#superpowers-testing--quality)
@@ -58,6 +60,98 @@ Each Skill has specific conditions that trigger activation:
 ---
 
 ## Skills Inventory
+
+### Custom Skills (Phase 1)
+
+**Source**: Workspace-specific custom Skills (`.claude/skills/`)
+**Count**: 3 Skills
+**Status**: ✅ Phase 1 Complete (tested and validated 2025-10-30)
+
+---
+
+#### ⚠️ `uncertainty-protocol-enforcer` - Law #1A Automation
+**Description**: Real-time uncertainty detection with automatic STOP protocol triggering
+**Location**: [`.claude/skills/uncertainty-protocol-enforcer/`](.claude/skills/uncertainty-protocol-enforcer/)
+**Triggers**:
+- Tentative language ("I think", "probably", "assuming", "maybe")
+- Multiple viable approaches without clear choice
+- Missing context or unclear requirements
+- Ambiguous specifications
+
+**Capabilities**:
+- Detects uncertainty indicators in real-time
+- Triggers MANDATORY STOP protocol
+- Generates 3-5 targeted clarifying questions
+- Prevents assumption-based actions
+- Logs uncertainty patterns to memory
+
+**Protocol Integration**: **Law #1A (Uncertainty Protocol)** - CRITICAL
+**Example Usage**: Auto-activates when Claude detects uncertainty during any task
+**Testing Results**: ✅ PASSED pressure test (time + economic + authority + exhaustion pressures)
+
+**Files**:
+- `SKILL.md` - Complete Skill instructions with auto-activation triggers
+- `references/uncertainty-patterns.md` - Comprehensive uncertainty indicators
+- `references/clarification-templates.md` - Question generation frameworks
+- `scripts/log_uncertainty.py` - Logs to `/memories/protocol-compliance/uncertainty-log.xml`
+
+---
+
+#### 🎯 `specification-adherence-checker` - Law #1B Automation
+**Description**: Prevents architectural drift by validating implementations against specifications BEFORE coding
+**Location**: [`.claude/skills/specification-adherence-checker/`](.claude/skills/specification-adherence-checker/)
+**Triggers**:
+- Before any code implementation begins
+- When modifying existing architecture
+- During refactoring tasks
+- When specifications are provided
+
+**Capabilities**:
+- 8-gate validation system (5 pre-implementation, 3 post-implementation)
+- Detects "close enough" implementations
+- Prevents shortcuts that violate architectural patterns
+- Enforces exact specification compliance
+- Validates against architecture patterns
+
+**Protocol Integration**: **Law #1B (Specification Adherence)** - CRITICAL
+**Example Usage**: Auto-activates before implementation to validate against requirements.md/design.md
+**Testing Results**: ✅ PASSED pressure test (time + exhaustion + sunk cost + pride + pragmatic rationalization)
+
+**Files**:
+- `SKILL.md` - Pre-implementation validation protocol with 8 mandatory gates
+- `references/drift-patterns.md` - Common drift indicators (language, architectural, interface)
+- `references/validation-checkpoints.md` - 8-gate validation system
+- `scripts/log_drift_prevention.py` - Logs to `/memories/protocol-compliance/drift-prevention-log.xml`
+
+---
+
+#### 💾 `session-recovery` - Law #6 Automation
+**Description**: Perfect session continuity through memory integration, enabling unlimited session length
+**Location**: [`.claude/skills/session-recovery/`](.claude/skills/session-recovery/)
+**Triggers**:
+- **MANDATORY**: First action at every session start
+- After Anthropic API clears context (100K token threshold)
+- When user says "continue where we left off"
+- When referencing previous session work
+- After session interruptions or crashes
+
+**Capabilities**:
+- Loads 4 critical memory files minimum
+- Restores TodoWrite status across sessions
+- Handles context editing integration (100K tokens)
+- Enables cross-project context switching
+- Never asks user to repeat previous information
+
+**Protocol Integration**: **Law #6 (Cross-Session Memory & Learning)** - CRITICAL
+**Example Usage**: Auto-activates at session start to restore complete context from `/memories/`
+**Testing Results**: ✅ PASSED pressure test (time + assumption + social + rationalization pressures)
+
+**Files**:
+- `SKILL.md` - Complete session recovery protocol (8-step process)
+- `references/memory-structure.md` - Complete `/memories/` directory architecture with XML schemas
+- `scripts/recover_session.py` - Session recovery script (loads memory, prints summary)
+
+---
 
 ### Document Skills
 
@@ -526,6 +620,9 @@ Each Skill has specific conditions that trigger activation:
 
 | Skill Name | Category | Auto-Activates When | CLAUDE.md Integration |
 |------------|----------|---------------------|----------------------|
+| **`uncertainty-protocol-enforcer`** ⭐ | **Custom** | **Tentative language, multiple approaches** | **Law #1A (CRITICAL)** |
+| **`specification-adherence-checker`** ⭐ | **Custom** | **Before implementation, refactoring** | **Law #1B (CRITICAL)** |
+| **`session-recovery`** ⭐ | **Custom** | **Session start (MANDATORY)** | **Law #6 (CRITICAL)** |
 | `xlsx` | Document | Excel file work | None |
 | `docx` | Document | Word document work | None |
 | `pptx` | Document | PowerPoint work | None |
@@ -604,11 +701,13 @@ What Skills are available?
 ### CLAUDE.md Law Integration
 
 **Law #1A (Uncertainty Protocol)**:
+- **`uncertainty-protocol-enforcer`** ⭐ **[CUSTOM]** - Real-time uncertainty detection (AUTOMATED)
 - `verification-before-completion` - Prevents premature claims
 - `systematic-debugging` - Structured problem-solving
 - `brainstorming` - Clarification before implementation
 
 **Law #1B (Specification Adherence)**:
+- **`specification-adherence-checker`** ⭐ **[CUSTOM]** - Architectural drift prevention (AUTOMATED)
 - `defense-in-depth` - Data validation integrity
 - `verification-before-completion` - Requirements checking
 
@@ -634,19 +733,29 @@ What Skills are available?
 - `receiving-code-review` - Professional communication
 
 **Law #6 (Cross-Session Memory & Learning)**:
-- No direct Skills currently (custom Skills planned)
+- **`session-recovery`** ⭐ **[CUSTOM]** - Perfect session continuity (AUTOMATED)
 
-### Protocol Coverage Gaps
+### Protocol Coverage Status
 
-**Identified gaps for custom Skill development:**
-1. **Uncertainty detection** - Auto-detect when Claude is uncertain
-2. **Specification drift prevention** - Monitor architectural compliance
-3. **Session recovery** - Memory-based context restoration
-4. **Knowledge capture** - Automated learning accumulation
-5. **Technical debt evaluation** - Systematic debt assessment
-6. **Security-first analysis** - Automated security protocol enforcement
+**✅ AUTOMATED (Phase 1 Complete - 2025-10-30)**:
+1. ✅ **Law #1A: Uncertainty Protocol** - `uncertainty-protocol-enforcer` (CRITICAL)
+2. ✅ **Law #1B: Specification Adherence** - `specification-adherence-checker` (CRITICAL)
+3. ✅ **Law #6: Memory & Learning** - `session-recovery` (CRITICAL)
 
-See `projects/custom-skills-development.md` for custom Skills roadmap.
+**⏳ PENDING (Phase 2 - Planned)**:
+4. ⏳ **Knowledge Capture** - Automated learning accumulation
+5. ⏳ **Surgical Precision Guide** - Law #4 minimalist approach automation
+6. ⏳ **Security-First Analyzer** - Automated security protocol enforcement
+
+**⏳ PENDING (Phase 3 - Planned)**:
+7. ⏳ **Technical Debt Evaluator** - Systematic debt assessment
+
+**✅ WELL-COVERED (Existing Skills)**:
+- ✅ **Law #2: Protocol Adherence** - TDD, planning, execution Skills
+- ✅ **Law #3: Orchestration** - Parallel agents, subagent-driven development
+- ✅ **Law #5: Senior Developer Leadership** - Code review, internal comms
+
+See [projects/custom-skills-development.md](../../projects/custom-skills-development.md) for complete custom Skills roadmap.
 
 ---
 
@@ -661,6 +770,32 @@ See `projects/custom-skills-development.md` for custom Skills roadmap.
 
 ---
 
-**Last Verified**: 2025-10-29
+**Last Verified**: 2025-10-30
 **Skills Working**: Claude Code CLI + Cursor IDE
-**Status**: ✅ All 35 Skills operational
+**Status**: ✅ All 38 Skills operational (35 installed + 3 custom Phase 1)
+
+---
+
+## Phase 1 Custom Skills Testing Results
+
+**Testing Method**: RED-GREEN-REFACTOR pressure testing with `testing-skills-with-subagents` Skill
+
+### `uncertainty-protocol-enforcer` Testing
+**Pressure Test**: Authentication feature with 90-min deadline, 5 hours sunk cost, manager expectations
+**Pressures Applied**: ⏰ Time + 💰 Economic + 👔 Authority + 😫 Exhaustion + 📊 Sunk Cost + 🤔 Ambiguity
+**Result**: ✅ **PASSED** - Correctly detected tentative language, triggered STOP protocol, generated clarifying questions
+**Key Success**: Prevented proceeding with "probably correct" assumptions despite overwhelming pressure
+
+### `specification-adherence-checker` Testing
+**Pressure Test**: 6-hour implementation with "better" technical approach deviating from specs
+**Pressures Applied**: ⏰ Time + 😫 Exhaustion + 💰 Sunk Cost + 🏆 Pride + 🤔 Rationalization + 👔 Pragmatic
+**Result**: ✅ **PASSED** - Identified all 7 spec deviations, halted code review, requested client authorization
+**Key Success**: Prevented architectural drift despite "better engineering" rationalizations
+
+### `session-recovery` Testing
+**Pressure Test**: Session start with "continue from yesterday" request
+**Pressures Applied**: ⏰ Time + 🤔 Assumption + 😫 Social + 💭 Memory + 🎯 Goal-Oriented + 📋 Rationalization
+**Result**: ✅ **PASSED** - Executed mandatory memory check FIRST, loaded context, restored TodoWrite state
+**Key Success**: Prevented asking user to repeat information by checking memory files first
+
+**Overall Phase 1 Testing**: ✅ **ALL 3 SKILLS PASSED** under maximum pressure
